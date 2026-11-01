@@ -28,6 +28,7 @@ theorem mem_interval_complement_intersection (L U : ℕ) (S : Finset ℕ)
   induction S using Finset.induction_on with
   | empty => simp
   | @insert p S hp ih =>
+      simp [intervalMultiples] at ih
       simp [Finset.inf_insert, intervalMultiples, ih]
 
 /-- The subtype complement intersection counts the ordinary coprime filter. -/
