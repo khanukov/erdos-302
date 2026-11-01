@@ -9,7 +9,7 @@ namespace RoughCount
     contains no multiples of zero. -/
 theorem card_multiples_Ioc (L U d : ℕ) (hLU : L ≤ U) :
     (((Finset.Ioc L U).filter fun n => d ∣ n).card : ℤ) =
-      (U / d : ℤ) - (L / d : ℤ) := by
+      ((U / d : ℕ) : ℤ) - ((L / d : ℕ) : ℤ) := by
   have hsub : (Finset.Ioc 0 L).filter (fun n => d ∣ n) ⊆
       (Finset.Ioc 0 U).filter (fun n => d ∣ n) := by
     intro n hn
