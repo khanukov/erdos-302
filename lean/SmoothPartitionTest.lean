@@ -18,6 +18,9 @@ example (Q : Finset ℕ) (a b x y : ℕ)
 -- Nonempty explicit instance: the block with rough index 1 contains 1.
 example : 1 ∈ block (∅ : Finset ℕ) 1 1 := by
   simp [block, SmoothRenewal.vertices, SmoothRenewal.Smooth]
+  intro q hq h
+  subst q
+  exact Nat.not_prime_one hq
 
 -- Omitting the positive smooth-factor condition would make uniqueness false.
 example : (1 : ℕ) * 0 = 2 * 0 ∧ (1 : ℕ) ≠ 2 := by norm_num
