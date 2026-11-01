@@ -55,7 +55,8 @@ def Check (nodes : ℕ → Node) (i : ℕ) : Prop :=
 
 instance (nodes : ℕ → Node) (i : ℕ) : Decidable (Check nodes i) := by
   unfold Check
-  split <;> dsimp only [ArchivePack.Valid, OrderedEdge] <;> infer_instance
+  dsimp only
+  cases (nodes i).rule <;> dsimp only [ArchivePack.Valid, OrderedEdge] <;> infer_instance
 
 /-- Strong induction establishes the prior-node invariant at each index. -/
 theorem sound (nodes : ℕ → Node) (count : ℕ)
@@ -67,18 +68,19 @@ theorem sound (nodes : ℕ → Node) (count : ℕ)
     intro hi
     have chk := valid i hi
     unfold Check at chk
+    dsimp only at chk
     cases hr : (nodes i).rule with
     | edge a b c =>
-      rw [hr] at chk
+      simp only [hr] at chk
       rcases chk with ⟨hu, hk, he⟩
       rw [hu]
       intro S hs
       exact le_trans hk (Extended.edge_bound he S hs)
     | small =>
-      rw [hr] at chk
+      simp only [hr] at chk
       exact small_sound chk
     | image j m d =>
-      rw [hr] at chk
+      simp only [hr] at chk
       rcases chk with ⟨hj, hm, hd, hex, hu, hk⟩
       have hb := ih j hj (lt_trans hj hi)
       have him := ArchivePack.scaled_bound hm hd hex hb
@@ -86,7 +88,7 @@ theorem sound (nodes : ℕ → Node) (count : ℕ)
       intro S hs
       exact le_trans hk (him S hs)
     | pack refs w D =>
-      rw [hr] at chk
+      simp only [hr] at chk
       rcases chk with ⟨prior, hp⟩
       apply ArchivePack.sound refs (fun j => (nodes j).support) w
         (fun j => (nodes j).demand) D (nodes i).demand (nodes i).support hp
