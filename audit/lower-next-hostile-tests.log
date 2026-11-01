@@ -1,0 +1,5 @@
+LowerNext.improvedLog : ∃ N₀, ∀ N ≥ N₀, (5 / 8 + deltaLog) * ↑N ≤ ↑(Erdos302Lower.f302 N)
+LowerNext.endpoint (d : ℝ) (hd : d < Erdos301.Analytic.roughDensity L / 24) :
+  ∃ N₀, ∀ N ≥ N₀, (5 / 8 + d) * ↑N ≤ ↑(Erdos302Lower.f302 N)
+'LowerNext.improvedLog' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LowerNext.delta2_lt_log' depends on axioms: [propext, Classical.choice, Quot.sound]

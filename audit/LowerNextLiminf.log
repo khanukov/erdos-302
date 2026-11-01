@@ -1,0 +1,2 @@
+'LowerNextLiminf.lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LowerNextLiminf.log_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
