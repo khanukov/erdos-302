@@ -1,0 +1,11 @@
+# Scope and correspondence
+
+This is a partial formalization, not the bound 0.8412308070499916 or a verification of the archive. Archive files were inspected statically, not executed. The exact target is claim.json's rational, not the prior Kitamura aggregate.
+
+* PROOF.md 41–91: bank nodes certify cover lower bounds; arithmetic, dilation, weighted and case-tree rules require replay, not solver trust. UpperRenewal assumes a bank result `hbound`; it does not replay the bank.
+* PROOF.md 95–111 and verify.py 202–211: `extension_projection` proves the explicit boundary witness rule for the actual `UpperBridge.OrderedEdge` and `OrderedCover` definitions: any source edge is either inside T or hit by U; a T-cover C extends to C ∪ U, giving r ≤ |C|+|U|. The archive additionally checks T ⊆ S and U ⊆ S\T; the proof does not need the latter. The `hT` parameter mirrors the input relationship but is not needed for the implication. Natural-number subtraction yields the quoted r−|U| bound as a consequence, but is not separately stated.
+* PROOF.md 96–103 and verify.py 224–235: `reciprocal_at_most_one_odd` proves the parity half for every natural-number solution of bc=a(b+c), without positivity or ordering. It does NOT prove the prime-support half (at least two outside vertices) or combine these facts to show the even outside vertices hit every boundary edge. Prefix deletion and seed construction remain unformalized.
+* PROOF.md 125–150 and verify.py 241–248: `renewal_max_sound` and `renewal_correction` prove only the local max and nonnegative correction facts at line 243, under explicit candidate bounds. They do not construct tables or establish strong-induction validity, monotonicity, disjoint smooth partitions, old profile premises, finite support, or zero-correction extension.
+* PROOF.md 158–194 and verify.py 244–251: still missing are smooth/rough block partitioning, disjoint cover summation, reindexing, finite inclusion-exclusion error bounds, replay of every cell and exact rational arithmetic, and the finite and limsup conclusions. The prior Kitamura profiles are premises, never the resulting theorem.
+
+Build using lower-rebuild/project's Lake environment, with LEAN_PATH containing this directory and upper-bank, and `lean --root=/root/erdos-302-independent-audit/upper-renewal`. `Tests.lean` checks the extension rule. No `sorry` is used.
