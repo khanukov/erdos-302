@@ -1,0 +1,27 @@
+name: Independent conditional bank check
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'independent_bank/**'
+      - 'input/erdos302_boundary_certificates_publication.zip'
+      - '.github/workflows/independent-bank.yml'
+permissions: {}
+
+jobs:
+  bank:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out triggering revision without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Optimized-mode tests and real-data mutations
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -O -m unittest discover -s independent_bank -v
+      - name: Interpret entire pinned data bank conditionally
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -O independent_bank/verify_bank.py

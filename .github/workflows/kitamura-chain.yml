@@ -1,0 +1,73 @@
+name: Kitamura profile chain (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'pilot = Data19 only; full = all chain_i (potentially >6h)'
+        type: choice
+        options: [pilot, full]
+        default: pilot
+        required: true
+permissions:
+  contents: read
+jobs:
+  chain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    env:
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Checkout exact upstream
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: KitaKen1/erdos-302-upper-bound
+          ref: 9447ceb28138949b2fb32442cec506a6f53104f9
+          path: upstream
+          persist-credentials: false
+      - name: Verify checkout and pinned manifest
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream rev-parse HEAD)" = 9447ceb28138949b2fb32442cec506a6f53104f9
+          test "$(cat upstream/lean/lean-toolchain)" = 'leanprover/lean4:v4.27.0'
+          sha256sum upstream/lean/lake-manifest.json > "$RUNNER_TEMP/manifest.sha256"
+          test -z "$(find upstream/lean -name '*.olean' -print -quit)"
+      - name: Install Lean and retrieve Mathlib cache
+        uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1
+        with:
+          lake-package-directory: upstream/lean
+          auto-config: 'false'
+          build: 'false'
+          test: 'false'
+          lint: 'false'
+          use-mathlib-cache: 'true'
+          use-github-cache: 'false'
+      - name: Check locked dependency revisions
+        run: |
+          set -euo pipefail
+          sha256sum -c "$RUNNER_TEMP/manifest.sha256"
+          python3 .github/kitamura/verify_lock.py upstream/lean
+          cd upstream/lean
+          lake env lean --version
+          df -h .
+          free -h
+      - name: Build fresh upstream closure and audit axioms
+        env:
+          SCOPE: ${{ inputs.scope }}
+        run: |
+          set -euo pipefail
+          mkdir -p kitamura-logs
+          cd upstream/lean
+          lake env python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" "$SCOPE" "$GITHUB_WORKSPACE/kitamura-logs" 2>&1 | tee "$GITHUB_WORKSPACE/kitamura-logs/build.log"
+      - name: Upload logs even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: kitamura-chain-${{ inputs.scope }}
+          path: |
+            kitamura-logs/*.log
+            kitamura-logs/Axioms.lean
+          if-no-files-found: warn
+          retention-days: 14

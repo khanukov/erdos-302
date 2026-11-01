@@ -64,6 +64,13 @@ def run(args, project, env, names):
     require(p.returncode == 0, f'Lean failed: {args}')
     check_axioms(p.stdout, names)
 
+def lean_search_path(project, lake_path):
+    require(bool(lake_path), 'empty Lake search path')
+    # Built Lake modules must precede the source root. Otherwise Lean sees
+    # Erdos302Lower/Defs.lean and looks for a nonexistent adjacent olean.
+    return lake_path + ':' + str(project)
+
+
 def main():
     ap = argparse.ArgumentParser(); g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('--check-only', action='store_true'); g.add_argument('--shard', type=int)
@@ -80,7 +87,7 @@ def main():
     version = subprocess.check_output(['lean','--version'], text=True)
     require('4.33.0-rc1' in version, f'wrong Lean: {version}')
     lp = subprocess.check_output(['lake','env','printenv','LEAN_PATH'], cwd=project, text=True).strip()
-    env = dict(os.environ, LEAN_PATH=str(project)+':'+lp)
+    env = dict(os.environ, LEAN_PATH=lean_search_path(project, lp))
     modules = [('Checker', ['SmallStd.sound','SmallStd.edges_sound']), ('Sound', ['SmallStd.lower_bound']), ('UpperBridge', ['UpperBridge.finite_card_bound']), ('Bridge', ['SmallStd.mask_bit','SmallStd.mask_lt','SmallStd.checked_orderedEdge','SmallStd.cover_lower'])]
     for mod,names in modules:
         text = (project/(mod+'.lean')).read_text()

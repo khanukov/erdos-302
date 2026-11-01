@@ -16,6 +16,11 @@ class Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify.check_axioms('', ['Archive.cover_1'])
 
+    def test_built_lake_objects_precede_source_tree(self):
+        self.assertEqual(verify.lean_search_path('/source', '/built:/deps'), '/built:/deps:/source')
+        with self.assertRaises(ValueError):
+            verify.lean_search_path('/source', '')
+
     def test_source_contains_bridge_application(self):
         text = verify.source_for([(7, {'v':[2,3,6], 'r':1})])
         self.assertIn('SmallStd.finite_card_bound', text)
