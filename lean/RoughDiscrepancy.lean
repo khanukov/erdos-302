@@ -37,13 +37,44 @@ theorem signed_error_sum_bound (S : Finset ℕ) (e : Finset ℕ → ℝ)
       simpa [abs_mul, abs_pow] using he T hT
     _ = (2 : ℝ) ^ S.card := by simp
 
-/-- The rough count in (L,U] differs from its exact real density prediction by
-at most one per subset of the finite prime set. -/
-theorem card_coprime_Ioc_discrepancy (L U : ℕ) (S : Finset ℕ)
+/-- If the empty-set error vanishes, there is one fewer contribution. -/
+theorem signed_error_sum_bound_sharp (S : Finset ℕ) (e : Finset ℕ → ℝ)
+    (he : ∀ T ∈ S.powerset, |e T| ≤ 1) (he0 : e ∅ = 0) :
+    |∑ T ∈ S.powerset, (-1 : ℝ) ^ T.card * e T| ≤
+      (2 : ℝ) ^ S.card - 1 := by
+  classical
+  have hmem : (∅ : Finset ℕ) ∈ S.powerset := by simp
+  have hsum : (∑ T ∈ S.powerset, (-1 : ℝ) ^ T.card * e T) =
+      ∑ T ∈ S.powerset.erase ∅, (-1 : ℝ) ^ T.card * e T := by
+    simpa [he0] using
+      (Finset.sum_erase_add S.powerset (fun T => (-1 : ℝ) ^ T.card * e T) hmem).symm
+  have hcard : (((S.powerset.erase ∅).card : ℕ) : ℝ) + 1 =
+      (2 : ℝ) ^ S.card := by
+    have hn := Finset.card_erase_add_one hmem
+    have hn' : (S.powerset.erase ∅).card + 1 = 2 ^ S.card := by
+      simpa using hn
+    exact_mod_cast hn'
+  rw [hsum]
+  calc
+    |∑ T ∈ S.powerset.erase ∅, (-1 : ℝ) ^ T.card * e T| ≤
+        ∑ T ∈ S.powerset.erase ∅, |(-1 : ℝ) ^ T.card * e T| :=
+      Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ _T ∈ S.powerset.erase ∅, (1 : ℝ) := by
+      apply Finset.sum_le_sum
+      intro T hT
+      have hTS : T ∈ S.powerset := (Finset.mem_erase.mp hT).2
+      simpa [abs_mul, abs_pow] using he T hTS
+    _ = (2 : ℝ) ^ S.card - 1 := by
+      simp only [Finset.sum_const, nsmul_eq_mul, mul_one]
+      linarith
+
+/-- The empty subset contributes no quotient error, so only the nonempty
+subsets contribute to the discrepancy bound. -/
+theorem card_coprime_Ioc_discrepancy_sharp (L U : ℕ) (S : Finset ℕ)
     (hLU : L ≤ U) (hprime : ∀ p ∈ S, Nat.Prime p) :
     |(((Finset.Ioc L U).filter fun n => Nat.Coprime n (∏ p ∈ S, p)).card : ℝ) -
       ((U : ℝ) - L) * (∏ p ∈ S, (1 - (1 : ℝ) / p))| ≤
-      (2 : ℝ) ^ S.card := by
+      (2 : ℝ) ^ S.card - 1 := by
   classical
   let q : Finset ℕ → ℝ := fun T =>
     ((U / (∏ p ∈ T, p) : ℕ) : ℝ) - ((L / (∏ p ∈ T, p) : ℕ) : ℝ)
@@ -70,11 +101,24 @@ theorem card_coprime_Ioc_discrepancy (L U : ℕ) (S : Finset ℕ)
     have h := RoughRounding.interval_quotient_error L U (∏ p ∈ T, p) hp
     apply le_of_lt
     simpa [q, d, Nat.cast_prod] using h
+  have he0 : q ∅ - d ∅ = 0 := by
+    simp [q, d]
   rw [hcount, hdensity, ← Finset.sum_sub_distrib]
-  have hs := signed_error_sum_bound S (fun T => q T - d T) herr
+  have hs := signed_error_sum_bound_sharp S (fun T => q T - d T) herr he0
   simpa only [mul_sub] using hs
+
+/-- The original weaker bound, retained for existing clients. -/
+theorem card_coprime_Ioc_discrepancy (L U : ℕ) (S : Finset ℕ)
+    (hLU : L ≤ U) (hprime : ∀ p ∈ S, Nat.Prime p) :
+    |(((Finset.Ioc L U).filter fun n => Nat.Coprime n (∏ p ∈ S, p)).card : ℝ) -
+      ((U : ℝ) - L) * (∏ p ∈ S, (1 - (1 : ℝ) / p))| ≤
+      (2 : ℝ) ^ S.card := by
+  have h := card_coprime_Ioc_discrepancy_sharp L U S hLU hprime
+  linarith
 
 #print axioms density_expansion
 #print axioms signed_error_sum_bound
+#print axioms signed_error_sum_bound_sharp
+#print axioms card_coprime_Ioc_discrepancy_sharp
 #print axioms card_coprime_Ioc_discrepancy
 end RoughDiscrepancy

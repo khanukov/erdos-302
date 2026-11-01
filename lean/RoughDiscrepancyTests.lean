@@ -35,4 +35,24 @@ example : |(((Finset.Ioc 2 12).filter fun n => Nat.Coprime n
   simp only [Finset.mem_insert, Finset.mem_singleton] at hp
   rcases hp with rfl | rfl <;> decide
 
+-- Empty prime set: every ordered interval has zero discrepancy, not merely ≤ 1.
+example (L U : ℕ) (hLU : L ≤ U) :
+    |(((Finset.Ioc L U).filter fun n => Nat.Coprime n
+      (∏ p ∈ (∅ : Finset ℕ), p)).card : ℝ) -
+      ((U : ℝ) - L) * (∏ p ∈ (∅ : Finset ℕ), (1 - (1 : ℝ) / p))| = 0 := by
+  have h := RoughDiscrepancy.card_coprime_Ioc_discrepancy_sharp L U ∅ hLU (by simp)
+  simp only [Finset.card_empty, pow_zero, sub_self] at h
+  exact le_antisymm h (abs_nonneg _)
+
+example : |(((Finset.Ioc 2 12).filter fun n => Nat.Coprime n
+    (∏ p ∈ ({2, 3} : Finset ℕ), p)).card : ℝ) -
+    ((12 : ℝ) - 2) * (∏ p ∈ ({2, 3} : Finset ℕ), (1 - (1 : ℝ) / p))| ≤
+    (2 : ℝ) ^ ({2, 3} : Finset ℕ).card - 1 := by
+  apply RoughDiscrepancy.card_coprime_Ioc_discrepancy_sharp 2 12 {2, 3} (by decide)
+  intro p hp
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hp
+  rcases hp with rfl | rfl <;> decide
+
+#print axioms RoughDiscrepancy.signed_error_sum_bound_sharp
+#print axioms RoughDiscrepancy.card_coprime_Ioc_discrepancy_sharp
 #print axioms RoughDiscrepancy.card_coprime_Ioc_discrepancy

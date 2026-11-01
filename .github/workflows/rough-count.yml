@@ -53,6 +53,6 @@ jobs:
           lean -o RoughRounding.olean RoughRounding.lean 2>&1 | tee "$RUNNER_TEMP/RoughRounding.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughRounding.log" RoughRounding.nat_div_cast_bounds RoughRounding.interval_quotient_error
           lean -o RoughDiscrepancy.olean RoughDiscrepancy.lean 2>&1 | tee "$RUNNER_TEMP/RoughDiscrepancy.log"
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancy.log" RoughDiscrepancy.density_expansion RoughDiscrepancy.signed_error_sum_bound RoughDiscrepancy.card_coprime_Ioc_discrepancy
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancy.log" RoughDiscrepancy.density_expansion RoughDiscrepancy.signed_error_sum_bound RoughDiscrepancy.signed_error_sum_bound_sharp RoughDiscrepancy.card_coprime_Ioc_discrepancy_sharp RoughDiscrepancy.card_coprime_Ioc_discrepancy
           lean RoughDiscrepancyTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughDiscrepancyTests.log"
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancyTests.log" RoughDiscrepancy.card_coprime_Ioc_discrepancy
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancyTests.log" RoughDiscrepancy.signed_error_sum_bound_sharp RoughDiscrepancy.card_coprime_Ioc_discrepancy_sharp RoughDiscrepancy.card_coprime_Ioc_discrepancy
