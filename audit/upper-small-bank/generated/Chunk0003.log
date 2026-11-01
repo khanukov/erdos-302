@@ -1,0 +1,800 @@
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:10:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_366' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:19:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_367' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:28:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_368' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:37:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_369' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:46:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_370' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:55:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_371' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:64:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_372' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:73:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_373' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:82:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_374' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:91:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_375' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:100:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_376' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:109:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_377' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:118:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_378' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:127:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_379' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:136:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_380' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:145:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_381' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:154:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_382' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:163:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_383' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:172:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_384' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:181:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_385' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:190:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_386' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:199:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_387' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:208:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_388' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:217:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_389' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:226:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_390' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:235:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_391' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:244:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_392' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:253:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_393' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:262:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_394' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:271:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_395' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:280:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_396' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:289:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_397' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:298:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_398' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:307:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_399' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:316:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_400' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:325:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_401' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:334:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_402' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:343:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_403' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:352:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_404' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:361:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_405' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:370:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_406' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:379:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_407' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:388:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_408' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:397:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_409' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:406:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_410' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:415:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_411' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:424:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_412' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:433:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_413' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:442:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_414' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:451:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_415' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:460:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_416' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:469:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_417' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:478:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_418' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:487:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_419' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:496:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_420' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:505:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_421' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:514:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_422' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:523:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_423' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:532:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_424' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:541:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_425' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:550:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_426' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:559:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_427' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:568:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_428' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:577:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_429' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:586:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_430' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:595:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_431' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:604:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_432' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:613:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_433' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:622:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_434' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:631:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_435' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:640:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_436' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:649:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_437' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:658:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_438' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:667:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_439' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:676:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_440' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:685:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_441' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:694:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_442' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:703:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_443' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:712:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_444' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:721:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_445' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:730:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_446' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:739:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_447' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:748:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_448' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:757:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_449' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:766:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_450' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:775:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_451' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:784:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_452' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:793:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_453' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:802:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_454' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:811:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_455' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:820:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_456' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:829:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_457' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:838:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_458' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:847:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_459' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:856:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_460' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:865:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_461' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:874:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_462' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:883:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_463' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:892:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_464' depends on axioms: [propext, Classical.choice, Quot.sound]
+/root/erdos-302-independent-audit/upper-small-bank/generated/Chunk0003.lean:901:15: warning: This simp argument is unused:
+  Finset.mem_insert
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_singleton] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'BaselineSmall.bank_node_1210' depends on axioms: [propext, Classical.choice, Quot.sound]
