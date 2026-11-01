@@ -1,0 +1,64 @@
+name: Archive rough summation bridge candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  summation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile candidate and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/summation-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lean/{RoughCount,RoughCountTest,RoughIEPartial,RoughIntersection,RoughIntersectionTests,RoughFinal,RoughFinalTests,RoughRounding,RoughDiscrepancy,RoughDiscrepancyTests,Summation,SumBridge,SumBridgeTest}.lean "$p/"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Finset.CastCard Mathlib.Combinatorics.Enumerative.InclusionExclusion Mathlib.Data.Nat.GCD.BigOperators Mathlib.Data.Nat.Prime.Basic Mathlib.Data.Nat.Cast.Order.Field Mathlib.Data.Real.Basic Mathlib.Order.Interval.Finset.Nat Mathlib.Tactic
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          lean -o RoughCount.olean RoughCount.lean 2>&1 | tee "$RUNNER_TEMP/RoughCount.log"
+          lean RoughCountTest.lean 2>&1 | tee "$RUNNER_TEMP/RoughCountTest.log"
+          for log in "$RUNNER_TEMP/RoughCount.log" "$RUNNER_TEMP/RoughCountTest.log"; do
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$log" RoughCount.card_multiples_Ioc
+          done
+          lean -o RoughIEPartial.olean RoughIEPartial.lean 2>&1 | tee "$RUNNER_TEMP/RoughIEPartial.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIEPartial.log" RoughIEPartial.interval_inclusion_exclusion
+          lean -o RoughIntersection.olean RoughIntersection.lean 2>&1 | tee "$RUNNER_TEMP/RoughIntersection.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIntersection.log" RoughIEPartial.prime_product_dvd_iff RoughIEPartial.intersection_card_eq_div
+          lean RoughIntersectionTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughIntersectionTests.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIntersectionTests.log" RoughIEPartial.intersection_card_eq_div
+          lean -o RoughFinal.olean RoughFinal.lean 2>&1 | tee "$RUNNER_TEMP/RoughFinal.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughFinal.log" RoughIEPartial.coprime_prime_product_iff RoughIEPartial.complement_card_eq_coprime_filter RoughIEPartial.card_coprime_Ioc_eq_inclusion_exclusion
+          lean RoughFinalTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughFinalTests.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughFinalTests.log" RoughIEPartial.card_coprime_Ioc_eq_inclusion_exclusion
+          lean -o RoughRounding.olean RoughRounding.lean 2>&1 | tee "$RUNNER_TEMP/RoughRounding.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughRounding.log" RoughRounding.nat_div_cast_bounds RoughRounding.interval_quotient_error
+          lean -o RoughDiscrepancy.olean RoughDiscrepancy.lean 2>&1 | tee "$RUNNER_TEMP/RoughDiscrepancy.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancy.log" RoughDiscrepancy.density_expansion RoughDiscrepancy.signed_error_sum_bound RoughDiscrepancy.card_coprime_Ioc_discrepancy
+          lean RoughDiscrepancyTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughDiscrepancyTests.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancyTests.log" RoughDiscrepancy.card_coprime_Ioc_discrepancy
+          lean -o Summation.olean Summation.lean 2>&1 | tee "$RUNNER_TEMP/Summation.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Summation.log" ArchiveSummation.global_upper ArchiveSummation.count_cell_eq
+          lean -o SumBridge.olean SumBridge.lean 2>&1 | tee "$RUNNER_TEMP/SumBridge.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SumBridge.log" ArchiveSumBridge.real_endpoint_loss_le_one ArchiveSumBridge.cell_lower_exact ArchiveSumBridge.cell_lower_archive ArchiveSumBridge.global_upper_archive
+          lean SumBridgeTest.lean 2>&1 | tee "$RUNNER_TEMP/SumBridgeTest.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SumBridgeTest.log" ArchiveSumBridge.global_upper_archive
