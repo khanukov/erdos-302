@@ -1,0 +1,7 @@
+# Case-rule CI overlay — not yet verified
+
+Copy this overlay's `lean/` and `.github/` files into the audit repository at the intended revision, then run the **Case rule soundness** GitHub Actions workflow. No local Lean run and no remote write were performed. The workflow reuses the bridge project's checked-in toolchain, Lake configuration and manifest, explicitly fetches the bridge's exact mathlib commit, and downloads the same pinned Lean archive with SHA-256 verification. It needs network access and a working mathlib cache; cache failure is fatal.
+
+`CaseRules.lean` develops integer residual, row contradiction, forced assignment, budget contradiction and two-branch soundness from an explicit state invariant. `CaseRulesTest.lean` includes negative residual/budget and small rule applications. The CI logs contain `#print axioms` output but the workflow does not automatically classify it.
+
+This is not a complete certificate checker: no syntax/parser, recursive tree interpreter, dual rule, arithmetic-image theorem, automatic connection from `Extended.Bound`, archive serialization, or global bound is supplied. The source-row theorem assumes the cardinality bound supplied by a previously established image proof. The Lean source, examples, and workflow remain unverified until the hosted CI actually succeeds. Test-driven red/green execution was not possible under the CI-only, no-push restriction.
