@@ -1,0 +1,9 @@
+# Ordered finite DAG prototype
+
+`ArchiveDag.Check nodes i` checks a single node using only its data and nodes at strictly smaller indices. `ArchiveDag.sound` states that if every index below `count` checks, each advertised cover bound below `count` holds. The input is a total function `ℕ → Node`; only its finite prefix is trusted as data, and no assertion about any external profile is an assumption of the theorem. CI must still compile and kernel-check this prototype: it has not been run locally.
+
+Supported rules: an explicit arithmetic edge, a finite exhaustive cover check, exact positive rational images of earlier nodes, and integer-weighted packing of earlier nodes with support inclusion, capacities and strict rounding. Pack references are sets of earlier nodes (weights are natural numbers); duplicate archive rows require aggregation or a generalized index type. Images are themselves nodes. `small` is mathematically exhaustive but may be computationally impractical at archive sizes.
+
+Not implemented: parsing or proving correspondence to the archive, archive-specific base/profile claims, case/split/force/budget/row trees, trim and other variants, rational-weight normalization, full-bank execution, analytic bridge, or the 0.84123 bound. `CaseRules.lean` is not part of this checker and its standalone lemmas do not discharge case-tree certificates. No result about the complete bank follows from these tests.
+
+The GitHub workflow pins Lean and Mathlib and fetches the repository's separately pinned `Erdos302Lower.Defs` source, with a file SHA-256 check; these are build dependencies, not an assumed profile theorem. The underlying imported files and the new soundness theorem must actually compile and their printed axioms must be reviewed in CI. No remote writes have been made. All new results are unverified until that happens.

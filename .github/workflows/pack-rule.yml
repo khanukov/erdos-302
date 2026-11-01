@@ -35,7 +35,7 @@ jobs:
           mkdir -p "$p/Erdos302Lower"
           cp audit/mathlib-bridge-ci/project/* "$p/"
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
-          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,PackTests,Pack1094,Pack1094Tests}.lean "$p/"
+          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,PackTests,Dag,DagTests,Pack1094,Pack1094Tests}.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
           git -C .lake/packages/mathlib init
@@ -46,10 +46,12 @@ jobs:
           lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
           lake build Erdos302Lower.Defs
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
-          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule PackTests Pack1094 Pack1094Tests; do
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule PackTests Dag DagTests Pack1094 Pack1094Tests; do
             echo "Checking $f"
             lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Dag.log" ArchiveDag.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/DagTests.log" ArchiveDag.sound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/PackRule.log" ArchivePack.sound ArchivePack.scaled_bound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/PackTests.log" ArchivePackTests.image4_pack
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Pack1094Tests.log" ArchivePack1094.valid
