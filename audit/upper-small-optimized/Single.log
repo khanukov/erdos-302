@@ -1,0 +1,8 @@
+/root/erdos-302-independent-audit/upper-small-optimized/Single.lean:10:67: warning: This simp argument is unused:
+  true_or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Finset.mem_insert, Finset.mem_singleton, or_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'OptimizedSmall.bank_node_4022' depends on axioms: [propext, Classical.choice, Quot.sound]

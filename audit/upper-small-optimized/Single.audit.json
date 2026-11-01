@@ -1,0 +1,24 @@
+{
+  "source_sha256": "5c1a1fa4edcc1a0bc7ac3fc9cd3bc7fca4eedad6cb689b6540436ca35ed89034",
+  "source_index": 4022,
+  "source_node": {
+    "t": "small",
+    "v": [
+      390,
+      490,
+      1911
+    ],
+    "r": 1
+  },
+  "previously_compiled": false,
+  "lean_file_sha256": "32c428f8750c33aa540338e0c181ab0e51660998c81bbc7eea19ac2a7bb35e91",
+  "log_sha256": "7b57e1b85f2f2bd103511f897e6b65c4052c31acac263cf6b2a9ab99533c5cc4",
+  "lean_exit_code": 0,
+  "peak_mib_sampled": 5908,
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "note": "Single.log and exit status from guarded direct Lean execution; peak aggregate process-group RSS sampled."
+}

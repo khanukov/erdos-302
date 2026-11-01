@@ -1,0 +1,7 @@
+# Optimized r=1 proof experiment
+
+`Single.lean` proves original bank node 4022 against the actual `UpperBridge` module. Its membership proof is decomposed into `simp only` steps and each numeric relation is closed with `norm_num1`. `Single.log` records the axiom query; `Single.audit.json` records the checked source mapping, hashes, process exit status, and sampled peak RSS. The guarded Lean run exited 0, with sampled peak 5908 MiB; its warning concerns an unused simp argument only. Axiom dependencies are propext, Classical.choice, Quot.sound; no sorryAx.
+
+`generator.py` is adapted from the original but uses the decomposed proof and imports `UpperBridge` instead of `UpperBank`; it is experimental and retains failed batch records in `coverage.json`. It independently rechecks the source hash, original coverage, source indices, Lean exit, and per-theorem axiom output. It enforces 6 GiB process-group aggregate RSS and 3.2 GiB free-space limits. The batch attempts failed the RSS guard, including two single-node attempts; these failed batches add no coverage. An import-only attempt also exceeded the RSS guard, so the bottleneck is not confined to numeric proof evaluation.
+
+Only the independently audited `Single.lean` success is additional coverage: one node (4022), beyond the original 1900; 1627 of 3528 small nodes remain. This result is not included in the experimental generator's coverage manifest. The remaining r=1 nodes are not verified here. No original files or coverage were changed.
