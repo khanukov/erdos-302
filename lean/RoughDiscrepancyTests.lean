@@ -2,6 +2,22 @@ import RoughDiscrepancy
 
 open scoped BigOperators
 
+-- The density identity is exact even for the empty set, a set containing zero,
+-- and a set of non-primes. In particular, it assumes no nonzero denominators.
+example : (∏ p ∈ (∅ : Finset ℕ), (1 - (1 : ℝ) / p)) =
+    ∑ T ∈ (∅ : Finset ℕ).powerset, (-1 : ℝ) ^ T.card / (∏ p ∈ T, (p : ℝ)) :=
+  RoughDiscrepancy.density_expansion ∅
+
+example : (∏ p ∈ ({0, 4} : Finset ℕ), (1 - (1 : ℝ) / p)) =
+    ∑ T ∈ ({0, 4} : Finset ℕ).powerset, (-1 : ℝ) ^ T.card / (∏ p ∈ T, (p : ℝ)) :=
+  RoughDiscrepancy.density_expansion {0, 4}
+
+example : (∏ p ∈ ({2, 3} : Finset ℕ), (1 - (1 : ℝ) / p)) =
+    ∑ T ∈ ({2, 3} : Finset ℕ).powerset, (-1 : ℝ) ^ T.card / (∏ p ∈ T, (p : ℝ)) :=
+  RoughDiscrepancy.density_expansion {2, 3}
+
+#print axioms RoughDiscrepancy.density_expansion
+
 -- Empty set and zero-length interval.
 example : |(((Finset.Ioc 3 3).filter fun n => Nat.Coprime n
     (∏ p ∈ (∅ : Finset ℕ), p)).card : ℝ) -

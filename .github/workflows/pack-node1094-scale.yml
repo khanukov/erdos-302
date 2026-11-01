@@ -1,12 +1,6 @@
-name: Pack node 1094 bounded capacity batch
+name: Pack node 1094 all capacity batches
 on:
   workflow_dispatch:
-    inputs:
-      batch:
-        description: "Zero-based batch number (0 is vertices 3-10)"
-        required: true
-        default: "0"
-        type: string
 permissions:
   contents: read
 jobs:
@@ -67,6 +61,11 @@ jobs:
           if-no-files-found: error
   shard:
     needs: upstream
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        batch: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87]
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -116,12 +115,13 @@ jobs:
       - name: Generate and compile bounded proof shard
         shell: bash
         env:
-          BATCH: ${{ inputs.batch }}
+          BATCH: ${{ matrix.batch }}
         run: |
           set -euo pipefail
           [[ "$BATCH" =~ ^(0|[1-9][0-9]?)$ ]] || { echo 'invalid batch number'; exit 1; }
           p="$RUNNER_TEMP/pack-project"
           python3 scripts/generate_pack1094_scale.py --out "$p/generated"
+          test "$(wc -l < "$p/generated/batches.txt")" -eq 88
           line=$(sed -n "$((10#$BATCH + 1))p" "$p/generated/batches.txt")
           [[ -n "$line" ]] || { echo 'batch outside generated range'; exit 1; }
           cd "$p"
@@ -141,6 +141,85 @@ jobs:
       - name: Save compiled proof shard
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: node1094-proof-batch-${{ inputs.batch }}
+          name: node1094-proof-batch-${{ matrix.batch }}
           path: proof-olean/*.olean
+          if-no-files-found: error
+
+  assembly:
+    needs: [upstream, shard]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Prepare matching dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/pack-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Pack1094,PackShard,Pack1094Shard,PackShardTests}.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
+          lake build Erdos302Lower.Defs
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+      - name: Restore upstream modules from this workflow run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: node1094-upstream-olean
+          path: ${{ runner.temp }}/pack-project
+      - name: Download all batch proof artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: node1094-proof-batch-*
+          path: ${{ runner.temp }}/batch-artifacts
+      - name: Verify complete artifacts and check all capacities
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/pack-project"
+          python3 scripts/generate_pack1094_scale.py --out "$p/generated"
+          test "$(wc -l < "$p/generated/batches.txt")" -eq 88
+          python3 scripts/assemble_pack1094_artifacts.py "$p/generated/batches.txt" "$RUNNER_TEMP/batch-artifacts" "$p"
+          cd "$p"
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          for f in PackShard Pack1094Shard; do
+            lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Pack1094Shard.log" ArchivePack1094.capacity_vertex_two
+          cp generated/Pack1094AllCapacities.lean .
+          lean -o Pack1094AllCapacities.olean Pack1094AllCapacities.lean 2>&1 | tee "$RUNNER_TEMP/Pack1094AllCapacities.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Pack1094AllCapacities.log" ArchivePack1094.all_capacities
+          mkdir -p "$GITHUB_WORKSPACE/assembly-proof"
+          cp Pack1094AllCapacities.olean "$RUNNER_TEMP/Pack1094AllCapacities.log" "$GITHUB_WORKSPACE/assembly-proof/"
+      - name: Save assembly proof and axiom report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: node1094-all-capacities
+          path: assembly-proof/*
           if-no-files-found: error

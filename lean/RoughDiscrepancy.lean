@@ -13,13 +13,14 @@ theorem density_expansion (S : Finset ℕ) :
   classical
   calc
     (∏ p ∈ S, (1 - (1 : ℝ) / p)) =
-        ∑ T ∈ S.powerset, ∏ p ∈ T, (-(1 : ℝ) / p) := by
-          simpa [sub_eq_add_neg] using
-            (Finset.prod_one_add (f := fun p : ℕ => (-(1 : ℝ) / p)) S)
+        ∑ T ∈ S.powerset, ∏ p ∈ T, (-((1 : ℝ) / p)) := by
+          simpa only [sub_eq_add_neg] using
+            (Finset.prod_one_add (f := fun p : ℕ => -((1 : ℝ) / p)) S)
     _ = ∑ T ∈ S.powerset, (-1 : ℝ) ^ T.card / (∏ p ∈ T, (p : ℝ)) := by
       apply Finset.sum_congr rfl
       intro T hT
-      simp [div_eq_mul_inv, Finset.prod_mul_distrib, Finset.prod_inv_distrib]
+      rw [Finset.prod_neg, Finset.prod_div_distrib]
+      simp only [Finset.prod_const_one, one_div, div_eq_mul_inv]
 
 /-- Triangle inequality for a signed sum of errors bounded by one. -/
 theorem signed_error_sum_bound (S : Finset ℕ) (e : Finset ℕ → ℝ)
