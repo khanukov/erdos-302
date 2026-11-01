@@ -30,7 +30,7 @@ jobs:
           p="$RUNNER_TEMP/case-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{CaseRules,CaseRulesTest,CaseTree,CaseTreeTest}.lean "$p/"
+          cp lean/{CaseRules,CaseRulesTest,CaseDual,CaseTree,CaseTreeTest}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -43,6 +43,8 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/case-source.log" BankCase.residual_sound BankCase.force_sound BankCase.budget_reject BankCase.split_sound
           lake env lean CaseRulesTest.lean 2>&1 | tee "$RUNNER_TEMP/case-test.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/case-test.log" BankCase.row_reject BankCase.remaining_le_selected
+          lake env lean -o .lake/build/lib/lean/CaseDual.olean CaseDual.lean 2>&1 | tee "$RUNNER_TEMP/case-dual.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/case-dual.log" BankCase.dualCheck_sound
           lake env lean -o .lake/build/lib/lean/CaseTree.olean CaseTree.lean 2>&1 | tee "$RUNNER_TEMP/case-tree.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/case-tree.log" BankCase.check_sound
           lake env lean CaseTreeTest.lean 2>&1 | tee "$RUNNER_TEMP/case-tree-test.log"

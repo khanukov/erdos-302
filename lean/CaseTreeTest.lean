@@ -5,6 +5,37 @@ namespace BankCase
 private def singletonRow : Constraint ℕ := ({0}, 1)
 private def universe01 : Finset ℕ := {0, 1}
 
+-- Two disjoint demands exclude a one-vertex model through a dual leaf.
+private def row1 : Constraint ℕ := ({1}, 1)
+example : check [singletonRow, row1] universe01 ∅ ∅ 2
+    (.dual [(singletonRow, 1), (row1, 1)] 1) = true := by simp only [check] <;> decide
+
+-- An unlisted row cannot be smuggled into a dual certificate.
+example : check [singletonRow] universe01 ∅ ∅ 2
+    (.dual [(singletonRow, 1), (row1, 1)] 1) = false := by simp only [check] <;> decide
+
+-- The -1 residual cancels one unit of the second row: clamping it would
+-- incorrectly make the objective 2 > 1 and accept this certificate.
+example : check [({0}, 0), ({1, 2}, 2)] ({0, 1, 2} : Finset ℕ) {0} ∅ 3
+    (.dual [((({0} : Finset ℕ), 0), 1), (({1, 2}, 2), 1)] 1) = false := by
+  simp only [check] <;> decide
+example : check [({0}, 0), ({1, 2}, 2)] ({0, 1, 2} : Finset ℕ) {0} ∅ 2
+    (.dual [((({0} : Finset ℕ), 0), 1), (({1, 2}, 2), 1)] 1) = true := by
+  simp only [check] <;> decide
+
+-- Dual leaves work inside both branches, not only at the root.
+example : check [singletonRow, row1] universe01 ∅ ∅ 1
+    (.split 0 (.row singletonRow) (.dual [(row1, 1)] 1)) = true := by
+  simp only [check] <;> decide
+
+-- Weight and per-vertex capacity are checked by the integrated leaf.
+example : check [singletonRow] universe01 ∅ ∅ 1
+    (.dual [(singletonRow, 0)] 1) = false := by simp only [check] <;> decide
+example : check [singletonRow] universe01 ∅ ∅ 1
+    (.dual [(singletonRow, 1)] 0) = false := by simp only [check] <;> decide
+example : check [singletonRow] universe01 ∅ ∅ 1
+    (.dual [(singletonRow, 1), (singletonRow, 1)] 1) = false := by simp only [check] <;> decide
+
 -- Forcing the only demanded vertex makes a size-zero budget impossible.
 example : check [singletonRow] universe01 ∅ ∅ 1
     (.force singletonRow .budget) = true := by simp only [check] <;> decide

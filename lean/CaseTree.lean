@@ -1,8 +1,8 @@
-import CaseRules
+import CaseDual
 
 /-! A finite, recursive case-certificate fragment.  A successful check rules out
-any small C satisfying the supplied rows.  This is not yet the archive's dual
-rule, array/edge validation, reachability check, or archive translation. -/
+any small C satisfying the supplied rows.  This does not validate archive
+arrays/edges, reachability, or translate an archive into this tree. -/
 namespace BankCase
 
 variable {α : Type*} [DecidableEq α]
@@ -10,11 +10,18 @@ variable {α : Type*} [DecidableEq α]
 /-- A row and its signed lower bound. -/
 abbrev Constraint (α : Type*) := Finset α × ℤ
 
+/-- An index identifies an occurrence, so duplicate weighted rows are retained. -/
+abbrev WeightedRow (α : Type*) := Constraint α × ℤ
+
+def dualEntry (entries : List (WeightedRow α)) (i : ℕ) : WeightedRow α :=
+  entries.getD i ((∅, 0), 0)
+
 inductive Tree (α : Type*) where
   | budget
   | row (c : Constraint α)
   | force (c : Constraint α) (child : Tree α)
   | split (x : α) (zero one : Tree α)
+  | dual (entries : List (WeightedRow α)) (denominator : ℤ)
   deriving DecidableEq
 
 /-- Check every branch and every local premise, not a semantic oracle.  The
@@ -34,6 +41,12 @@ def check (rows : List (Constraint α)) (T O Z : Finset α) (k : ℕ)
       decide (x ∈ Free T O Z) &&
       check rows T O (insert x Z) k zero &&
       check rows T (insert x O) Z k one
+  | .dual entries denominator =>
+      decide (∀ i ∈ Finset.range entries.length, (dualEntry entries i).1 ∈ rows) &&
+      dualCheck (Finset.range entries.length)
+        (fun i => (dualEntry entries i).1.1)
+        (fun i => (dualEntry entries i).1.2)
+        (fun i => (dualEntry entries i).2) denominator T O Z k
 termination_by sizeOf t
 
 /-- Soundness concerns all models of the input constraints, rather than taking
@@ -59,6 +72,14 @@ theorem check_sound (rows : List (Constraint α)) (T O Z C : Finset α)
         exact ihZero _ _ hc.1.2 hz
       · intro ho
         exact ihOne _ _ hc.2 ho
+  | dual entries denominator =>
+      simp only [check, Bool.and_eq_true, decide_eq_true_eq] at hc
+      apply dualCheck_sound (Finset.range entries.length)
+        (fun i => (dualEntry entries i).1.1)
+        (fun i => (dualEntry entries i).1.2)
+        (fun i => (dualEntry entries i).2) denominator T O Z C k hc.2 hs hsmall
+      intro i hi
+      exact hrows (dualEntry entries i).1 (hc.1 i hi)
 
 #print axioms check_sound
 end BankCase

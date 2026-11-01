@@ -11,6 +11,6 @@ example : |(((12 / 5 : ℕ) : ℝ) - ((2 / 5 : ℕ) : ℝ)) -
 
 example : |(((1 / 2 : ℕ) : ℝ) - ((10 / 2 : ℕ) : ℝ)) -
     ((1 : ℝ) - 10) / 2| < 1 := by
-  exact RoughRounding.interval_quotient_error 10 1 2 (by decide)
+  convert RoughRounding.interval_quotient_error 10 1 2 (by decide) using 1 <;> norm_num
 
 #print axioms RoughRounding.interval_quotient_error
