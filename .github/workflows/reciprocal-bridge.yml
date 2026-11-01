@@ -55,7 +55,7 @@ jobs:
           cp audit/mathlib-bridge-ci/project/* "$p/"
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
           cp upstream/lean/{Erdos302CertificateCoreFC,Erdos302CoverRowsFC}.lean "$p/"
-          cp audit/upper-small-bridge/UpperBridge.lean audit/reciprocal-bridge/{ReciprocalBridge,ReciprocalBridgeTest}.lean "$p/"
+          cp audit/upper-small-bridge/UpperBridge.lean lean/{UpperBank,Extended}.lean audit/reciprocal-bridge/{ReciprocalBridge,ReciprocalBridgeTest,ActiveSupport,ActiveSupportTest}.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
           git -C .lake/packages/mathlib init

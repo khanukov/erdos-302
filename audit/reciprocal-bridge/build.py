@@ -29,6 +29,9 @@ modules = [
     ('Erdos302CoverRowsFC', ['Erdos302CoverRowsFC.certificate_tree_cover_lower_bound']),
     ('UpperBridge', ['UpperBridge.reciprocal_iff_product', 'UpperBridge.finite_card_bound']),
     ('ReciprocalBridge', ['UpperBridge.reciprocal_lt_denominators', 'UpperBridge.reciprocal_ordered_edge', 'UpperBridge.orderedCover_to_upstream']),
+    ('UpperBank', ['UpperBank.ordered_sound']),
+    ('Extended', ['Extended.trim_bound']),
+    ('ActiveSupport', ['UpperBridge.activeSupport_subset', 'UpperBridge.orderedEdge_mem_activeSupport', 'UpperBridge.activeSupport_cover_iff', 'UpperBridge.activeSupport_bound_of_upstream']),
 ]
 for mod, names in modules:
     result = subprocess.run(['lean', '-j', '1', '-o', str(out / (mod + '.olean')), mod + '.lean'], cwd=project, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -36,8 +39,11 @@ for mod, names in modules:
     if result.returncode or not (out / (mod + '.olean')).is_file():
         raise RuntimeError('compilation failed: ' + mod)
     check(result.stdout, names)
-result = subprocess.run(['lean', '-j', '1', 'ReciprocalBridgeTest.lean'], cwd=project, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-print(result.stdout, end='', flush=True)
-if result.returncode or 'error:' in result.stdout:
-    raise RuntimeError('regression tests failed')
-print('PASS: upstream closure and reciprocal bridge rebuilt in one Lean environment')
+for test in ['ReciprocalBridgeTest', 'ActiveSupportTest']:
+    result = subprocess.run(['lean', '-j', '1', test + '.lean'], cwd=project, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    print(result.stdout, end='', flush=True)
+    if result.returncode or 'error:' in result.stdout:
+        raise RuntimeError('regression tests failed: ' + test)
+    if test == 'ActiveSupportTest':
+        check(result.stdout, ['example_upstream_lower'])
+print('PASS: upstream closure and active support bridge rebuilt in one Lean environment')
