@@ -1,0 +1,213 @@
+COMMAND ['lake', 'build', 'Erdos302Lower']
+⚠ [8670/8773] Replayed Erdos327.Analytic.RoughCount
+warning: Erdos327/Analytic/RoughCount.lean:295:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Erdos327/Analytic/RoughCount.lean:295:41: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [8685/8773] Replayed Erdos327.Analytic.ThreeFormWeightBridge
+warning: Erdos327/Analytic/ThreeFormWeightBridge.lean:52:10: This simp argument is unused:
+  sourceQU
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sourceQV, sourceQSum, hpL, hpu, hpsum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos327/Analytic/ThreeFormWeightBridge.lean:52:30: This simp argument is unused:
+  sourceQSum
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sourceQU, sourceQV, hpL, hpu, hpsum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos327/Analytic/ThreeFormWeightBridge.lean:52:42: This simp argument is unused:
+  hpL
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sourceQU, sourceQV, sourceQSum, hpu, hpsum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [8698/8773] Replayed Erdos327.Analytic.PowerLogSummability
+warning: Erdos327/Analytic/PowerLogSummability.lean:21:29: Variable name `hm` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hm
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8705/8773] Replayed Erdos301.Coordinates
+warning: Erdos301/Coordinates.lean:20:31: Variable name `hs` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hs
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Erdos301/Coordinates.lean:28:18: Variable name `hr` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hr
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Erdos301/Coordinates.lean:37:31: Variable name `hs` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hs
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Erdos301/Coordinates.lean:60:5: Variable name `ha` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _ha
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8706/8773] Replayed Erdos301.Construction
+warning: Erdos301/Construction.lean:28:5: Variable name `hHsub` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hHsub
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8711/8773] Replayed Erdos301.Analytic.Conclusion
+warning: Erdos301/Analytic/Conclusion.lean:37:28: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [8715/8773] Replayed Erdos327.Analytic.MixedEdges
+warning: Erdos327/Analytic/MixedEdges.lean:138:4: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [8718/8773] Replayed Erdos327.AnalyticAssembly
+warning: Erdos327/AnalyticAssembly.lean:116:25: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [8719/8773] Replayed Erdos327.Analytic.CanonicalReduction
+warning: Erdos327/Analytic/CanonicalReduction.lean:84:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Erdos327/Analytic/CanonicalReduction.lean:84:51: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Erdos327/Analytic/CanonicalReduction.lean:162:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Erdos327/Analytic/CanonicalReduction.lean:162:51: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Erdos327/Analytic/CanonicalReduction.lean:170:29: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [8723/8773] Replayed Erdos327.Analytic.TailInstantiation
+warning: Erdos327/Analytic/TailInstantiation.lean:166:6: 'push_cast' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [8725/8773] Replayed Erdos301.Analytic.Conflicts
+warning: Erdos301/Analytic/Conflicts.lean:79:5: Variable name `ht` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _ht
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Erdos301/Analytic/Conflicts.lean:79:18: Variable name `hr` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hr
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Erdos301/Analytic/Conflicts.lean:79:31: Variable name `hs` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hs
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Erdos301/Analytic/Conflicts.lean:135:6: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos301/Analytic/Conflicts.lean:151:6: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [8742/8773] Replayed Erdos327.Analytic.MixedGlobalAssembly
+warning: Erdos327/Analytic/MixedGlobalAssembly.lean:176:37: Variable name `L` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _L
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8754/8773] Built Erdos327.Analytic.AsymptoticParameterSelection (61s)
+warning: Erdos327/Analytic/AsymptoticParameterSelection.lean:32:19: Variable name `hC` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hC
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8755/8773] Built Erdos327.Analytic.FinalThresholds (61s)
+warning: Erdos327/Analytic/FinalThresholds.lean:55:28: Variable name `hC` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hC
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [8756/8773] Built Erdos301.Analytic.ThreeFormBridge (41s)
+✔ [8757/8773] Built Erdos327.Analytic.ScheduledSupport (41s)
+⚠ [8758/8773] Built Erdos301.Analytic.ConflictDyadic (45s)
+warning: Erdos301/Analytic/ConflictDyadic.lean:132:18: Variable name `hnear` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hnear
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [8759/8773] Built Erdos327.Analytic.MixedScheduledSummation (53s)
+✔ [8760/8773] Built Erdos301.Analytic.ConflictExplicit (39s)
+✔ [8761/8773] Built Erdos327.Analytic.MixedMainSummation (31s)
+⚠ [8762/8773] Built Erdos301.Analytic.ConflictSchedule (27s)
+warning: Erdos301/Analytic/ConflictSchedule.lean:181:5: Variable name `hj` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hj
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8763/8773] Built Erdos327.Analytic.MixedTerminalSummation (29s)
+warning: Erdos327/Analytic/MixedTerminalSummation.lean:807:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+✔ [8764/8773] Built Erdos327.Analytic.MixedBudgetSummation (20s)
+⚠ [8765/8773] Built Erdos327.Analytic.MixedBoundarySummation (25s)
+warning: Erdos327/Analytic/MixedBoundarySummation.lean:1599:6: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: Erdos327/Analytic/MixedBoundarySummation.lean:1635:6: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+✔ [8766/8773] Built Erdos327.Analytic.MixedFinalSummation (9.8s)
+⚠ [8767/8773] Built Erdos301.Analytic.ConflictGlobal (7.5s)
+warning: Erdos301/Analytic/ConflictGlobal.lean:26:35: This simp argument is unused:
+  Finset.mem_filter
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Erdos327.Analytic.dyadicSlice, conflictDyadicCoordinateSet, Erdos327.Analytic.dyadicScale]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [8768/8773] Built Erdos302Lower.Defs (5.7s)
+✔ [8769/8773] Built Erdos302Lower.Validate (10s)
+✔ [8770/8773] Built Erdos302Lower.FromErdos301 (12s)
+✔ [8771/8773] Built Erdos302Lower.Maximum (8.6s)
+✔ [8772/8773] Built Erdos302Lower (7.1s)
+Build completed successfully (8773 jobs).
+RESULT rc=0 reason= free_bytes=7690645504
+COMMAND ['lake', 'env', 'lean', 'FreshEndpointCheck.lean']
+Erdos302Lower.erdos302_lower_five_eighths_plus : Erdos302LowerConclusion
+Erdos302Lower.erdos302_f302_lower_five_eighths_plus : Erdos302MaximumLowerConclusion
+def Erdos302Lower.Erdos302MaximumLowerConclusion : Prop :=
+∃ δ, 0 < δ ∧ ∃ N₀, ∀ N ≥ N₀, (5 / 8 + δ) * ↑N ≤ ↑(f302 N)
+def Erdos302Lower.Erdos302LowerConclusion : Prop :=
+∃ δ, 0 < δ ∧ ∃ N₀, ∀ N ≥ N₀, ∃ A ⊆ Finset.Icc 1 N, NoUnitFractionTriple A ∧ (5 / 8 + δ) * ↑N ≤ ↑A.card
+'Erdos302Lower.erdos302_lower_five_eighths_plus' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.erdos302_f302_lower_five_eighths_plus' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.exists_structured_roughThird_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.padding_preserves_noUnitFractionTriple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.not_noUnitFractionTriple_236' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.full_interval_not_triple_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.card_le_f302' depends on axioms: [propext, Classical.choice, Quot.sound]
+RESULT rc=0 reason= free_bytes=7690633216
