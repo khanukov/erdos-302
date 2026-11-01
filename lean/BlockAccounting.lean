@@ -50,8 +50,10 @@ theorem global_block_accounting_real {ι : Type*} [DecidableEq ι]
     (A.card : ℝ) + ArchiveSummation.weightedCount s
       (fun i => (weight i : ℝ)) (fun i => (count i : ℝ)) ≤ (N : ℝ) := by
   have h := global_block_accounting hA hblocks hdisjoint hdemand
+  have h' : ((A.card + ∑ i ∈ s, weight i * count i : ℕ) : ℝ) ≤ (N : ℝ) := by
+    exact_mod_cast h
   unfold ArchiveSummation.weightedCount
-  exact_mod_cast h
+  simpa only [Nat.cast_add, Nat.cast_sum, Nat.cast_mul] using h'
 
 #print axioms global_block_accounting
 #print axioms global_block_accounting_real
