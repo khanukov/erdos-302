@@ -1,0 +1,12 @@
+name = "erdos302lower"
+version = "0.1.0"
+defaultTargets = ["Erdos302Lower"]
+
+[[require]]
+name = "erdos301"
+git = "https://github.com/donalddellapietra/erdos-301-proof.git"
+rev = "789c6f045dbc81da3811031247d186a7128dafce"
+subDir = "lean"
+
+[[lean_lib]]
+name = "Erdos302Lower"

@@ -1,0 +1,65 @@
+name: Mathlib small-node bridge (pilot shard 0)
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify source inventory and tests
+        run: |
+          python3 audit/mathlib-bridge-ci/test_verify.py
+          python3 -O audit/mathlib-bridge-ci/test_verify.py
+          python3 audit/mathlib-bridge-ci/verify.py --check-only
+          sha256sum -c <<'EOF'
+          0f7e49f1e1f8ba8d5b1ac1c38eb1d631fcf849ac0af187c93b789b1048ef5a0a  audit/upper-small-bridge/Checker.lean
+          80f7f59cc23d901fd12493decd22a4833e1a07f5b1aa40e82d8227a4cf7533e3  audit/upper-small-bridge/Sound.lean
+          d0481dfd40cf2b06a831900eff4b7c0521093344cf52c5b4cc8043ffd3ab8fc5  audit/upper-small-bridge/UpperBridge.lean
+          eaa2a04655d855106f7c63a586ae5ca8c70458c4da35ba6780a5adc8f3de08cc  audit/upper-small-bridge/Bridge.lean
+          EOF
+      - name: Checkout pinned public lower definitions
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Install pinned Lean 4.33.0-rc1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned Lake project and build imports
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/bridge-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp audit/upper-small-bridge/{Checker,Sound,UpperBridge,Bridge}.lean "$p/"
+          cd "$p"
+          lean --version
+          lake --version
+          # The manifest pins every transitive dependency. The cache is optional;
+          # failure falls back to source compilation and may exceed runner limits.
+          lake exe cache get || echo 'Mathlib cache unavailable; building from sources'
+          lake build Erdos302Lower.Defs
+      - name: Fresh bridge and archive certificate checks
+        run: python3 audit/mathlib-bridge-ci/verify.py --project "$RUNNER_TEMP/bridge-project" --shard '${{ matrix.shard }}'
