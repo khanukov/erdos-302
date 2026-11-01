@@ -1,0 +1,23 @@
+/root/erdos-302-independent-audit/bridge/LowerNext.lean:39:22: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/bridge/LowerNext.lean:39:50: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/bridge/LowerNext.lean:39:26: warning: '(try simp only [C, Kt])' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/bridge/LowerNext.lean:86:31: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/bridge/LowerNext.lean:103:29: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/bridge/LowerNext.lean:111:27: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'LowerNext.improvedLog' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LowerNext.delta2_lt_log' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LowerNext.core' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LowerNext.endpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LowerNext.improved' depends on axioms: [propext, Classical.choice, Quot.sound]

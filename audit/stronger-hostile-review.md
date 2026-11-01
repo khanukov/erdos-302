@@ -1,0 +1,39 @@
+# Hostile review: stronger explicit #302 endpoint
+
+## Verdict and scope
+
+**No defect found in the reviewed stronger endpoint arithmetic, quantifier order, or exposed carrier interfaces.** Conditional on the correctness and intended semantics of the substantial upstream #301/#327 and fixed-budget development, the stronger adapter establishes an eventual lower bound with a strictly larger positive delta than the old explicit adapter. This is not an independent verification of that upstream development, its cached dependency oleans, or the complete Erdős problem. In particular, a fresh Lean build and a clean axiom report are not a substitute for a semantic audit of the analytic theorems and the finite-to-asymptotic machinery.
+
+Inspected `explicit-rebuild/sources/StrongerEndpoint.lean` (SE), `StrongerLiminf.lean` (SL), `CommonL.lean`, `UnconditionalMixedClosure.lean`, `Erdos302Lower/{Defs,Maximum,FromErdos301}.lean`, and recorded independent probes in `StrongerHostileChecks.lean` and `.log`. The original stronger source hashes match those reported in `explicit-rebuild/RESULT.md`: SE `8d74a01b5036f2e3296ed129efc269533cf2dd4be9c05ce759cbabc8c6c15d86`; SL `259aa04d45da038cbdfe87a77f98f31ec15ad29e1c3c7bf1a02bfb00dcbce29c`.
+
+## What the target actually says
+
+`NoUnitFractionTriple A` quantifies over all **pairwise distinct** a,b,c in A and forbids 1/a = 1/b + 1/c in ℚ (`Defs.lean:14–17`). `f302 N` is the supremum of cardinalities over all such subsets of the positive integer interval [1,N] (`Maximum.lean:13–20`); the finite powerset is nonempty, and a subset's cardinality is bounded by the supremum (`Maximum.lean:23–30`). Thus there is no zero-denominator ambiguity on the actual domain. This is the conventional extremal definition used in the independent problem description at `kitamura/README.md:3` (which links https://www.erdosproblems.com/302); I did not separately fetch the official live page in this review.
+
+The proved statement is exactly `∃ N₀ : ℕ, ∀ N ≥ N₀, (5/8 + delta) * N ≤ (f302 N : ℝ)` (SE:87–90), with fixed positive delta, and its liminf corollary. It does **not** determine the range or limit, supply a matching upper bound, or provide a numeric eventual threshold. The `Erdos302MaximumLowerConclusion` packaging existentially hides the displayed delta, but the pointwise theorem displays it. N₀ is chosen after the fixed commonL, before N: no N-dependent epsilon is introduced.
+
+## Constant and strictness
+
+`commonL` is a closed, fixed natural number, the maximum of six explicitly specified powers/thresholds (`CommonL.lean:37–88`); in particular 512 ≤ commonL, although the endpoint needs only 17 ≤ commonL. It is not an arbitrary or N-dependent existential choice. It is vastly large but exact; the result is a symbolic rational, not a computed decimal. SE:14–29 defines `L` as the same `commonL` and delta as `1/(86400*((L : ℝ)-1))`; the cast occurs **before** subtraction. The denominator is positive by L ≥ 17. Thus no natural-number truncated subtraction, zero denominator, sign flip, or false strictness occurs.
+
+SE:31–54 uses 0 < log L < L−1 and the strict lower constant 1/1800 < Mertens constant to get `1/(1800*(L−1)) < roughDensity L`. All division inequality denominators are explicitly positive, and the density lower bound applies at L ≥ 3. SE:56–68 divides by positive 48 and proves delta < ρ/48. Strictness survives transitivity; later use of `.le` is intentional. SE:70–85 compares the old `1/(86400 L)` with `1/(86400 (L−1))`, using positive denominators: the new/old ratio is L/(L−1) > 1. Exact rational controls for L=17,18,100,1000000 showed positive differences; these illustrative L values are not claims about actual commonL. Lean independently confirmed definitional equality of the old and new formulae and the cast ordering.
+
+## Carrier and absorption audit
+
+At SE:91–122 the unconditional budget theorem applies at **the same** L, Kh=128000000, Kt=`oddBudget L`, headSlope and topSlope as the defined C. The independent Lean probe checks definitional equality of `Erdos302FinalMixedIntegration.L` and `commonL`, and of the two namespace variants of roughDensity. The `roughThirdSet_card_lower_bound` signature in the probe log explicitly requires the corresponding `RoughThirdBudgets N L Kh Kt Ah At`; Lean's `convert` in SE:122 makes matching a checked obligation, not merely a textual resemblance. C is a subset of `upto N`, admissible, and has the required upper-third decomposition via the cited upstream lemmas.
+
+The witness A is exactly C union the odd positive integers n with 4n ≤ N. Existing #302 bridge lemmas give inclusion, triple-freeness and disjointness from C (`FromErdos301.lean:57–63,92–115,153–159`); the padding proof was not fully independently audited here. The odd-quarter lower bound is N/8−1, not N/8; that one-unit loss is explicitly retained. Writing ρ for roughDensity L, the threshold `M_absorb` gives 48/ρ < N (SE:139–147), hence 1 ≤ Nρ/48; delta < ρ/48 and N ≥ 0 give delta N ≤ Nρ/48. Adding yields delta N+1 ≤ Nρ/24, which correctly absorbs the −1. The C-card lower bound plus the odd-quarter bound gives `(5/8+delta)N ≤ |A| ≤ f302 N`. All strict/non-strict directions are sound in this calculation.
+
+The N threshold is the maximum of the budget witness and absorption threshold. No hidden local hypotheses appear in the theorem statement. However, 'unconditional' here is a Lean theorem name: its proof invokes five upstream allocation packages (`UnconditionalMixedClosure.lean:20–40`); their semantic correctness and proof terms remain outside this review, rather than being independently established by this adapter audit.
+
+## Liminf and adversarial controls
+
+SL:23–33 takes N ≥ max(N₀,1), so it divides only by positive N. SL:14–21 proves f302 N ≤ N from the powerset definition, and SL:39–49 uses eventual upper boundedness to justify Lean's real liminf rule; the normalized value at N=0 is irrelevant to the atTop filter. The resulting liminf inequality is non-strict at 5/8+delta, then strict at 5/8 follows from delta > 0. No assumption that the density sequence converges is made.
+
+An independent Lean file, importing `StrongerLiminf` from the isolated rebuilt objects, successfully proved that {2,3,6} is *not* triple-free and that {1,2} is triple-free under the all-distinct convention: the latter deliberately distinguishes this statement from a stronger prohibition allowing repeated tail denominators. It also checked the commonL and rough-density definitional identities and printed the budget and absorption signatures. This is a sanity control, not an exhaustive counterexample search or independent reconstruction of the upstream proofs.
+
+## Imports, trust and reproducibility
+
+SE imports `ExplicitEndpointCandidate`, `AmbientWitnesses`, `Erdos302Lower.Maximum`; SL imports SE and `Mathlib.Order.LiminfLimsup`. The saved `explicit-rebuild/RESULT.md` reports 64 fresh source-module builds with the stronger modules included, but reuse of upstream dependency oleans. The independent probe ran Lean 4.33.0-rc1 with `LEAN_PATH` exactly as in `explicit-rebuild/lean-path.txt` and exited 0. Its printed transitive axiom sets for `old_delta_lt_delta`, `f302_stronger_pointwise`, and `f302_stronger_liminf_lower` were exactly `[propext, Classical.choice, Quot.sound]`; the original build also reported that set for the packaged and strict-liminf conclusions. In particular no `sorryAx` appears in those reports. Standard axioms do not certify intended definitions, external correspondence, or the validity of cached compiled dependencies; no independent leanchecker replay was performed.
+
+Probe SHA-256: `StrongerHostileChecks.lean` `f8c1dfbc7a059a184e26af6538d8b87ca558cf90708b9fa81803b5d48fa40384`; `.log` `75fa684cecaff3f14e53940b7a5c8aaf39d7b2927d1b721d6633d96f25c22b86`. Existing untracked files in the source worktree were observed and left untouched. No remote writes.
