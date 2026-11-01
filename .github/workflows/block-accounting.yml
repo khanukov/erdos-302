@@ -1,0 +1,48 @@
+name: Finite block accounting and quotient cells
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  summation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile candidate and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/summation-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lean/{Summation,SummationTest,CellEquivalence,CellEquivalenceTests,BlockAccounting,BlockAccountingTests}.lean "$p/"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Real.Basic Mathlib.Order.Interval.Finset.Nat Mathlib.Tactic
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          lean -o Summation.olean Summation.lean 2>&1 | tee "$RUNNER_TEMP/Summation.log"
+          lean SummationTest.lean 2>&1 | tee "$RUNNER_TEMP/SummationTest.log"
+          for log in "$RUNNER_TEMP/Summation.log" "$RUNNER_TEMP/SummationTest.log"; do
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$log" ArchiveSummation.weightedCount_lower ArchiveSummation.global_upper ArchiveSummation.count_cell_eq
+          done
+          lean -o CellEquivalence.olean CellEquivalence.lean 2>&1 | tee "$RUNNER_TEMP/CellEquivalence.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CellEquivalence.log" ArchiveSummation.quotient_cell_iff
+          lean CellEquivalenceTests.lean
+          lean -o BlockAccounting.olean BlockAccounting.lean 2>&1 | tee "$RUNNER_TEMP/BlockAccounting.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BlockAccounting.log" BlockAccounting.global_block_accounting BlockAccounting.global_block_accounting_real
+          lean BlockAccountingTests.lean
