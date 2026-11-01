@@ -26,19 +26,23 @@ jobs:
           p="$RUNNER_TEMP/summation-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{RoughCount,RoughCountTest,RoughIEPartial}.lean "$p/"
+          cp lean/{RoughCount,RoughCountTest,RoughIEPartial,RoughIntersection,RoughIntersectionTests}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
           git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
           test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           cd "$p"
-          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Finset.CastCard Mathlib.Combinatorics.Enumerative.InclusionExclusion Mathlib.Tactic
+          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Finset.CastCard Mathlib.Combinatorics.Enumerative.InclusionExclusion Mathlib.Data.Nat.GCD.BigOperators Mathlib.Data.Nat.Prime.Basic Mathlib.Tactic
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
           lean -o RoughCount.olean RoughCount.lean 2>&1 | tee "$RUNNER_TEMP/RoughCount.log"
           lean RoughCountTest.lean 2>&1 | tee "$RUNNER_TEMP/RoughCountTest.log"
           for log in "$RUNNER_TEMP/RoughCount.log" "$RUNNER_TEMP/RoughCountTest.log"; do
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$log" RoughCount.card_multiples_Ioc
           done
-          lean RoughIEPartial.lean 2>&1 | tee "$RUNNER_TEMP/RoughIEPartial.log"
+          lean -o RoughIEPartial.olean RoughIEPartial.lean 2>&1 | tee "$RUNNER_TEMP/RoughIEPartial.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIEPartial.log" RoughIEPartial.interval_inclusion_exclusion
+          lean -o RoughIntersection.olean RoughIntersection.lean 2>&1 | tee "$RUNNER_TEMP/RoughIntersection.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIntersection.log" RoughIEPartial.prime_product_dvd_iff RoughIEPartial.intersection_card_eq_div
+          lean RoughIntersectionTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughIntersectionTests.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIntersectionTests.log" RoughIEPartial.intersection_card_eq_div
