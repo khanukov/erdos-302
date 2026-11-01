@@ -57,6 +57,14 @@ jobs:
           cd "$p"
           lean --version
           lake --version
+          # Lake's normal clone fetches branch refs and may not contain this
+          # historical commit. Fetch the exact manifest object explicitly.
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           # The manifest pins every transitive dependency. The cache is optional;
           # failure falls back to source compilation and may exceed runner limits.
           lake exe cache get || echo 'Mathlib cache unavailable; building from sources'
