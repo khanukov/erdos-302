@@ -60,7 +60,11 @@ theorem count_cell_eq (N a b : ℕ) (rough : ℕ → Prop) [DecidablePred rough]
   ext q
   simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_Ioc]
   have hbound : N / a ≤ N := Nat.div_le_self N a
-  omega
+  constructor
+  · rintro ⟨_, lo, hi, hr⟩
+    exact ⟨⟨lo, hi⟩, hr⟩
+  · rintro ⟨⟨lo, hi⟩, hr⟩
+    exact ⟨by omega, lo, hi, hr⟩
 
 #print axioms weightedCount_lower
 #print axioms global_upper
