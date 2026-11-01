@@ -1,6 +1,11 @@
 name: Three-vertex archive certificates
 on:
   push:
+    paths:
+      - '.github/workflows/small-three.yml'
+      - 'audit/small-three-ci/**'
+      - 'audit/upper-small-std/Checker.lean'
+      - 'audit/source/erdos302_boundary_certificates/baseline/bank.json.xz'
   pull_request:
   workflow_dispatch:
 permissions:

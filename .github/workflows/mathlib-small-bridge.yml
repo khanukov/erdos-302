@@ -3,6 +3,13 @@ on:
   workflow_dispatch:
   pull_request:
   push:
+    paths:
+      - '.github/workflows/mathlib-small-bridge.yml'
+      - 'audit/mathlib-bridge-ci/verify.py'
+      - 'audit/mathlib-bridge-ci/test_verify.py'
+      - 'audit/mathlib-bridge-ci/project/**'
+      - 'audit/upper-small-bridge/**'
+      - 'audit/source/erdos302_boundary_certificates/baseline/bank.json.xz'
 permissions:
   contents: read
 jobs:

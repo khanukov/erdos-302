@@ -1,6 +1,13 @@
 name: Std certificate verification
 on:
   push:
+    paths:
+      - '.github/workflows/std-certificates.yml'
+      - 'audit/std-ci/**'
+      - 'audit/upper-small-bank/coverage.json'
+      - 'audit/upper-small-std/**'
+      - 'audit/upper-small-std-final/**'
+      - 'audit/source/erdos302_boundary_certificates/baseline/bank.json.xz'
   pull_request:
   workflow_dispatch:
 permissions:

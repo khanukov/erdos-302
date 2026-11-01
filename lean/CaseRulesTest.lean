@@ -4,7 +4,10 @@ open Finset BankCase
 
 -- Regression: residual is genuinely negative, not Nat subtraction.
 example : Residual ({1, 2, 3} : Finset ℕ) {1} 1 = -1 := by
-  norm_num [Residual]
+  have h : (({1, 2, 3} : Finset ℕ) \ {1}) = {2, 3} := by decide
+  unfold Residual
+  rw [h]
+  norm_num
 
 -- A negative budget rejects even when the integer budget is below zero.
 example (C : Finset ℕ) (h : State {1, 2} {1, 2} ∅ C)
