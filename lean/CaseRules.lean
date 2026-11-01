@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Data.Finset.Card
+import Mathlib.Tactic
 
 /-!
 Case-rule soundness, independent of the archive parser.  All residuals and

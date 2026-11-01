@@ -35,6 +35,6 @@ jobs:
           git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
           test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           cd "$p"
-          lake exe cache get
+          lake exe cache get Mathlib.Data.Finset.Card Mathlib.Tactic
           lake env lean -o CaseRules.olean CaseRules.lean
           lake env lean CaseRulesTest.lean
