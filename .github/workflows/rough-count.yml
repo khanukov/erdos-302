@@ -26,14 +26,14 @@ jobs:
           p="$RUNNER_TEMP/summation-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{RoughCount,RoughCountTest,RoughIEPartial,RoughIntersection,RoughIntersectionTests,RoughFinal,RoughFinalTests}.lean "$p/"
+          cp lean/{RoughCount,RoughCountTest,RoughIEPartial,RoughIntersection,RoughIntersectionTests,RoughFinal,RoughFinalTests,RoughRounding,RoughDiscrepancy,RoughDiscrepancyTests}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
           git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
           test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           cd "$p"
-          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Finset.CastCard Mathlib.Combinatorics.Enumerative.InclusionExclusion Mathlib.Data.Nat.GCD.BigOperators Mathlib.Data.Nat.Prime.Basic Mathlib.Tactic
+          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Finset.CastCard Mathlib.Combinatorics.Enumerative.InclusionExclusion Mathlib.Data.Nat.GCD.BigOperators Mathlib.Data.Nat.Prime.Basic Mathlib.Data.Nat.Cast.Order.Field Mathlib.Tactic
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
           lean -o RoughCount.olean RoughCount.lean 2>&1 | tee "$RUNNER_TEMP/RoughCount.log"
           lean RoughCountTest.lean 2>&1 | tee "$RUNNER_TEMP/RoughCountTest.log"
@@ -50,3 +50,9 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughFinal.log" RoughIEPartial.coprime_prime_product_iff RoughIEPartial.complement_card_eq_coprime_filter RoughIEPartial.card_coprime_Ioc_eq_inclusion_exclusion
           lean RoughFinalTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughFinalTests.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughFinalTests.log" RoughIEPartial.card_coprime_Ioc_eq_inclusion_exclusion
+          lean -o RoughRounding.olean RoughRounding.lean 2>&1 | tee "$RUNNER_TEMP/RoughRounding.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughRounding.log" RoughRounding.nat_div_cast_bounds RoughRounding.interval_quotient_error
+          lean -o RoughDiscrepancy.olean RoughDiscrepancy.lean 2>&1 | tee "$RUNNER_TEMP/RoughDiscrepancy.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancy.log" RoughDiscrepancy.density_expansion RoughDiscrepancy.signed_error_sum_bound RoughDiscrepancy.card_coprime_Ioc_discrepancy
+          lean RoughDiscrepancyTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughDiscrepancyTests.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughDiscrepancyTests.log" RoughDiscrepancy.card_coprime_Ioc_discrepancy
