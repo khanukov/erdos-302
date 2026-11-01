@@ -1,0 +1,47 @@
+name: Scaling soundness
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  scaling:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Test axiom-report gate
+        run: |
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+          python3 -B -O audit/mathlib-bridge-ci/test_check_axioms.py
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile scaling and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/scaling-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lean/{Scaling,ScalingTest}.lean "$p/"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Finset.Card Mathlib.Tactic
+          mkdir -p .lake/build/lib/lean
+          lake env lean -o .lake/build/lib/lean/Scaling.olean Scaling.lean 2>&1 | tee "$RUNNER_TEMP/scaling-source.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/scaling-source.log" ArchiveScaling.scale_equation_iff ArchiveScaling.bound_image
+          lake env lean ScalingTest.lean 2>&1 | tee "$RUNNER_TEMP/scaling-test.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/scaling-test.log" archive_image_2 fractional_identity
