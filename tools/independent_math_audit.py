@@ -1,7 +1,12 @@
-import json,itertools,collections
+import json,itertools,collections,zipfile
 from fractions import Fraction
-P='/root/erdos-302-independent-audit/source/erdos302_boundary_certificates/certificate.json'
-c=json.load(open(P)); tables={}
+from pathlib import Path
+archive = Path(__file__).resolve().parents[1] / 'input/erdos302_boundary_certificates_publication.zip'
+with zipfile.ZipFile(archive) as z:
+    candidates = [name for name in z.namelist() if name.endswith('/certificate.json') and name.count('/') == 1]
+    assert len(candidates) == 1
+    c = json.loads(z.read(candidates[0]))
+tables={}
 for t in c['tables']:
  s=t['support']; b=t['boundary']; n=len(s)
  edges=[z for z in itertools.combinations(s,3) if z[1]*z[2]==z[0]*(z[1]+z[2])]
