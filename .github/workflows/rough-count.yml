@@ -26,7 +26,7 @@ jobs:
           p="$RUNNER_TEMP/summation-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{RoughCount,RoughCountTest,RoughIEPartial,RoughIntersection,RoughIntersectionTests}.lean "$p/"
+          cp lean/{RoughCount,RoughCountTest,RoughIEPartial,RoughIntersection,RoughIntersectionTests,RoughFinal,RoughFinalTests}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -46,3 +46,7 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIntersection.log" RoughIEPartial.prime_product_dvd_iff RoughIEPartial.intersection_card_eq_div
           lean RoughIntersectionTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughIntersectionTests.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughIntersectionTests.log" RoughIEPartial.intersection_card_eq_div
+          lean -o RoughFinal.olean RoughFinal.lean 2>&1 | tee "$RUNNER_TEMP/RoughFinal.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughFinal.log" RoughIEPartial.coprime_prime_product_iff RoughIEPartial.complement_card_eq_coprime_filter RoughIEPartial.card_coprime_Ioc_eq_inclusion_exclusion
+          lean RoughFinalTests.lean 2>&1 | tee "$RUNNER_TEMP/RoughFinalTests.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RoughFinalTests.log" RoughIEPartial.card_coprime_Ioc_eq_inclusion_exclusion
