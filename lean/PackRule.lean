@@ -37,10 +37,9 @@ theorem sound {ι : Type*} [DecidableEq ι] (I : Finset ι)
         intro i hi hxi
         exact hxs (hsub i hi hxi)
       have hf : I.filter (fun i => x ∈ T i) = ∅ := by
-        ext i
-        simp only [Finset.mem_filter, Finset.not_mem_empty, iff_false]
-        intro hi
-        exact hz i hi.1 hi.2
+        apply Finset.filter_eq_empty_iff.mpr
+        intro i hi
+        exact hz i hi
       simp [hf]
   · exact hround
 
