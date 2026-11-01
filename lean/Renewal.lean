@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic
 
 namespace RenewalNext
 open Finset

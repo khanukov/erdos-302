@@ -1,0 +1,53 @@
+name: Smooth partition and finite accounting
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smooth-partition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile dependencies, candidate and tests; audit axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/smooth-partition-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest}.lean "$p/"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Real.Basic Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Nat.Prime.Basic Mathlib.Order.Interval.Finset.Nat Mathlib.Tactic
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          check="$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py"
+          lean -o Summation.olean Summation.lean 2>&1 | tee "$RUNNER_TEMP/Summation.log"
+          python3 "$check" "$RUNNER_TEMP/Summation.log" ArchiveSummation.weightedCount_lower ArchiveSummation.global_upper ArchiveSummation.count_cell_eq
+          lean SummationTest.lean 2>&1 | tee "$RUNNER_TEMP/SummationTest.log"
+          python3 "$check" "$RUNNER_TEMP/SummationTest.log" ArchiveSummation.weightedCount_lower ArchiveSummation.global_upper ArchiveSummation.count_cell_eq
+          lean -o BlockAccounting.olean BlockAccounting.lean 2>&1 | tee "$RUNNER_TEMP/BlockAccounting.log"
+          python3 "$check" "$RUNNER_TEMP/BlockAccounting.log" BlockAccounting.global_block_accounting BlockAccounting.global_block_accounting_real
+          lean BlockAccountingTests.lean
+          lean -o Renewal.olean Renewal.lean 2>&1 | tee "$RUNNER_TEMP/Renewal.log"
+          python3 "$check" "$RUNNER_TEMP/Renewal.log" RenewalNext.demand_image RenewalNext.disjoint_scaled RenewalNext.update_demand RenewalNext.tail_sound RenewalNext.demand_disjoint RenewalNext.update_sound RenewalNext.correction_identity
+          lean -o SmoothRenewal.olean SmoothRenewal.lean 2>&1 | tee "$RUNNER_TEMP/SmoothRenewal.log"
+          python3 "$check" "$RUNNER_TEMP/SmoothRenewal.log" SmoothRenewal.triple_scale_iff SmoothRenewal.vertices_partition SmoothRenewal.vertices_disjoint SmoothRenewal.demand_recurrence SmoothRenewal.cover_pullback SmoothRenewal.edge_image SmoothRenewal.demand_scaled
+          lean -o SmoothPartition.olean SmoothPartition.lean 2>&1 | tee "$RUNNER_TEMP/SmoothPartition.log"
+          python3 "$check" "$RUNNER_TEMP/SmoothPartition.log" SmoothPartition.decomposition_unique SmoothPartition.blocks_disjoint SmoothPartition.global_accounting
+          lean SmoothPartitionTest.lean 2>&1 | tee "$RUNNER_TEMP/SmoothPartitionTest.log"
+          python3 "$check" "$RUNNER_TEMP/SmoothPartitionTest.log" SmoothPartition.decomposition_unique SmoothPartition.blocks_disjoint
