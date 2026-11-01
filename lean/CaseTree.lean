@@ -15,7 +15,7 @@ inductive Tree (α : Type*) where
   | row (c : Constraint α)
   | force (c : Constraint α) (child : Tree α)
   | split (x : α) (zero one : Tree α)
-  deriving DecidableEq, Repr
+  deriving DecidableEq
 
 /-- Check every branch and every local premise, not a semantic oracle.  The
 explicit measure decreases even when the state is updated by a force. -/
@@ -51,14 +51,14 @@ theorem check_sound (rows : List (Constraint α)) (T O Z C : Finset α)
       exact row_reject hs (hrows c hc.1) hc.2
   | force c child ih =>
       simp only [check, Bool.and_eq_true, decide_eq_true_eq] at hc
-      exact ih hc.2 (force_sound hs (hrows c hc.1.1) hc.1.2)
+      exact ih _ _ hc.2 (force_sound hs (hrows c hc.1.1) hc.1.2)
   | split x zero one ihZero ihOne =>
       simp only [check, Bool.and_eq_true, decide_eq_true_eq] at hc
       apply split_sound x hs
       · intro hz
-        exact ihZero hc.1.2 hz
+        exact ihZero _ _ hc.1.2 hz
       · intro ho
-        exact ihOne hc.2 ho
+        exact ihOne _ _ hc.2 ho
 
 #print axioms check_sound
 end BankCase

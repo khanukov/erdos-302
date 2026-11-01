@@ -35,8 +35,9 @@ theorem prime_product_dvd_iff (T : Finset ℕ) (n : ℕ)
       rw [Finset.prod_insert hp]
       constructor
       · intro h q hq
-        rcases Finset.mem_insert.mp hq with rfl | hq
-        · exact dvd_trans (dvd_mul_right p _) h
+        rcases Finset.mem_insert.mp hq with heq | hq
+        · subst q
+          exact dvd_trans (dvd_mul_right p _) h
         · exact (ih hT).mp (dvd_trans (dvd_mul_left _ p) h) q hq
       · intro h
         apply hcop.mul_dvd_of_dvd_of_dvd
