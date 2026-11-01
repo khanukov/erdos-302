@@ -20,6 +20,7 @@ def rows : Fin 1 → Finset ℕ := fun _ => row4
 
 theorem one_row_valid : ArchivePack.Valid Finset.univ rows (fun _ => 158)
     (fun _ => 1) 1000 1 row4 := by
+  unfold ArchivePack.Valid
   decide
 
 theorem image4_pack : Extended.Bound row4 1 := by
@@ -30,12 +31,18 @@ theorem image4_pack : Extended.Bound row4 1 := by
 
 -- The demand is essential: changing it from 1 to 0 invalidates rounding.
 example : ¬ ArchivePack.Valid Finset.univ rows (fun _ => 158)
-    (fun _ => 0) 1000 1 row4 := by decide
+    (fun _ => 0) 1000 1 row4 := by
+  unfold ArchivePack.Valid
+  decide
 -- Capacity must be checked on the row support, even if a selected set misses it.
 example : ¬ ArchivePack.Valid Finset.univ rows (fun _ => 1001)
-    (fun _ => 1) 1000 1 row4 := by decide
+    (fun _ => 1) 1000 1 row4 := by
+  unfold ArchivePack.Valid
+  decide
 example : ¬ ArchivePack.Valid Finset.univ rows (fun _ => 158)
-    (fun _ => 1) 0 1 row4 := by decide
+    (fun _ => 1) 0 1 row4 := by
+  unfold ArchivePack.Valid
+  decide
 
 #print axioms image4_pack
 end ArchivePackTests

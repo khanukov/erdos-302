@@ -7,6 +7,7 @@ set_option maxHeartbeats 0 in
 theorem ArchivePack1094.valid : ArchivePack.Valid ArchivePack1094.indices
     ArchivePack1094.T ArchivePack1094.w ArchivePack1094.r 1000 217
     ArchivePack1094.support := by
+  unfold ArchivePack.Valid
   decide
 
 #print axioms ArchivePack1094.valid
