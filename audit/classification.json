@@ -1,0 +1,41 @@
+{
+  "source_sha256": "5c1a1fa4edcc1a0bc7ac3fc9cd3bc7fca4eedad6cb689b6540436ca35ed89034",
+  "count": 1628,
+  "by_r": {
+    "1": 886,
+    "2": 342,
+    "3": 400
+  },
+  "by_r_size": [
+    {
+      "r": 1,
+      "size": 3,
+      "count": 886
+    },
+    {
+      "r": 2,
+      "size": 5,
+      "count": 60
+    },
+    {
+      "r": 2,
+      "size": 6,
+      "count": 282
+    },
+    {
+      "r": 3,
+      "size": 7,
+      "count": 32
+    },
+    {
+      "r": 3,
+      "size": 8,
+      "count": 146
+    },
+    {
+      "r": 3,
+      "size": 9,
+      "count": 222
+    }
+  ]
+}
