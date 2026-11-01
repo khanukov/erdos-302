@@ -1,9 +1,9 @@
-# Erdős Problem 302 — independent verification workspace
+# Erdős Problem 302 — upper-bound verification
 
-**Private research workspace. Preliminary, unrefereed. No public release authorized.**
+**Preliminary research workspace; not a completed proof or a peer-reviewed publication.**
 
-The `input/` archive is the user-supplied boundary-certificates draft, preserved byte-for-byte. Its SHA-256 is `9396819eb36e25926d7ae8ee78b85c61cb898801f935fccfe72ebcad491bc196`. The archive's own manifest was checked on extraction; this proves internal consistency, not mathematical validity or external provenance.
+The `input/` archive is the supplied boundary-certificates draft, preserved byte-for-byte. SHA-256: `9396819eb36e25926d7ae8ee78b85c61cb898801f935fccfe72ebcad491bc196`. Its internal manifest establishes consistency of the bundle, not mathematical validity or independently authenticated provenance.
 
-The submitted material does not claim a new numerical upper bound or a complete solution of Erdős 302. Its inherited global bound depends on a pinned external mathematical input, and its generated Lean file was not compiled in the submitted run. Verification and Lean proof work are in progress; do not read this repository as a proof, a peer-reviewed result, or a public novelty claim.
+The archive's baseline claims the profile-only global upper bound `limsup f(N)/N < 0.841230807050`, but **this repository does not yet contain a complete kernel-checked proof of that bound**. The new boundary certificates strengthen a local relaxation and do not themselves claim an additional global improvement. The baseline relies on an external profile input and a finite certificate bank whose full formal verification remains in progress. The archive does not claim a complete solution of Erdős 302.
 
-No license or human-author signoff is inferred from depositing the material in this private workspace. Research results will be added with exact scope, reproducible builds and explicit axiom/provenance reports.
+Partial Lean developments and audit material are recorded under `lean/` and `audit/`. Earlier successful logs identify the exact scope and environment of each check; they are not substitutes for a reproducible build. A green CI job checks only its stated scope, not the global theorem unless that theorem is explicitly built and its axioms inspected. No license, independent human review, or novelty/priority claim is inferred from publication of this workspace.
