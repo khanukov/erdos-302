@@ -1,0 +1,7 @@
+# Result 5: Data10 attempt stopped on contention
+
+Starting from RESULT4, attempted `Erdos302ReflectiveChainData10FC` with the existing Lean v4.27 environment and cache, one Lean thread, exclusive log creation and no existing-artifact overwrite. The attempt was interrupted after 17.58 seconds when a separate Lean process (`lean Test.lean`, PID 2219762) appeared. The job's process group received SIGTERM; exit was -15. This is not a successful or timed-out compilation and contributes no newly established chain level. The Data10 `.olean` was absent after cleanup. Data9 through Data0 were not attempted. No new theorem axiom output was obtained because there was no successful module to check. Existing RESULT4 evidence is unchanged.
+
+Guard settings: 900-second per-operation deadline; 4,294,967,296-byte per-process RSS stop threshold; 1,073,741,824-byte system MemAvailable threshold; 3,758,096,384-byte free-space threshold (above 3.25 GiB); approximately 0.25-second polling. Peak sampled individual RSS was 2,400,235,520 bytes; free space at termination was 4,669,153,280 bytes. These are polling-based limits, not hard guarantees against overshoot or concurrent writes. The unrelated Lean process was not signaled. No cache was downloaded and no remote changes were made.
+
+Evidence: `result5-data10.log`; runner: `run-result5.py`. Final free space was 4,669,140,992 bytes; no Lean or Lake process was observed in the final snapshot. This does not establish the remaining chain or the global bound.
