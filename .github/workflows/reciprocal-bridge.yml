@@ -1,0 +1,69 @@
+name: Reciprocal bridge against pinned upstream source
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: KitaKen1/erdos-302-upper-bound
+          ref: 9447ceb28138949b2fb32442cec506a6f53104f9
+          path: upstream
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Validate inputs and checker tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 audit/reciprocal-bridge/test_check_axioms.py
+          python3 -O audit/reciprocal-bridge/test_check_axioms.py
+          test "$(git -C upstream rev-parse HEAD)" = 9447ceb28138949b2fb32442cec506a6f53104f9
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          sha256sum -c <<'EOF'
+          d052d814b8f0f15efbf75131fe2702053e60e05adeefcab4267641609404a7f1  upstream/lean/Erdos302CertificateCoreFC.lean
+          6e961dfc3cd496670f59f8eaf028d0fcd34c427138df696ffbbf879fe69dfdc8  upstream/lean/Erdos302CoverRowsFC.lean
+          bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d  lower-source/lower-lean/Erdos302Lower/Defs.lean
+          d0481dfd40cf2b06a831900eff4b7c0521093344cf52c5b4cc8043ffd3ab8fc5  audit/upper-small-bridge/UpperBridge.lean
+          61dfd356c0ee4956a664a53a9c6f8c0f81cbd450031ac370e5a6e6f4bc1870ed  audit/mathlib-bridge-ci/project/lake-manifest.json
+          EOF
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Rebuild upstream closure and bridge in one project
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/reciprocal-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp upstream/lean/{Erdos302CertificateCoreFC,Erdos302CoverRowsFC}.lean "$p/"
+          cp audit/upper-small-bridge/UpperBridge.lean audit/reciprocal-bridge/{ReciprocalBridge,ReciprocalBridgeTest}.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lean --version
+          lake exe cache get || echo 'Mathlib cache unavailable; building from source'
+          lake build Erdos302Lower.Defs Mathlib.Tactic Mathlib.Algebra.Order.BigOperators.Group.Finset Mathlib.Algebra.BigOperators.Ring.Finset Mathlib.Data.Fintype.Fin Mathlib.Data.Fin.VecNotation Mathlib.Data.Rat.Defs
+          python3 "$GITHUB_WORKSPACE/audit/reciprocal-bridge/build.py" "$p"

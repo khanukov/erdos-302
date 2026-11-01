@@ -6,6 +6,18 @@ open ArchiveSumBridge
 -- Non-integral endpoints exercise the integer floor-loss condition.
 example : boundaryOK 11 3 5 := by norm_num [boundaryOK]
 example : boundaryOK 12 2 3 := by norm_num [boundaryOK]
+example : ¬ boundaryOK 2 0 1 := by norm_num [boundaryOK]
+
+-- Exercise the cast and positive-denominator bridge directly, including b < a.
+example : (11 : ℝ) * (1 / 5 - 1 / 3) -
+    (((11 / 5 : ℕ) : ℝ) - ((11 / 3 : ℕ) : ℝ)) ≤ 1 := by
+  apply real_endpoint_loss_le_one 11 5 3 <;> norm_num [boundaryOK]
+
+example (N a b : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hboundary : boundaryOK N a b) :
+    (N : ℝ) * (1 / (a : ℝ) - 1 / (b : ℝ)) -
+      (((N / a : ℕ) : ℝ) - ((N / b : ℕ) : ℝ)) ≤ 1 :=
+  real_endpoint_loss_le_one N a b ha hb hboundary
 
 -- A nonempty prime set and nonintegral endpoints, without assuming the count bound.
 example : (11 : ℝ) * density ({2} : Finset ℕ) * (1 / 3 - 1 / 5) - 4 ≤

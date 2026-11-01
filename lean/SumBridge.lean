@@ -25,10 +25,11 @@ theorem real_endpoint_loss_le_one (N a b : ℕ)
   have hz : (N : ℝ) * ((b : ℝ) - (a : ℝ)) -
       (a : ℝ) * (b : ℝ) * (((N / a : ℕ) : ℝ) - ((N / b : ℕ) : ℝ)) ≤
         (a : ℝ) * (b : ℝ) := by
+    unfold boundaryOK at hboundary
     exact_mod_cast hboundary
   have hab : 0 < (a : ℝ) * (b : ℝ) := mul_pos ha' hb'
-  apply (mul_le_mul_right hab).mp
-  field_simp
+  apply le_of_mul_le_mul_right ?_ hab
+  field_simp [ne_of_gt ha', ne_of_gt hb']
   nlinarith
 
 /-- Per-cell rough count, with the exact archive ideal and the actual floor
