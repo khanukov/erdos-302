@@ -1,0 +1,541 @@
+closure 62 total 64 missing set()
+BUILD 1/64 CommonL
+/root/erdos-302-independent-audit/explicit-rebuild/sources/CommonL.lean:59:2: warning: exponent 2308312067 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+Erdos302FixedComposition.commonL : ℕ
+'Erdos302FixedComposition.seventeen_le_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302FixedComposition.coefficientPower_le_commonL' depends on axioms: [propext]
+'Erdos302FixedComposition.profileThreshold_le_commonL' depends on axioms: [propext]
+'Erdos302FixedComposition.residual_decay_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]
+END CommonL exit=0 seconds=2.0
+BUILD 2/64 PinnedMixedInstantiation
+'Erdos302FixedComposition.pinnedFiveWayEventually_128000000' depends on axioms: [propext, Classical.choice, Quot.sound]
+END PinnedMixedInstantiation exit=0 seconds=7.2
+BUILD 3/64 MertensCertificate
+'Erdos327.Analytic.one_div_1800_lt_mertensLowerConstant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos327.Analytic.mertensLowerConstant_ge_explicit' depends on axioms: [propext, Classical.choice, Quot.sound]
+END MertensCertificate exit=0 seconds=8.9
+BUILD 4/64 CenteredTailCertificate
+/root/erdos-302-independent-audit/explicit-rebuild/sources/CenteredTailCertificate.lean:212:56: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/CenteredTailCertificate.lean:278:72: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos327.Analytic.unrestrictedCenteredTailConstant_le_explicit' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END CenteredTailCertificate exit=0 seconds=10.9
+BUILD 5/64 KhCertificate
+/root/erdos-302-independent-audit/explicit-rebuild/sources/KhCertificate.lean:19:56: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/KhCertificate.lean:52:72: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/KhCertificate.lean:139:56: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos301.Analytic.headTailBudget_128000000' depends on axioms: [propext, Classical.choice, Quot.sound]
+END KhCertificate exit=0 seconds=8.5
+BUILD 6/64 RoughThirdAdapter
+'Erdos302FixedComposition.eventualRoughThirdBudgets_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+END RoughThirdAdapter exit=0 seconds=6.6
+BUILD 7/64 TopTailCertificate
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TopTailCertificate.lean:87:52: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos302TopTail.unrestrictedCenteredTailConstant_lt_sharp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302TopTail.topTailPrefactor_lt_ten_pow_41' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302TopTail.topTailThreshold_891306_ledger' depends on axioms: [propext, Classical.choice, Quot.sound]
+END TopTailCertificate exit=0 seconds=7.1
+BUILD 8/64 CommonLTopTail
+/root/erdos-302-independent-audit/explicit-rebuild/sources/CommonLTopTail.lean:31:2: warning: exponent 891306 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/CommonLTopTail.lean:127:10: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos302TopTail.topTailThreshold_loglog_gt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302TopTail.commonL_loglog_gt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302TopTail.commonL_odd_tail_sixty_fourth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302TopTail.commonLTopTail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302FixedComposition.commonLTopTail_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+END CommonLTopTail exit=0 seconds=7.9
+BUILD 9/64 FactorPre
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean:142:6: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean:319:58: warning: exponent 128000130 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean:315:17: warning: 'positivity' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean:318:17: warning: 'positivity' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean:315:17: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean:318:17: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+END FactorPre exit=0 seconds=57.2
+BUILD 10/64 FormulaBridge
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FormulaBridge.lean:12:47: warning: exponent 128000130 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FormulaBridge.lean:30:73: warning: exponent 5000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FormulaBridge.lean:61:4: warning: exponent 128000130 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+'Erdos327.Analytic.terminal_hambient_of_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+END FormulaBridge exit=0 seconds=11.0
+BUILD 11/64 TerminalAmbientAllocation
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TerminalAmbientAllocation.lean:24:18: warning: Variable name `hD` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hD
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Erdos327.Analytic.sum_mixedCanonicalTerminalMain_le_roughDensity_div_of_ambient' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END TerminalAmbientAllocation exit=0 seconds=9.6
+BUILD 12/64 TerminalFormulaAllocation
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TerminalFormulaAllocation.lean:29:2: warning: exponent 128000130 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+'Erdos327.Analytic.sum_mixedCanonicalTerminalMain_le_formula' depends on axioms: [propext, Classical.choice, Quot.sound]
+END TerminalFormulaAllocation exit=0 seconds=7.4
+BUILD 13/64 BoundaryCommonL
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryCommonL.lean:43:41: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryCommonL.lean:46:42: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+'Erdos302ResidualBoundary.positiveResidualBoundary_commonL_of_explicit_hypotheses' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.explicitProfileHyp_of_log_absorption' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.boundary_decay_gt_quarter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ResidualBoundary.H_S_le_J_boundary' depends on axioms: [propext]
+'Erdos302ResidualBoundary.N_boundary_eq_pinned_ambient' depends on axioms: [propext]
+'Erdos302ResidualBoundary.commonL_roughDensity_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ResidualBoundary.commonL_boundaryEpsilon_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ResidualBoundary.J_dec_eq' depends on axioms: [propext]
+'Erdos302ResidualBoundary.decomposition_prefix_normal_form' depends on axioms: [propext]
+END BoundaryCommonL exit=0 seconds=9.3
+BUILD 14/64 AmbientWitnesses
+FinalAmbient.N_one_spec {L N : ℕ} (hL : 17 ≤ L) (hN : N_one L ≤ N) : 1 ≤ ↑N * Erdos327.roughDensity L / 512
+FinalAmbient.M_absorb_spec {L : ℕ} (hL : 17 ≤ L) : 48 / Erdos301.Analytic.roughDensity L < ↑(M_absorb L)
+'FinalAmbient.N_one_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalAmbient.M_absorb_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalAmbient.NbaseExact_le_NbaseSafe' depends on axioms: [propext, Classical.choice, Quot.sound]
+END AmbientWitnesses exit=0 seconds=7.6
+BUILD 15/64 SchedulePointwise
+'Erdos302ScheduleStart.explicitScheduleAtTwoPow21' depends on axioms: [propext, Classical.choice, Quot.sound]
+END SchedulePointwise exit=0 seconds=12.6
+BUILD 16/64 ScheduleClosure
+'Erdos302ScheduleClosure.explicitScheduleHyp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ScheduleClosure.unresolved_tail_eq_terminal_add_boundary' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END ScheduleClosure exit=0 seconds=7.0
+BUILD 17/64 FinalMixedIntegration
+'Erdos302FinalMixedIntegration.unresolved_prefix_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302FinalMixedIntegration.boundary_allocation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302FinalMixedIntegration.commonLMixedFiveWay_of_open_leaves' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302FinalMixedIntegration.eventualRoughThirdBudgets_of_open_leaves' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END FinalMixedIntegration exit=0 seconds=7.7
+BUILD 18/64 ProfileMovingGeneric
+END ProfileMovingGeneric exit=0 seconds=6.5
+BUILD 19/64 ProfileStartCore
+'Erdos302CoefficientCutoffs.profileStart_le_mixedBulkMovingStart_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END ProfileStartCore exit=0 seconds=6.4
+BUILD 20/64 LogAbsorptionCore
+/root/erdos-302-independent-audit/explicit-rebuild/sources/LogAbsorptionCore.lean:8:2: warning: exponent 1360000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/LogAbsorptionCore.lean:27:6: warning: exponent 1360000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+'Erdos302ResidualBoundary.log_four_le_rpow_one_div_10000_of_dyadic_start' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END LogAbsorptionCore exit=0 seconds=3.7
+BUILD 21/64 ProfileLogGeneric
+END ProfileLogGeneric exit=0 seconds=3.3
+BUILD 22/64 BulkProfileCommonL
+'Erdos302CoefficientCutoffs.bulkProfile_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BulkProfileCommonL exit=0 seconds=7.3
+BUILD 23/64 TransitionScheduleCommonL
+'Erdos302CoefficientCutoffs.transitionSchedule_from_movingStart' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END TransitionScheduleCommonL exit=0 seconds=6.7
+BUILD 24/64 TransitionProfileCommonL
+'Erdos302CoefficientCutoffs.transitionProfile_from_movingStart' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END TransitionProfileCommonL exit=0 seconds=6.8
+BUILD 25/64 TransitionBaseCommonL
+'Erdos302CoefficientCutoffs.commonL_ge_transition_base' depends on axioms: [propext, Classical.choice, Quot.sound]
+END TransitionBaseCommonL exit=0 seconds=1.7
+BUILD 26/64 CommonLProfiles
+'Erdos302CoefficientCutoffs.profileStart_le_mixedBulkMovingStart_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302CoefficientCutoffs.bulkProfile_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302CoefficientCutoffs.transitionSchedule_from_movingStart' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302CoefficientCutoffs.transitionProfile_from_movingStart' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302CoefficientCutoffs.commonL_ge_transition_base' depends on axioms: [propext, Classical.choice, Quot.sound]
+END CommonLProfiles exit=0 seconds=6.2
+BUILD 27/64 BulkCommonLSummation
+'Erdos302CoefficientCutoffs.sum_mixedCanonicalBulkMain_le_moving_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END BulkCommonLSummation exit=0 seconds=8.0
+BUILD 28/64 CoefficientProjectionCore
+'Erdos302FixedComposition.commonLCoefficientProjectionNat' depends on axioms: [propext]
+END CoefficientProjectionCore exit=0 seconds=1.8
+BUILD 29/64 SymbolicCoefficientBridge
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SymbolicCoefficientBridge.lean:33:19: warning: Variable name `hp` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hp
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Erdos302CoefficientCutoffs.log_nat_gt_scale_pow_of_exponent_cast' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302CoefficientCutoffs.coefficientScale_pow_lt_log_commonL_of_projection' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END SymbolicCoefficientBridge exit=0 seconds=4.2
+BUILD 30/64 CoefficientCutoffCore
+END CoefficientCutoffCore exit=0 seconds=11.7
+BUILD 31/64 RoughDensityGeneric
+/root/erdos-302-independent-audit/explicit-rebuild/sources/RoughDensityGeneric.lean:18:5: warning: Variable name `hC` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hC
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'Erdos302CoefficientCutoffs.coefficient_rpow_le_roughDensity_generic' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END RoughDensityGeneric exit=0 seconds=9.3
+BUILD 32/64 RoughDensityCutoff
+'Erdos302CoefficientCutoffs.coefficient_rpow_le_roughDensity' depends on axioms: [propext, Classical.choice, Quot.sound]
+END RoughDensityCutoff exit=0 seconds=6.5
+BUILD 33/64 BulkMainCutoff
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:48:6: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:38:10: warning: 'exact hmove' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:39:10: warning: 'exact hqb0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:40:10: warning: 'exact hsched0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:41:10: warning: 'exact hres0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:42:10: warning: 'exact hmove0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:43:10: warning: 'positivity [mixedCanonicalScheduledProductConstant_pos, mixedCanonicalResidualConstant_pos,
+  mixedBulkMovingTailConstant_pos]' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:38:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:39:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:40:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:41:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:42:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean:43:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+'Erdos302CoefficientCutoffs.bulkMain_source_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BulkMainCutoff exit=0 seconds=8.2
+BUILD 34/64 SieveErrorCutoff
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:28:6: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:23:10: warning: 'exact hqb0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:24:10: warning: 'exact hres0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:25:10: warning: 'positivity [mixedCanonicalResidualConstant_pos]' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:23:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:24:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean:25:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+'Erdos302CoefficientCutoffs.sieveError_source_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+END SieveErrorCutoff exit=0 seconds=7.3
+BUILD 35/64 TransitionMainCutoff
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:34:6: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:27:10: warning: 'exact hqb0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:28:10: warning: 'exact hsched0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:29:10: warning: 'exact hprofile0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:30:10: warning: 'positivity [mixedCanonicalScheduledProductConstant_pos, mixedBoundaryProfileConstant_pos]' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:27:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:28:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:29:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean:30:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+'Erdos302CoefficientCutoffs.transitionMain_source_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+END TransitionMainCutoff exit=0 seconds=6.7
+BUILD 36/64 TransitionErrorCutoff
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionErrorCutoff.lean:23:48: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionErrorCutoff.lean:21:10: warning: 'exact hqb0' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionErrorCutoff.lean:22:10: warning: 'positivity' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionErrorCutoff.lean:21:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionErrorCutoff.lean:22:10: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+'Erdos302CoefficientCutoffs.transitionError_source_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+END TransitionErrorCutoff exit=0 seconds=6.8
+BUILD 37/64 DecayMargins
+'Erdos302CoefficientCutoffs.main_decay_margin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302CoefficientCutoffs.sieve_error_decay_margin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302CoefficientCutoffs.transition_error_decay_margin' depends on axioms: [propext, Classical.choice, Quot.sound]
+END DecayMargins exit=0 seconds=7.1
+BUILD 38/64 FixedCoefficientComparisons
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:36:6: warning: exponent 128000130 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:51:40: warning: exponent 128000071 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:73:40: warning: exponent 128000059 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:95:40: warning: exponent 128000000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:137:12: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:180:12: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:217:12: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean:259:12: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos302CoefficientCutoffs.bulkMainCoefficient_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302CoefficientCutoffs.sieveErrorCoefficient_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302CoefficientCutoffs.transitionMainCoefficient_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302CoefficientCutoffs.transitionErrorCoefficient_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END FixedCoefficientComparisons exit=0 seconds=7.2
+BUILD 39/64 BulkAllocation
+'Erdos302FinalMixedIntegration.bulkMainAllocation_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END BulkAllocation exit=0 seconds=6.9
+BUILD 40/64 SieveTailPrefix
+'Erdos302CoefficientCutoffs.sieveErrorProfile_tail_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302CoefficientCutoffs.mixedCanonicalGoodSieveError_tail_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302CoefficientCutoffs.sum_mixedCanonicalGoodSieveError_le_coefficient_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END SieveTailPrefix exit=0 seconds=6.9
+BUILD 41/64 SieveAllocation
+'Erdos302FinalMixedIntegration.sieveErrorAllocation_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END SieveAllocation exit=0 seconds=6.7
+BUILD 42/64 TransitionPointwiseSummation
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionPointwiseSummation.lean:15:5: warning: Variable name `hL17` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hL17
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionPointwiseSummation.lean:349:6: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos302CoefficientCutoffs.sum_mixedTransitionBoundary_le_of_pointwise' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END TransitionPointwiseSummation exit=0 seconds=8.3
+BUILD 43/64 TransitionAllocation
+/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionAllocation.lean:33:23: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Erdos302FinalMixedIntegration.transitionBoundaryAllocation_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END TransitionAllocation exit=0 seconds=6.4
+BUILD 44/64 TerminalProfileClosure
+'Erdos302FinalMixedIntegration.terminalProfileAllocation_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END TerminalProfileClosure exit=0 seconds=7.1
+BUILD 45/64 BoundaryABIProfile
+'Erdos302ResidualBoundary.explicitLogAbsorptionHyp_lightweight' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.explicitProfileHyp_unconditional' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BoundaryABIProfile exit=0 seconds=7.4
+BUILD 46/64 BoundaryRawDensity
+END BoundaryRawDensity exit=0 seconds=6.8
+BUILD 47/64 BoundaryRawCoefficientAnalytic
+'Erdos302ResidualBoundary.raw_boundaryCM_lt_real_majorant_commonL_of' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.raw_boundaryCE_lt_real_majorant_commonL_of' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END BoundaryRawCoefficientAnalytic exit=0 seconds=8.7
+BUILD 48/64 BoundaryRawCoefficients
+/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryRawCoefficients.lean:23:27: warning: This simp argument is unused:
+  Nat.cast_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Erdos302ResidualBoundary.raw_boundaryCM_lt_integer_majorant_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.raw_boundaryCE_lt_integer_majorant_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END BoundaryRawCoefficients exit=0 seconds=6.6
+BUILD 49/64 BoundaryDenominatorGeneric
+'Erdos302ResidualBoundary.main_denominator_generic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ResidualBoundary.error_denominator_generic' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BoundaryDenominatorGeneric exit=0 seconds=3.5
+BUILD 50/64 BoundaryABIDenominators
+'Erdos302ResidualBoundary.boundaryMainBase_inv_lt_target_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.boundaryErrorBase_inv_lt_target_commonL' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END BoundaryABIDenominators exit=0 seconds=6.5
+BUILD 51/64 BoundaryOrderCore
+END BoundaryOrderCore exit=0 seconds=4.0
+BUILD 52/64 BoundaryDecay
+END BoundaryDecay exit=0 seconds=6.8
+BUILD 53/64 BoundarySmallnessGeneric
+END BoundarySmallnessGeneric exit=0 seconds=6.6
+BUILD 54/64 BoundaryMainSmallnessABI
+'Erdos302ResidualBoundary.explicitMainSmallHyp_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BoundaryMainSmallnessABI exit=0 seconds=6.3
+BUILD 55/64 BoundaryErrorSmallnessABI
+'Erdos302ResidualBoundary.explicitErrorSmallHyp_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BoundaryErrorSmallnessABI exit=0 seconds=6.8
+BUILD 56/64 BoundaryABIAdapters
+'Erdos302ResidualBoundary.explicitLogAbsorptionHyp_lightweight' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ResidualBoundary.explicitMainSmallHyp_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ResidualBoundary.explicitErrorSmallHyp_commonL' depends on axioms: [propext, Classical.choice, Quot.sound]
+END BoundaryABIAdapters exit=0 seconds=6.0
+BUILD 57/64 UnconditionalMixedClosure
+'Erdos302FinalMixedIntegration.positiveResidualLeaves_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302FinalMixedIntegration.commonLMixedFiveWay_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302FinalMixedIntegration.eventualRoughThirdBudgets_unconditional' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+END UnconditionalMixedClosure exit=0 seconds=6.4
+BUILD 58/64 Erdos302Lower.Defs
+END Erdos302Lower.Defs exit=0 seconds=6.3
+BUILD 59/64 Erdos302Lower.FromErdos301
+END Erdos302Lower.FromErdos301 exit=0 seconds=9.1
+BUILD 60/64 Erdos302Lower.Maximum
+END Erdos302Lower.Maximum exit=0 seconds=6.5
+BUILD 61/64 ExplicitEndpointCandidate
+/root/erdos-302-independent-audit/explicit-rebuild/sources/ExplicitEndpointCandidate.lean:70:22: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/ExplicitEndpointCandidate.lean:70:50: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/ExplicitEndpointCandidate.lean:70:26: warning: '(try simp only [C, Kt])' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+'Erdos302ExplicitEndpoint.delta_lt_density_half' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ExplicitEndpoint.f302_explicit_pointwise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ExplicitEndpoint.f302_explicit_lower_candidate' depends on axioms: [propext, Classical.choice, Quot.sound]
+END ExplicitEndpointCandidate exit=0 seconds=7.7
+BUILD 62/64 LiminfAdapter
+'Erdos302ExplicitEndpoint.eventually_explicit_normalized_lower' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302ExplicitEndpoint.f302_explicit_liminf_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302ExplicitEndpoint.five_eighths_lt_explicit_liminf' depends on axioms: [propext, Classical.choice, Quot.sound]
+END LiminfAdapter exit=0 seconds=6.5
+BUILD 63/64 StrongerEndpoint
+/root/erdos-302-independent-audit/explicit-rebuild/sources/StrongerEndpoint.lean:122:22: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/StrongerEndpoint.lean:122:50: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/root/erdos-302-independent-audit/explicit-rebuild/sources/StrongerEndpoint.lean:122:26: warning: '(try simp only [C, Kt])' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+'Erdos302StrongerEndpoint.delta_lt_density_half' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302StrongerEndpoint.f302_stronger_pointwise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302StrongerEndpoint.f302_stronger_lower_candidate' depends on axioms: [propext, Classical.choice, Quot.sound]
+END StrongerEndpoint exit=0 seconds=7.4
+BUILD 64/64 StrongerLiminf
+'Erdos302StrongerEndpoint.eventually_explicit_normalized_lower' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos302StrongerEndpoint.f302_stronger_liminf_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302StrongerEndpoint.five_eighths_lt_stronger_liminf' depends on axioms: [propext, Classical.choice, Quot.sound]
+END StrongerLiminf exit=0 seconds=6.3
+REBUILD_OK baseline=62 overlay=59 stronger=2
+Erdos302StrongerEndpoint.f302_stronger_pointwise :
+  ∃ N₀, ∀ N ≥ N₀, (5 / 8 + Erdos302StrongerEndpoint.delta) * ↑N ≤ ↑(Erdos302Lower.f302 N)
+'Erdos302StrongerEndpoint.f302_stronger_pointwise' depends on axioms: [propext, Classical.choice, Quot.sound]
+Erdos302StrongerEndpoint.f302_stronger_lower_candidate : Erdos302Lower.Erdos302MaximumLowerConclusion
+'Erdos302StrongerEndpoint.f302_stronger_lower_candidate' depends on axioms: [propext, Classical.choice, Quot.sound]
+Erdos302StrongerEndpoint.f302_stronger_liminf_lower :
+  5 / 8 + Erdos302StrongerEndpoint.delta ≤ Filter.liminf Erdos302StrongerEndpoint.normalizedF302 Filter.atTop
+'Erdos302StrongerEndpoint.f302_stronger_liminf_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+Erdos302StrongerEndpoint.five_eighths_lt_stronger_liminf :
+  5 / 8 < Filter.liminf Erdos302StrongerEndpoint.normalizedF302 Filter.atTop
+'Erdos302StrongerEndpoint.five_eighths_lt_stronger_liminf' depends on axioms: [propext, Classical.choice, Quot.sound]

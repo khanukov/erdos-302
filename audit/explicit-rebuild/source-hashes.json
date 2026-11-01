@@ -1,0 +1,258 @@
+{
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryABIAdapters.lean": {
+    "sha256": "04324cb507e913342d0c3bee0c2ff013570db3c07a997ab4a8935e776751d25d",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryABIAdapters.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryABIDenominators.lean": {
+    "sha256": "1af1963c75812376ef05ecc0ddd3de2b77a57fbb295f7e2a58e887163795d632",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryABIDenominators.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryABIProfile.lean": {
+    "sha256": "cc4e083a34e40c581349331c205187d16758cbe9f6effba411172f0034e08f1b",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryABIProfile.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryDecay.lean": {
+    "sha256": "aaa7d46eef875a0d9aad6245d62dcd7e42ccb79942c2aa6226494a9ae32ab6bb",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryDecay.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryDenominatorGeneric.lean": {
+    "sha256": "c16f439b1a4d750bed778e357b126a84e3e7b1f60aca5663495d39dacaee3191",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryDenominatorGeneric.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryErrorSmallnessABI.lean": {
+    "sha256": "fc90c874e8f3efe3e93a14495de8b30c32493335f1ea72bc8aabacd8cb0be0af",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryErrorSmallnessABI.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryMainSmallnessABI.lean": {
+    "sha256": "b49993a1b8f3bf84e8b87675a28c6b8973aa86aab6293a621a49a27b47974169",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryMainSmallnessABI.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryOrderCore.lean": {
+    "sha256": "a72c246dd13c2a5dbabc3af80ad4d952fb0fe0106a5e7fb1af158ca528a1f1cb",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryOrderCore.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryRawCoefficientAnalytic.lean": {
+    "sha256": "e36cae6f9e894b0a3a072cec131ee3a28239a56b8af287f8752bb57bf5a5d8fa",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryRawCoefficientAnalytic.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryRawCoefficients.lean": {
+    "sha256": "2bddbd55d55270ce66cb840e592dc0380567711a3500a7ee373c4f978041aee2",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryRawCoefficients.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundaryRawDensity.lean": {
+    "sha256": "72c2434b488be8fd73ccf912e662620b0d9aaddb281dae831316e471bb568542",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryRawDensity.lean"
+  },
+  "/root/erdos302-explicit-lower/boundary-lightweight/BoundarySmallnessGeneric.lean": {
+    "sha256": "662c0f3c3933a30f83ef6ca2e92df391e39b6f4157d241f459f48f46c9a3d24a",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundarySmallnessGeneric.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/BulkAllocation.lean": {
+    "sha256": "3bb0f775ff6e38244c3a22452a95390b77fffc24e61cfbfd13e1fad60723a74c",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkAllocation.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/BulkCommonLSummation.lean": {
+    "sha256": "c860eb48fa6da18822e8222e3215db9e7de3a42de373b3d69034c31de35c5334",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkCommonLSummation.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/BulkMainCutoff.lean": {
+    "sha256": "8997f301fbdb55f8cf349df02c1cec6e80ac73760df4fd2226cc7cfe708418ab",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkMainCutoff.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/BulkProfileCommonL.lean": {
+    "sha256": "35277f61d6532227bca3a29d88e5906af319156c567be9ffe24aa1de8e74f003",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BulkProfileCommonL.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/CoefficientCutoffCore.lean": {
+    "sha256": "02b0ab50a45d4d102ebab55f4572397036e87273b2545c8daecf5f75b3256872",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/CoefficientCutoffCore.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/CommonLProfiles.lean": {
+    "sha256": "d4273ea3a791854aec3ec688f623b286106abf106eaae166c72617e08ddc834e",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/CommonLProfiles.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/DecayMargins.lean": {
+    "sha256": "eede078584305ca1f496a155fc38e191a630a7d807798ca1158667b52dba9505",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/DecayMargins.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/FixedCoefficientComparisons.lean": {
+    "sha256": "3bac995b3831f73381d2749303090c8d41e8b05458dda62f2ce1e2eda7522883",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/FixedCoefficientComparisons.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/ProfileLogGeneric.lean": {
+    "sha256": "61f05f2ce06f4bbf22ae168c9d5b885f4db7f79b5b9a62e741322700e6555732",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/ProfileLogGeneric.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/ProfileMovingGeneric.lean": {
+    "sha256": "ed1b05f2539bd83b90347dbc4c91c491f205f23534da58c7c671fc0b4a0d6b94",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/ProfileMovingGeneric.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/ProfileStartCore.lean": {
+    "sha256": "c6ee4cba82b34eb534fe388b4b4943e5c33413c12ddca9e8390d14f540b15628",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/ProfileStartCore.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/RoughDensityCutoff.lean": {
+    "sha256": "a3efb5f1bef6c84ebf0621ba7a69fcb2eb18c3b1cdff6af493b378ca896472d1",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/RoughDensityCutoff.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/RoughDensityGeneric.lean": {
+    "sha256": "9962bc5a4e435b174da21acef91e1d954543e4a2c58c2be50086b2ddb90cc019",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/RoughDensityGeneric.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/SieveAllocation.lean": {
+    "sha256": "83b85f88b2aad4e74b3864980b608d4094718bc6a98874488f1b06b2188f9636",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveAllocation.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/SieveErrorCutoff.lean": {
+    "sha256": "1815124046851499359431805758ad2f43aaba9ebe9bee62ffdd9e8278744ac9",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveErrorCutoff.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/SieveTailPrefix.lean": {
+    "sha256": "e4f539fda786842773b286772bdb69e9211212b1152aac714b06432710133bd5",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/SieveTailPrefix.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/SymbolicCoefficientBridge.lean": {
+    "sha256": "51fa0bc23dc8bb5b67f37bba8287473f4a987bfe19e0de605a9bbac53bc62a6a",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/SymbolicCoefficientBridge.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionAllocation.lean": {
+    "sha256": "19914f5e62524436e4b3545d23d4673841c80056066b32d39b0e306b63be35e6",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionAllocation.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionBaseCommonL.lean": {
+    "sha256": "d0bfdb01ebee5381711e481c52cd99eb89548adcb419795775e1927bf49ef9cd",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionBaseCommonL.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionErrorCutoff.lean": {
+    "sha256": "36b4cd9d953b4f0976cd1bcf48a786f1c427d0cc6c267f300015e318807cf594",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionErrorCutoff.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionMainCutoff.lean": {
+    "sha256": "390133b3164dd148e82e4a1ac605827d08863c349258b2f90fcdc81628b56d54",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionMainCutoff.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionPointwiseSummation.lean": {
+    "sha256": "cc86945192f9426b142fcd23c5872d6cf6ecf12ac0b95e0475d7f58e5b6f22b3",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionPointwiseSummation.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionProfileCommonL.lean": {
+    "sha256": "c1a02e27c0319139eceed785fa0698d65c37fbe84a76612a8b2576b9335f5f3e",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionProfileCommonL.lean"
+  },
+  "/root/erdos302-explicit-lower/coefficient-cutoffs/TransitionScheduleCommonL.lean": {
+    "sha256": "9be057c534dd71466e489b5e06d18c240e4569809113e1eee8ff5c8de5ae59e8",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TransitionScheduleCommonL.lean"
+  },
+  "/root/erdos302-explicit-lower/final-ambient/AmbientWitnesses.lean": {
+    "sha256": "6a9a6e0ad84b45035a92e3adf9706f20d81bd47b8b9d2cf91c5e5552808cbc9d",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/AmbientWitnesses.lean"
+  },
+  "/root/erdos302-explicit-lower/final-mixed-integration/FinalMixedIntegration.lean": {
+    "sha256": "cbfac4c8d937edeaa6abfca85075b74f5cf4d1fe18151f093e0a05105b0327f0",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/FinalMixedIntegration.lean"
+  },
+  "/root/erdos302-explicit-lower/final-mixed-integration/TerminalProfileClosure.lean": {
+    "sha256": "66dbea7189a1c383aeb6057f50291887f8f27251716e19e18f0bbabbd74a2775",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TerminalProfileClosure.lean"
+  },
+  "/root/erdos302-explicit-lower/final-mixed-integration/UnconditionalMixedClosure.lean": {
+    "sha256": "e1e5a6814c692dff6e0cc578ed16fcae9155b1974d608d7302834452be901828",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/UnconditionalMixedClosure.lean"
+  },
+  "/root/erdos302-explicit-lower/final-threshold-candidate/ExplicitEndpointCandidate.lean": {
+    "sha256": "0d4138c414db9c8d53bc04f8d49ee2576e96e69ab20b4a085e11136f65c2f15c",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/ExplicitEndpointCandidate.lean"
+  },
+  "/root/erdos302-explicit-lower/final-threshold-candidate/LiminfAdapter.lean": {
+    "sha256": "03ace95bd1ea0cd468f211fae7d290f6c75a7d17cdbf3198e9052f97a792e77e",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/LiminfAdapter.lean"
+  },
+  "/root/erdos302-explicit-lower/fixed-mixed-composition/CoefficientProjectionCore.lean": {
+    "sha256": "e24092a8505d4ecc2617752374e3fe8de0473b5c97beaeb5221650a6c5e0ee8c",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/CoefficientProjectionCore.lean"
+  },
+  "/root/erdos302-explicit-lower/fixed-mixed-composition/CommonL.lean": {
+    "sha256": "d01d656dba43b80cdbd6a304c36444981a45dafc6ef1edd65049bbfbc48e62ed",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/CommonL.lean"
+  },
+  "/root/erdos302-explicit-lower/fixed-mixed-composition/PinnedMixedInstantiation.lean": {
+    "sha256": "3cd6409771c4a768983bf538de1c20cc58e9d2f0e717ea6fc277b7f99b1f2496",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/PinnedMixedInstantiation.lean"
+  },
+  "/root/erdos302-explicit-lower/fixed-mixed-composition/RoughThirdAdapter.lean": {
+    "sha256": "429063827a91e037d923ae724b5f71ad68d7dffcc693d3393efe3dce1a1d3468",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/RoughThirdAdapter.lean"
+  },
+  "/root/erdos302-explicit-lower/kernel-constants/CenteredTailCertificate.lean": {
+    "sha256": "529736959731c478381c3219ab8c3a956fda7c69be00884843a30a27029adc81",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/CenteredTailCertificate.lean"
+  },
+  "/root/erdos302-explicit-lower/kernel-constants/KhCertificate.lean": {
+    "sha256": "8f549a22bc5b8fd16fd077e0aeee5a4c1695c1c5f3ac8058047cd43bab19ba6e",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/KhCertificate.lean"
+  },
+  "/root/erdos302-explicit-lower/kernel-constants/MertensCertificate.lean": {
+    "sha256": "291db266dd10f2d930e3dd20be85e5d86228fbe3731bbdcf5c0a3b67632ef8f9",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/MertensCertificate.lean"
+  },
+  "/root/erdos302-explicit-lower/residual-boundary/BoundaryCommonL.lean": {
+    "sha256": "144525a2271c5bd79455a886c415ea7081b29a6d5caf04b1d916c2f5fa25f741",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/BoundaryCommonL.lean"
+  },
+  "/root/erdos302-explicit-lower/residual-boundary/LogAbsorptionCore.lean": {
+    "sha256": "26509260c5d82cf3f38e3b491e8c6d882f3b57d8bb7f01540c9fa867fbac6d60",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/LogAbsorptionCore.lean"
+  },
+  "/root/erdos302-explicit-lower/schedule-start/ScheduleClosure.lean": {
+    "sha256": "f6531d5eb3c77eaf87a52e75e4755b0de9cf44992e833ae259a5744e5e980cf0",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/ScheduleClosure.lean"
+  },
+  "/root/erdos302-explicit-lower/schedule-start/SchedulePointwise.lean": {
+    "sha256": "f2cad221634f0ac64f7d1ca5d62cee754b8aa39eec1ed962d2627638e85fc266",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/SchedulePointwise.lean"
+  },
+  "/root/erdos302-explicit-lower/terminal-ambient/FactorPre.lean": {
+    "sha256": "036a5c4362622d821d6f3933f69c694af8ef3734023e3534fe5745ca8b928e9c",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/FactorPre.lean"
+  },
+  "/root/erdos302-explicit-lower/terminal-ambient/FormulaBridge.lean": {
+    "sha256": "50344f91b9de5054676fcbdb55df0cc76661cee28630ccda80467a7f55e50daa",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/FormulaBridge.lean"
+  },
+  "/root/erdos302-explicit-lower/terminal-ambient/TerminalAmbientAllocation.lean": {
+    "sha256": "f1bed801bea64fa6c72e0ee97a092b415c62fc1db72220115888463092f8272b",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TerminalAmbientAllocation.lean"
+  },
+  "/root/erdos302-explicit-lower/terminal-ambient/TerminalFormulaAllocation.lean": {
+    "sha256": "a6c76bfec8aca987c3ef73d95fb57dd669da71ddf8393b314b665a13eb3a8144",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TerminalFormulaAllocation.lean"
+  },
+  "/root/erdos302-explicit-lower/top-tail/CommonLTopTail.lean": {
+    "sha256": "64617ccc49dc3debcc856bf9a1e0a62d324fef8d1c1dbe7f8167e779c42f191b",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/CommonLTopTail.lean"
+  },
+  "/root/erdos302-explicit-lower/top-tail/TopTailCertificate.lean": {
+    "sha256": "08a1342149c411fd0dea2f70550e59688a2df0f012f91c9439df6fcdbd7034d4",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/TopTailCertificate.lean"
+  },
+  "/root/erdos302/lower-lean/Erdos302Lower/Defs.lean": {
+    "sha256": "bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/Erdos302Lower/Defs.lean"
+  },
+  "/root/erdos302/lower-lean/Erdos302Lower/FromErdos301.lean": {
+    "sha256": "45f700af8f4e759576a0e0fd64ad34e0c0411cfa1e453e8b9ec14014714f0269",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/Erdos302Lower/FromErdos301.lean"
+  },
+  "/root/erdos302/lower-lean/Erdos302Lower/Maximum.lean": {
+    "sha256": "f63ec5ebb408d91f49b9ad1826168fd0ea7f0e9e3efe35aee88457e7956a07e3",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/Erdos302Lower/Maximum.lean"
+  },
+  "/root/erdos302-explicit-lower/stronger-endpoint/StrongerEndpoint.lean": {
+    "sha256": "8d74a01b5036f2e3296ed129efc269533cf2dd4be9c05ce759cbabc8c6c15d86",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/StrongerEndpoint.lean"
+  },
+  "/root/erdos302-explicit-lower/stronger-endpoint/StrongerLiminf.lean": {
+    "sha256": "259aa04d45da038cbdfe87a77f98f31ec15ad29e1c3c7bf1a02bfb00dcbce29c",
+    "copy": "/root/erdos-302-independent-audit/explicit-rebuild/sources/StrongerLiminf.lean"
+  }
+}

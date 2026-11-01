@@ -1,0 +1,9 @@
+import StrongerLiminf
+#check Erdos302StrongerEndpoint.f302_stronger_pointwise
+#print axioms Erdos302StrongerEndpoint.f302_stronger_pointwise
+#check Erdos302StrongerEndpoint.f302_stronger_lower_candidate
+#print axioms Erdos302StrongerEndpoint.f302_stronger_lower_candidate
+#check Erdos302StrongerEndpoint.f302_stronger_liminf_lower
+#print axioms Erdos302StrongerEndpoint.f302_stronger_liminf_lower
+#check Erdos302StrongerEndpoint.five_eighths_lt_stronger_liminf
+#print axioms Erdos302StrongerEndpoint.five_eighths_lt_stronger_liminf
