@@ -20,7 +20,7 @@ theorem density_expansion (S : Finset ℕ) :
       apply Finset.sum_congr rfl
       intro T hT
       rw [Finset.prod_neg, Finset.prod_div_distrib]
-      simp only [Finset.prod_const_one, one_div, div_eq_mul_inv]
+      simp only [Finset.prod_const_one, one_div, div_eq_mul_inv, one_mul]
 
 /-- Triangle inequality for a signed sum of errors bounded by one. -/
 theorem signed_error_sum_bound (S : Finset ℕ) (e : Finset ℕ → ℝ)

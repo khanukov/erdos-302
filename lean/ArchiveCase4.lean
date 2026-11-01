@@ -14,6 +14,6 @@ def tree : BankCase.Tree ℕ := BankCase.Tree.dual [(({4, 5, 20}, (1 : ℤ)), (1
 
 -- Host CI must kernel-check this candidate; generation is not verification.
 theorem check_valid : BankCase.check rows target ∅ ∅ demand tree = true := by
-  simp only [BankCase.check] <;> decide
+  simp only [tree, rows, target, demand, BankCase.check] <;> decide
 #print axioms check_valid
 end ArchiveCase4
