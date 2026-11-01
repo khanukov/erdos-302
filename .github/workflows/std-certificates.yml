@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+      - name: Test verifier in normal and optimized Python
+        run: |
+          python3 audit/std-ci/test_verify.py
+          python3 -O audit/std-ci/test_verify.py
       - name: Check archive and source inventory
         run: python3 audit/std-ci/verify.py --check-only
       - name: Install Lean 4.27.0

@@ -1,0 +1,36 @@
+name: Three-vertex archive certificates
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    name: Three-vertex shard ${{ matrix.shard }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Test verifier in normal and optimized Python
+        run: |
+          python3 audit/small-three-ci/test_verify.py
+          python3 -O audit/small-three-ci/test_verify.py
+      - name: Validate archive-derived coverage
+        run: python3 audit/small-three-ci/verify.py --check-only
+      - name: Install checksum-pinned Lean 4.27.0 release
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.27.0/lean-4.27.0-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 056e2dc8564fc064a801e69f3eb18c044b9b546bc8b0e5a2c00247f8a1cb8ce6 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.27.0-linux/bin" >> "$GITHUB_PATH"
+      - name: Rebuild checker and compile certificates
+        run: python3 audit/small-three-ci/verify.py --shard '${{ matrix.shard }}'

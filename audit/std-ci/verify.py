@@ -27,6 +27,11 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def chunk_success(chunk):
+    require(type(chunk['success']) is bool, 'chunk success must be boolean')
+    return chunk['success']
+
+
 def pinned(path, digest):
     data = path.read_bytes()
     require(hashlib.sha256(data).hexdigest() == digest, f'hash mismatch: {path}')
@@ -73,7 +78,7 @@ def inventory():
         base = AUDIT / folder
         manifest = json.loads((base/'coverage.json').read_text())
         for ch in manifest['chunks']:
-            if not ch['success']:
+            if not chunk_success(ch):
                 continue
             name, ids = ch['chunk'], ch['indices']
             require(re.fullmatch(r'Chunk[0-9]{4}', name) is not None, 'invalid chunk name')

@@ -15,6 +15,13 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(buckets))
         self.assertEqual(sum(len(c[2]) for bucket in buckets for c in bucket), 1627)
 
+    def test_chunk_success_requires_real_boolean(self):
+        self.assertTrue(v.chunk_success({'success': True}))
+        self.assertFalse(v.chunk_success({'success': False}))
+        for value in ('false', 0, 1, None):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                v.chunk_success({'success': value})
+
     def test_axioms_fail_closed(self):
         name = 'Archive.bank_node_1'
         v.check_axioms("'Archive.bank_node_1' does not depend on any axioms\n", [name])
