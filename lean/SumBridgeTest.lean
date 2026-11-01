@@ -20,7 +20,7 @@ example (N a b : ℕ) (ha : 0 < a) (hb : 0 < b)
   real_endpoint_loss_le_one N a b ha hb hboundary
 
 -- A nonempty prime set and nonintegral endpoints, without assuming the count bound.
-example : (11 : ℝ) * density ({2} : Finset ℕ) * (1 / 3 - 1 / 5) - 4 ≤
+example : ((11 : ℕ) : ℝ) * density ({2} : Finset ℕ) * (1 / ((3 : ℕ) : ℝ) - 1 / ((5 : ℕ) : ℝ)) - (2 : ℝ) ^ 2 ≤
     (ArchiveSummation.cellCount 11 3 5
       (fun q => Nat.Coprime q (∏ p ∈ ({2} : Finset ℕ), p)) : ℝ) := by
   apply cell_lower_archive 11 3 5 2 ({2} : Finset ℕ)
@@ -36,7 +36,7 @@ example : (11 : ℝ) * density ({2} : Finset ℕ) * (1 / 3 - 1 / 5) - 4 ≤
   · norm_num
 
 -- Equal endpoints are permitted and test the half-open interval convention.
-example : (10 : ℝ) * density (∅ : Finset ℕ) * (1 / 2 - 1 / 2) - 2 ≤
+example : ((10 : ℕ) : ℝ) * density (∅ : Finset ℕ) * (1 / ((2 : ℕ) : ℝ) - 1 / ((2 : ℕ) : ℝ)) - (2 : ℝ) ^ 1 ≤
     (ArchiveSummation.cellCount 10 2 2
       (fun q => Nat.Coprime q (∏ p ∈ (∅ : Finset ℕ), p)) : ℝ) := by
   apply cell_lower_archive 10 2 2 1 (∅ : Finset ℕ)
@@ -48,5 +48,30 @@ example : (10 : ℝ) * density (∅ : Finset ℕ) * (1 / 2 - 1 / 2) - 2 ≤
   · norm_num [boundaryOK]
   · norm_num
 
+-- Equality j = |S| is allowed, including a nonempty prime set.
+example : ((11 : ℕ) : ℝ) * density ({2} : Finset ℕ) * (1 / ((3 : ℕ) : ℝ) - 1 / ((5 : ℕ) : ℝ)) - (2 : ℝ) ^ 1 ≤
+    (ArchiveSummation.cellCount 11 3 5
+      (fun q => Nat.Coprime q (∏ p ∈ ({2} : Finset ℕ), p)) : ℝ) := by
+  apply cell_lower_archive 11 3 5 1 ({2} : Finset ℕ)
+  · norm_num
+  · norm_num
+  · norm_num
+  · intro p hp
+    simp only [Finset.mem_singleton] at hp
+    subst p
+    norm_num
+  · norm_num [density]
+  · norm_num [boundaryOK]
+  · norm_num
+
+example (N a b : ℕ) (S : Finset ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hLU : N / b ≤ N / a) (hp : ∀ p ∈ S, Nat.Prime p)
+    (hrho : 0 ≤ density S ∧ density S ≤ 1) (hboundary : boundaryOK N a b) :
+    (N : ℝ) * density S * (1 / (a : ℝ) - 1 / (b : ℝ)) - (2 : ℝ) ^ S.card ≤
+      (ArchiveSummation.cellCount N a b
+        (fun q => Nat.Coprime q (∏ p ∈ S, p)) : ℝ) :=
+  cell_lower_archive N a b S.card S ha hb hLU hp hrho hboundary le_rfl
+
+#print axioms ArchiveSumBridge.global_upper_exact
 #print axioms ArchiveSumBridge.global_upper_archive
 end ArchiveSumBridgeTest

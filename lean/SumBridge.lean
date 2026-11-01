@@ -38,13 +38,13 @@ theorem cell_lower_exact (N a b : ℕ) (S : Finset ℕ)
     (ha : 0 < a) (hLU : N / b ≤ N / a)
     (hprime : ∀ p ∈ S, Nat.Prime p) :
     (N : ℝ) * density S * (1 / (a : ℝ) - 1 / (b : ℝ)) -
-      ((2 : ℝ) ^ S.card + density S *
+      (((2 : ℝ) ^ S.card - 1) + density S *
         ((N : ℝ) * (1 / (a : ℝ) - 1 / (b : ℝ)) -
           (((N / a : ℕ) : ℝ) - ((N / b : ℕ) : ℝ)))) ≤
       (ArchiveSummation.cellCount N a b
         (fun q => Nat.Coprime q (∏ p ∈ S, p)) : ℝ) := by
   classical
-  have hd := RoughDiscrepancy.card_coprime_Ioc_discrepancy
+  have hd := RoughDiscrepancy.card_coprime_Ioc_discrepancy_sharp
     (N / b) (N / a) S hLU hprime
   have hl := (abs_le.mp hd).1
   rw [ArchiveSummation.count_cell_eq N a b _ ha]
@@ -58,7 +58,7 @@ theorem cell_lower_archive (N a b j : ℕ) (S : Finset ℕ)
     (hprime : ∀ p ∈ S, Nat.Prime p)
     (hrho : 0 ≤ density S ∧ density S ≤ 1)
     (hboundary : boundaryOK N a b)
-    (hbudget : (2 : ℝ) ^ S.card + 1 ≤ (2 : ℝ) ^ j) :
+    (hbudget : (2 : ℝ) ^ S.card ≤ (2 : ℝ) ^ j) :
     (N : ℝ) * density S * (1 / (a : ℝ) - 1 / (b : ℝ)) - (2 : ℝ) ^ j ≤
       (ArchiveSummation.cellCount N a b
         (fun q => Nat.Coprime q (∏ p ∈ S, p)) : ℝ) := by
@@ -66,6 +66,31 @@ theorem cell_lower_archive (N a b j : ℕ) (S : Finset ℕ)
   have hm := mul_le_mul_of_nonneg_left he hrho.1
   have hc := cell_lower_exact N a b S ha hLU hprime
   nlinarith [hrho.2]
+
+/-- The exact signed ledger retains the endpoint loss: the error is the
+sharp discrepancy plus density times (real endpoint width minus floor width).
+It need not be nonnegative. The cover is an independent hypothesis. -/
+theorem global_upper_exact {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (N : ℕ) (f : ℝ) (h : ι → ℝ)
+    (a b : ι → ℕ) (S : ι → Finset ℕ)
+    (hh : ∀ i ∈ s, 0 ≤ h i)
+    (ha : ∀ i ∈ s, 0 < a i)
+    (hLU : ∀ i ∈ s, N / b i ≤ N / a i)
+    (hprime : ∀ i ∈ s, ∀ p ∈ S i, Nat.Prime p)
+    (hcover : f + ArchiveSummation.weightedCount s h
+      (fun i => (ArchiveSummation.cellCount N (a i) (b i)
+        (fun q => Nat.Coprime q (∏ p ∈ S i, p)) : ℝ)) ≤ N) :
+    f ≤ (N : ℝ) - ArchiveSummation.weightedIdeal s h
+      (fun i => (N : ℝ) * density (S i) * (1 / (a i : ℝ) - 1 / (b i : ℝ))) +
+      ArchiveSummation.weightedError s h
+        (fun i => ((2 : ℝ) ^ (S i).card - 1) + density (S i) *
+          ((N : ℝ) * (1 / (a i : ℝ) - 1 / (b i : ℝ)) -
+            (((N / a i : ℕ) : ℝ) - ((N / b i : ℕ) : ℝ)))) := by
+  apply ArchiveSummation.global_upper s h _ _ _ N f hh
+  · intro i hi
+    exact cell_lower_exact N (a i) (b i) (S i)
+      (ha i hi) (hLU i hi) (hprime i hi)
+  · exact hcover
 
 /-- Integration with the global ledger. The cover premise remains independent;
 the per-cell inequalities are derived from discrepancy and endpoint inputs. -/
@@ -78,7 +103,7 @@ theorem global_upper_archive {ι : Type*} [DecidableEq ι]
     (hprime : ∀ i ∈ s, ∀ p ∈ S i, Nat.Prime p)
     (hrho : ∀ i ∈ s, 0 ≤ density (S i) ∧ density (S i) ≤ 1)
     (hboundary : ∀ i ∈ s, boundaryOK N (a i) (b i))
-    (hbudget : ∀ i ∈ s, (2 : ℝ) ^ (S i).card + 1 ≤ (2 : ℝ) ^ (j i))
+    (hbudget : ∀ i ∈ s, (2 : ℝ) ^ (S i).card ≤ (2 : ℝ) ^ (j i))
     (hcover : f + ArchiveSummation.weightedCount s h
       (fun i => (ArchiveSummation.cellCount N (a i) (b i)
         (fun q => Nat.Coprime q (∏ p ∈ S i, p)) : ℝ)) ≤ N) :
@@ -95,5 +120,6 @@ theorem global_upper_archive {ι : Type*} [DecidableEq ι]
 #print axioms real_endpoint_loss_le_one
 #print axioms cell_lower_exact
 #print axioms cell_lower_archive
+#print axioms global_upper_exact
 #print axioms global_upper_archive
 end ArchiveSumBridge
