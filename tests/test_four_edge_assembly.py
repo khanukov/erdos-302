@@ -20,7 +20,15 @@ def is_smooth(value):
 class AssemblyTest(unittest.TestCase):
     def test_all_shards_referenced_once(self):
         assembly = (BASE / 'FourEdgeAssemblyCandidate.lean').read_text()
-        shards = (BASE / 'FourEdgeShardsCandidate.lean').read_text()
+        aggregator = (BASE / 'FourEdgeShardsCandidate.lean').read_text()
+        imports = re.findall(r'^import (FourEdgeShard_\d+_\d+_\d+)$', aggregator, re.M)
+        self.assertEqual(len(imports), 44)
+        self.assertEqual(len(set(imports)), 44)
+        shards = ''.join((BASE / (name + '.lean')).read_text() for name in imports)
+        for name in imports:
+            text = (BASE / (name + '.lean')).read_text()
+            self.assertEqual(len(re.findall(r'^theorem edges_', text, re.M)), 1)
+            self.assertIn('import FourEdgeUniversesCandidate', text)
         references = re.findall(r'\bedges_\d+_\d+_\d+\b', assembly)
         declarations = re.findall(r'theorem (edges_\d+_\d+_\d+)', shards)
         self.assertEqual(len(declarations), 44)

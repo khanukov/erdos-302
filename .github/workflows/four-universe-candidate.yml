@@ -85,11 +85,17 @@ jobs:
           lake env bash -euo pipefail -c '
             cd "$RUNNER_TEMP/staged"
             python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" full "$RUNNER_TEMP/logs" 2>&1 | tee "$RUNNER_TEMP/logs/build.log"
-            for f in lean/Erdos302Lower/Defs.lean lean/UpperBridge.lean lean/UpperBank.lean lean/Extended.lean audit/full-reflective/ReciprocalBridge.lean audit/reciprocal-bridge/ActiveSupport.lean audit/reciprocal-bridge/FourExternalCandidate.lean audit/reciprocal-bridge/FourEdgeShardsCandidate.lean audit/reciprocal-bridge/FourEdgeSoundnessCandidate.lean audit/reciprocal-bridge/FourEdgeAssemblyCandidate.lean audit/reciprocal-bridge/FourUniverseCandidate.lean; do
+            for f in lean/Erdos302Lower/Defs.lean lean/UpperBridge.lean lean/UpperBank.lean lean/Extended.lean audit/full-reflective/ReciprocalBridge.lean audit/reciprocal-bridge/ActiveSupport.lean audit/reciprocal-bridge/FourExternalCandidate.lean audit/reciprocal-bridge/FourEdgeUniversesCandidate.lean audit/reciprocal-bridge/FourEdgeShardsCandidate.lean audit/reciprocal-bridge/FourEdgeSoundnessCandidate.lean audit/reciprocal-bridge/FourEdgeAssemblyCandidate.lean audit/reciprocal-bridge/FourUniverseCandidate.lean; do
               case "$f" in lean/Erdos302Lower/Defs.lean) dest=Erdos302Lower/Defs.lean;; *) dest="${f##*/}";; esac
               test ! -e "$dest"
               mkdir -p "$(dirname "$dest")"
               cp "$GITHUB_WORKSPACE/$f" "$dest"
+            done
+            for f in "$GITHUB_WORKSPACE"/audit/reciprocal-bridge/FourEdgeShard_*.lean; do
+              test -f "$f"
+              dest="${f##*/}"
+              test ! -e "$dest"
+              cp "$f" "$dest"
             done
             python3 "$GITHUB_WORKSPACE/audit/reciprocal-bridge/build_four_universe.py" "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" "$RUNNER_TEMP/logs/fresh-oleans" 2>&1 | tee "$RUNNER_TEMP/logs/four-build.log"
             export LEAN_PATH="$RUNNER_TEMP/logs/fresh-oleans:$LEAN_PATH"
@@ -99,7 +105,7 @@ jobs:
             python3 "$GITHUB_WORKSPACE/audit/reciprocal-bridge/test_four_signatures.py" FourSignatureAudit.lean 2>&1 | tee "$RUNNER_TEMP/logs/signature-negative-tests.log"
             printf "import FourUniverseCandidate\n" > FourAudit.lean
             names="from_chain eval_1097 bound_1097 eval_1107 bound_1107 eval_1112 bound_1112 eval_1114 bound_1114 bound_from_edge_retention retain_1097 retain_1107 retain_1112 retain_1114 universe_eq_1097 universe_eq_1107 universe_eq_1112 universe_eq_1114 closed_bound_1097 closed_bound_1107 closed_bound_1112 closed_bound_1114"
-            names="$names $(python3 -c '"'"'import re; from pathlib import Path; print(" ".join(re.findall(r"^theorem (edges_\w+)", Path("FourEdgeShardsCandidate.lean").read_text(), re.M)))'"'"')"
+            names="$names $(python3 -c '"'"'import re; from pathlib import Path; print(" ".join("edges_" + x for x in re.findall(r"^import FourEdgeShard_(\d+_\d+_\d+)$", Path("FourEdgeShardsCandidate.lean").read_text(), re.M)))'"'"')"
             test "$(printf "%s\n" "$names" | tr " " "\n" | sort -u | wc -l)" = 66
             for n in $names; do
               printf "#check FourExternal.%s\n#print axioms FourExternal.%s\n" "$n" "$n" >> FourAudit.lean

@@ -26,7 +26,7 @@ def omitted_endpoints(universe, active):
 
 class EdgeShardsTest(unittest.TestCase):
     def test_generated_artifact_exact(self):
-        self.assertEqual(module.OUT.read_text(), module.render())
+        self.assertEqual({name: (module.BASE / name).read_text() for name in module.render()}, module.render())
 
     def test_every_edge_retained_and_singleton_deletions_rejected(self):
         data = json.loads(module.DATA.read_text())

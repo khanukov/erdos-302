@@ -2,6 +2,7 @@
 """Build the candidate closure against upstream oleans produced in this job."""
 import importlib.util
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -18,6 +19,10 @@ order = mod.closure('FourUniverseCandidate')
 local = {'FourExternalCandidate', 'ActiveSupport', 'ReciprocalBridge', 'Extended',
          'UpperBank', 'UpperBridge', 'Erdos302Lower.Defs', 'FourEdgeShardsCandidate',
          'FourEdgeSoundnessCandidate', 'FourEdgeAssemblyCandidate', 'FourUniverseCandidate'}
+shards = re.findall(r'^import (FourEdgeShard_\d+_\d+_\d+)$', Path('FourEdgeShardsCandidate.lean').read_text(), re.M)
+if len(shards) != 44 or len(set(shards)) != 44:
+    raise RuntimeError('expected exactly 44 distinct shard imports')
+local |= {'FourEdgeUniversesCandidate', *shards}
 if set(order) - upstream != local or not upstream <= set(order):
     raise RuntimeError(f'candidate closure mismatch: local={sorted(set(order)-upstream)}; missing upstream={sorted(upstream-set(order))}')
 if not out.is_dir():
