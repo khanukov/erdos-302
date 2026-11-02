@@ -26,7 +26,7 @@ jobs:
           p="$RUNNER_TEMP/smooth-partition-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest,RenewalUnroll,RenewalUnrollTest,LocalBlockDemand,LocalBlockDemandTests,PrimePowerReindex,PrimePowerReindexTest}.lean "$p/"
+          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest,RenewalUnroll,RenewalUnrollTest,LocalBlockDemand,LocalBlockDemandTests,PrimePowerReindex,PrimePowerReindexTest,PrimePowerSum}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -75,3 +75,5 @@ jobs:
           python3 "$check" "$RUNNER_TEMP/PrimePowerReindex.log" PrimePowerReindex.exists_decomposition PrimePowerReindex.decomposition_unique PrimePowerReindex.bounded_decomposition
           lean PrimePowerReindexTest.lean 2>&1 | tee "$RUNNER_TEMP/PrimePowerReindexTest.log"
           python3 "$check" "$RUNNER_TEMP/PrimePowerReindexTest.log" PrimePowerReindex.bounded_decomposition
+          lean PrimePowerSum.lean 2>&1 | tee "$RUNNER_TEMP/PrimePowerSum.log"
+          python3 "$check" "$RUNNER_TEMP/PrimePowerSum.log" PrimePowerSum.sum_reindex
