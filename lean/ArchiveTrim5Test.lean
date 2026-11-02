@@ -10,4 +10,5 @@ example : Extended.Bound (ArchiveTrim5.support 4) (ArchiveTrim5.nodeDemand 4) :=
 example : ¬ (∀ a ∈ ({2,3,6} : Finset ℕ), ∀ b ∈ ({2,3,6} : Finset ℕ),
     ∀ c ∈ ({2,3,6} : Finset ℕ), UpperBridge.OrderedEdge ({2,3,6} : Finset ℕ) a b c →
       a ∈ ({2,3} : Finset ℕ) ∧ b ∈ ({2,3} : Finset ℕ) ∧ c ∈ ({2,3} : Finset ℕ)) := by
+  unfold UpperBridge.OrderedEdge
   decide

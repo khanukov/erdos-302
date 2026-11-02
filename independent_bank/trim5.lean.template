@@ -16,6 +16,7 @@ theorem all_edges_retained :
     ∀ a ∈ ArchiveCase4.target, ∀ b ∈ ArchiveCase4.target,
       ∀ c ∈ ArchiveCase4.target, OrderedEdge ArchiveCase4.target a b c →
         a ∈ target ∧ b ∈ target ∧ c ∈ target := by
+  unfold OrderedEdge
   decide
 
 theorem target_subset : target ⊆ ArchiveCase4.target := by decide
@@ -25,7 +26,9 @@ def edgeWitnesses : List (ℕ × ℕ × ℕ) :=
   [(2,3,6), (3,4,12), (4,5,20), (4,6,12), (6,8,24), (6,10,15), (8,12,24)]
 
 theorem witnesses_valid : ∀ e ∈ edgeWitnesses,
-    OrderedEdge ArchiveCase4.target e.1 e.2.1 e.2.2 := by decide
+    OrderedEdge ArchiveCase4.target e.1 e.2.1 e.2.2 := by
+  unfold OrderedEdge
+  decide
 
 theorem every_retained_has_witness : ∀ v ∈ target, ∃ e ∈ edgeWitnesses,
     v = e.1 ∨ v = e.2.1 ∨ v = e.2.2 := by decide

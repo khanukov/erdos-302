@@ -37,6 +37,9 @@ theorem entries_error (prior : List ℕ) (ls : List ArchiveLedger.Level) :
         Function.comp_def, ArchiveLedger.step, ArchiveLedger.heightSum,
         height_fold, zero_add, contribution, List.sum_map_mul_right]
       rw [hw]
+      have hm : (l.cells.map ArchiveLedger.Cell.height).sum =
+          (l.cells.map (fun c => c.height)).sum := rfl
+      rw [hm]
       simp only [Nat.mul_comm]
       omega
   simpa [ArchiveLedger.totals] using (aux prior ls (1, 0, 0, 2 ^ (prior.length + 1)) rfl).symm
@@ -53,8 +56,18 @@ theorem indexed_error :
       (fun i => (2 : ℝ) ^ cellExponent i) = (55064831540 : ℝ) := by
   have h : (∑ i : Index, (contribution (entry i) : ℝ)) =
       ((entries.map contribution).sum : ℝ) := by
+    have cast_sum (xs : List ℕ) : ((xs.map (fun n => (n : ℝ))).sum) = (xs.sum : ℝ) := by
+      induction xs with
+      | nil => simp
+      | cons n xs ih => simp only [List.map_cons, List.sum_cons, Nat.cast_add, ih]
     rw [← List.sum_ofFn]
-    simp [List.map_ofFn, entry]
+    change (List.ofFn ((fun e => (contribution e : ℝ)) ∘
+      (fun i : Index => entry i))).sum = _
+    rw [← List.map_ofFn (f := fun i : Index => entry i)
+      (g := fun e => (contribution e : ℝ))]
+    rw [show List.ofFn (fun i : Index => entry i) = entries from List.ofFn_getElem]
+    rw [← List.map_map]
+    exact cast_sum (entries.map contribution)
   simpa [ArchiveSummation.weightedError, cellHeight, cellExponent,
     contribution, Nat.cast_mul, Nat.cast_pow, occurrence_error] using h
 

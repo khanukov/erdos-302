@@ -13,6 +13,8 @@ OLD = b'Finset.sum_inter_add_sum_diff'
 NEW = b'Finset.sum_inter_add_sum_sdiff'
 GROUP = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0027FC.lean.gz').read_bytes())
 GROUP29 = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0029FC.lean.gz').read_bytes())
+GROUP30 = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0030FC.lean.gz').read_bytes())
+THEOREM30 = b'theorem rl_P02_c64_G_valid :'
 THEOREMS29 = (b'theorem rl_P02_c62_G_valid :', b'theorem rl_P02_c63_G_valid :')
 THEOREM = b'theorem rl_P02_c60_G_valid :'
 OPTION = b'set_option maxHeartbeats 1000000 in\n'
@@ -29,6 +31,8 @@ class CompatibilityTests(unittest.TestCase):
         self.group.write_bytes(GROUP)
         self.group29 = self.root / 'Erdos302RLGroup0029FC.lean'
         self.group29.write_bytes(GROUP29)
+        self.group30 = self.root / 'Erdos302RLGroup0030FC.lean'
+        self.group30.write_bytes(GROUP30)
 
     def run_compat(self):
         return subprocess.run([sys.executable, str(SCRIPT), str(self.root)], capture_output=True, text=True)
@@ -84,6 +88,26 @@ class CompatibilityTests(unittest.TestCase):
         result = self.run_compat()
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.group29.read_bytes(), modified)
+        self.assertEqual(self.group.read_bytes(), GROUP)
+        self.assertEqual(self.leaf.read_bytes(), ORIGINAL)
+
+    def test_0030_scoped_option_only(self):
+        self.assertEqual(hashlib.sha256(GROUP30).hexdigest(), 'ffc6b48c60712ca2002dfc91b3fb6d71dc00ccc68618d25593cc231a15d4f734')
+        self.assertEqual(GROUP30.count(THEOREM30), 1)
+        expected = GROUP30.replace(THEOREM30, OPTION + THEOREM30)
+        result = self.run_compat()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.group30.read_bytes(), expected)
+        self.assertIn(hashlib.sha256(expected).hexdigest(), result.stdout)
+        self.assertIn('rl_P02_c64_G_valid', result.stdout)
+
+    def test_modified_0030_rejected_before_any_mutation(self):
+        modified = GROUP30 + b'\n-- unexpected\n'
+        self.group30.write_bytes(modified)
+        result = self.run_compat()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.group30.read_bytes(), modified)
+        self.assertEqual(self.group29.read_bytes(), GROUP29)
         self.assertEqual(self.group.read_bytes(), GROUP)
         self.assertEqual(self.leaf.read_bytes(), ORIGINAL)
 

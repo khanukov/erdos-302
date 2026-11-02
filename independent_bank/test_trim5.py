@@ -24,6 +24,12 @@ class Trim5Tests(unittest.TestCase):
             mutate(bank)
             with self.assertRaises(ValueError): trim5.translate(bank)
 
+    def test_ordered_edge_decidable_in_generated_proofs(self):
+        source = trim5.render(self.bank)
+        for name in ('all_edges_retained', 'witnesses_valid'):
+            proof = source.split('theorem ' + name, 1)[1].split('\ntheorem ', 1)[0]
+            self.assertIn('unfold OrderedEdge', proof)
+
     def test_generated_source_matches(self):
         self.assertEqual(trim5.render(self.bank), trim5.TARGET.read_text())
 

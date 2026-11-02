@@ -26,18 +26,18 @@ theorem primes_nodup : ArchiveLedger.primes.Nodup := by decide
 theorem all_prefixes_nodup (k : ℕ) : (primePrefix k).Nodup := by
   exact primes_nodup.take
 
-/-- The literal 20-level ledger yields 21 possible preceding prefixes.  This is
-independent of cell equality: duplicate cells are kept as list occurrences. -/
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 0 in
+/-- The literal 20-level ledger yields 21 possible preceding prefixes.  This is
+independent of cell equality: duplicate cells are kept as list occurrences. -/
 theorem entry_prefixes :
     ∀ e ∈ entries, e.prior ∈ (List.range 21).map primePrefix := by
   decide +kernel
 
-/-- The actual rational density update agrees with the Finset product for
-all 21 literal prefixes.  No generic equality is supplied as a hypothesis. -/
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 0 in
+/-- The actual rational density update agrees with the Finset product for
+all 21 literal prefixes.  No generic equality is supplied as a hypothesis. -/
 theorem rational_prefixes :
     ∀ k ∈ Finset.range 21, prefixFold k = prefixProduct k := by
   decide +kernel

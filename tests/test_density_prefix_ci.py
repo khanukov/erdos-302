@@ -19,7 +19,7 @@ class DensityCI(unittest.TestCase):
         self.assertNotIn('primes_nodup.take k', text)
         self.assertRegex(text, r'exact primes_nodup\.take\s*\n')
         for name in ('entry_prefixes', 'rational_prefixes'):
-            self.assertRegex(text, r'set_option maxRecDepth 100000 in\s*set_option maxHeartbeats 0 in\s*theorem ' + name)
+            self.assertRegex(text, r'set_option maxRecDepth 100000 in\s*set_option maxHeartbeats 0 in\s*/--(?:(?!-/)[\s\S])*-/\s*theorem ' + name)
         self.assertEqual(text.count('decide +kernel'), 2)
 
     def test_hosted_compile_and_axiom_gate(self):
