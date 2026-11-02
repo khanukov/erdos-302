@@ -43,6 +43,7 @@ theorem checked_node_seed (nodes : ℕ → ArchiveDag.Node) (count j : ℕ)
   have ht : Extended.Bound T ((nodes j).demand - U.card) := by
     intro C hc
     have h := UpperProjection.smooth_projection S Q (nodes j).demand hb C hc
+    change (nodes j).demand ≤ C.card + U.card at h
     omega
   exact restrict_bound (Finset.filter_subset _ _) ht
 
