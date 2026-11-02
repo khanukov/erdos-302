@@ -68,6 +68,8 @@ LedgerTailDemandTests
 LedgerTests
 LiteralFactorMatchingCandidate
 LocalBlockDemandTests
+MixedDag
+MixedDagTests
 LowerNext
 LowerNextLiminf
 Pack1094

@@ -28,7 +28,7 @@ jobs:
           python3 -B -O tests/test_upper_project.py
           python3 -B tests/test_multiplicity_ci.py
           python3 -B -O tests/test_multiplicity_ci.py
-          if grep -nE "\b(sorry|admit|native_decide)\b" lean/BankRowPack*.lean; then exit 1; fi
+          if grep -nE "\b(sorry|admit|native_decide)\b" lean/BankRowPack*.lean lean/MixedDag*.lean; then exit 1; fi
       - name: Install pinned Lean
         shell: bash
         run: |
@@ -48,7 +48,7 @@ jobs:
           cp audit/mathlib-bridge-ci/project/* "$p/"
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
           cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
-          cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090}.lean "$p/"
+          cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090,MixedDag,MixedDagTests}.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
           git -C .lake/packages/mathlib init
@@ -59,7 +59,7 @@ jobs:
           lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
           lake build Erdos302Lower.Defs
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
-          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag BankRowPack BankRowPackTests BankRowPackArchive1090; do
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag BankRowPack BankRowPackTests BankRowPackArchive1090 MixedDag MixedDagTests; do
             echo "Checking $f"
             lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
@@ -68,3 +68,5 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPack.log" BankRowPack.sound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPackTests.log" BankRowPack.sound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPackArchive1090.log" BankRowPackArchive1090.prior BankRowPackArchive1090.checked BankRowPackArchive1090.bound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedDag.log" MixedDag.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedDagTests.log" MixedDag.sound

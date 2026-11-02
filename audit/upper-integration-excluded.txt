@@ -2,6 +2,8 @@
 BankRowPack
 BankRowPackArchive1090
 BankRowPackTests
+MixedDag
+MixedDagTests
 BlockAccountingTests
 BoundaryCertificatesStd
 Bridge
