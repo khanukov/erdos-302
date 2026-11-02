@@ -11,6 +11,8 @@ FreshExistentialLowerCheck
 LiteralFactorMatchingCandidate
 LowerNext
 LowerNextLiminf
+OccurrenceIndex
+OccurrenceIndexTests
 Pack1094Tests
 Pack1094Vertex10
 Pack1094Vertex3
@@ -22,6 +24,10 @@ Pack1094Vertex8
 Pack1094Vertex9
 PackTests
 PilotAudit
+RenewalConcreteOccurrence
+RenewalConcreteOccurrenceTests
+RenewalPointwiseAllocation
+RenewalPointwiseAllocationTests
 SmoothExistenceTest
 SmoothPartitionTest
 SuffixBijectionCandidateTests

@@ -13,4 +13,10 @@ RoughRounding
 RoughDiscrepancy
 SumBridge
 RenewalMultiplicityCandidate
+RenewalPointwiseAllocation
+OccurrenceIndex
+RenewalConcreteOccurrence
+OccurrenceIndexTests
+RenewalPointwiseAllocationTests
 RenewalMultiplicityCandidateTests
+RenewalConcreteOccurrenceTests

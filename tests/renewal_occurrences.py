@@ -37,3 +37,24 @@ def hcover(heights, multiplicities, counts):
     if any(sum(row) != count for row, count in zip(multiplicities, counts)):
         raise ValueError('per-cell matching fails')
     return sum(h * count for h, count in zip(heights, counts))
+
+
+def bounded_occurrences(divisors, n):
+    """Mirror Lean's bounded list, including zero-argument dummy entries.
+
+    Each tuple is (level, exponent choices, argument); positions are identities.
+    """
+    if any(p <= 1 for p in divisors) or n < 0:
+        raise ValueError('divisors must exceed one and n must be nonnegative')
+    def visit(levels, m):
+        if levels == 0:
+            return []
+        j = levels - 1
+        out = []
+        for k in range(m):
+            arg = m // divisors[j] ** k
+            out.extend((level, (k,) + choices, x)
+                       for level, choices, x in visit(j, arg))
+            out.append((j, (k,), arg))
+        return out
+    return visit(len(divisors), n)

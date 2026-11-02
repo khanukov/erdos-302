@@ -1,8 +1,14 @@
 BlockAccounting
 LocalBlockDemand
+OccurrenceIndex
+OccurrenceIndexTests
 Renewal
+RenewalConcreteOccurrence
+RenewalConcreteOccurrenceTests
 RenewalMultiplicityCandidate
 RenewalMultiplicityCandidateTests
+RenewalPointwiseAllocation
+RenewalPointwiseAllocationTests
 RenewalUnroll
 RoughCount
 RoughDiscrepancy

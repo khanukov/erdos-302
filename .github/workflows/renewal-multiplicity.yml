@@ -48,7 +48,7 @@ jobs:
             mkdir -p "$p/lean/$(dirname "$f")"
             cp "lean/$f" "$p/lean/$f"
           done < audit/multiplicity-ci/included.txt
-          printf '%s\n' 'name = "multiplicity_ci"' '[[require]]' 'name = "mathlib"' 'git = "https://github.com/teorth/mathlib4.git"' 'rev = "da1f94df976c7cd38117281c57d6ee3046c8d104"' '[[lean_lib]]' 'name = "MultiplicityCI"' 'srcDir = "lean"' 'roots = ["RenewalMultiplicityCandidateTests"]' > "$p/lakefile.toml"
+          printf '%s\n' 'name = "multiplicity_ci"' '[[require]]' 'name = "mathlib"' 'git = "https://github.com/teorth/mathlib4.git"' 'rev = "da1f94df976c7cd38117281c57d6ee3046c8d104"' '[[lean_lib]]' 'name = "MultiplicityCI"' 'srcDir = "lean"' 'roots = ["RenewalConcreteOccurrenceTests"]' > "$p/lakefile.toml"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -62,3 +62,6 @@ jobs:
           done < "$GITHUB_WORKSPACE/audit/multiplicity-ci/build-order.txt"
           cp "$RUNNER_TEMP/RenewalMultiplicityCandidate.log" "$RUNNER_TEMP/multiplicity-axioms.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/multiplicity-axioms.log" RenewalMultiplicityCandidate.expansion_eq RenewalMultiplicityCandidate.occurrence_cover RenewalMultiplicityCandidate.occurrence_hcover
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/OccurrenceIndex.log" RenewalOccurrenceIndex.index_expansion
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RenewalPointwiseAllocation.log" RenewalPointwiseAllocation.allocation
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/RenewalConcreteOccurrence.log" RenewalConcreteOccurrence.index_expansion RenewalConcreteOccurrence.allocation

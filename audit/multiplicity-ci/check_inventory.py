@@ -42,9 +42,9 @@ def visit(module):
             for dep in match.group(1).split():
                 visit(dep)
     ordered.append(module)
-visit('RenewalMultiplicityCandidateTests')
+visit('RenewalConcreteOccurrenceTests')
 if seen != expected:
     raise SystemExit(f'closure mismatch: missing={sorted(expected-seen)} extra={sorted(seen-expected)}')
 if (root / 'audit/multiplicity-ci/build-order.txt').read_text().splitlines() != ordered:
-    raise SystemExit('build order does not match source closure')
+    raise SystemExit(f'build order does not match source closure: {ordered}')
 print(f'verified {len(seen)} included, {len(excluded)} excluded modules')

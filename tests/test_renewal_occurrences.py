@@ -1,5 +1,5 @@
 import unittest
-from renewal_occurrences import values, occurrences, hcover
+from renewal_occurrences import values, occurrences, bounded_occurrences, hcover
 
 class RenewalOccurrencesTest(unittest.TestCase):
     def test_twenty_levels_and_zero(self):
@@ -12,6 +12,25 @@ class RenewalOccurrencesTest(unittest.TestCase):
     def test_duplicate_cell_contributions_are_not_deduplicated(self):
         self.assertEqual(occurrences([3],3).count((0,1)),1)
         self.assertEqual(sum(1 for j,t in occurrences([3],3) if 1 <= 3//t < 4),2)
+
+    def test_bounded_dummy_zeros_and_duplicate_positive_arguments(self):
+        self.assertEqual(bounded_occurrences([3], 3),
+                         [(0, (0,), 3), (0, (1,), 1), (0, (2,), 0)])
+        result = bounded_occurrences([2, 2], 4)
+        repeated = [x for x in result if x[0] == 0 and x[2] == 2]
+        self.assertEqual(len(repeated), 2)
+        self.assertNotEqual(repeated[0][1], repeated[1][1])
+        self.assertEqual(sum(x == 0 for _, _, x in result), 2)
+        with self.assertRaises(ValueError):
+            bounded_occurrences([1], 2)
+
+    def test_bounded_reference_matches_trimmed_for_zero_correction(self):
+        primes = [2, 3]
+        for n in range(8):
+            d = lambda j, x: (j + 1) * x
+            bounded = sum(d(j, x) for j, _, x in bounded_occurrences(primes, n))
+            trimmed = sum(d(j, n // factor) for j, factor in occurrences(primes, n))
+            self.assertEqual(bounded, trimmed)
 
     def test_empty_and_zero(self):
         self.assertEqual(occurrences([],7),[])
