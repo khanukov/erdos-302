@@ -22,7 +22,8 @@ theorem correction_zero_above (cells : List ArchiveLedger.Cell) (X n : ℕ)
     have hcs : ∀ c ∈ cs, c.b ≤ X+1 := by
       intro d hd; exact hs d (by simp [hd])
     have hnot : ¬ n < c.b := by omega
-    simp [correction, hnot, ih hcs]
+    change (if c.a ≤ n ∧ n < c.b then c.height else 0) + correction cs n = 0
+    simp [hnot, ih hcs]
 
 /-- All demanded assumptions: prime/fresh schedule and its prefix equation;
 base demand at every argument; finite demand certificates through X at every
