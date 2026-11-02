@@ -1,0 +1,140 @@
+name: Candidate actual mixed prefix 256
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Structural and semantic sanity tests
+        run: |
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+          python3 -B -O audit/mathlib-bridge-ci/test_check_axioms.py
+          python3 -B audit/bank-row-pack/check_mixed_inventory.py
+          python3 -B audit/bank-row-pack/test_mixed_inventory.py
+          python3 -B -O audit/bank-row-pack/test_mixed_inventory.py
+          python3 -B -m unittest discover -s independent_bank -p test_prefix256_shards.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_prefix256_shards.py
+          python3 -B independent_bank/prefix256_shards.py --check
+          python3 -B independent_bank/test_next_shards.py
+          python3 -B -O independent_bank/test_next_shards.py
+          python3 -B independent_bank/next_shards.py --check
+          python3 -B -O independent_bank/next_shards.py --check
+          python3 -B independent_bank/test_first_shard.py
+          python3 -B -O independent_bank/test_first_shard.py
+          python3 -B independent_bank/test_mixed_artifact.py
+          python3 -B -O independent_bank/test_mixed_artifact.py
+          python3 -B independent_bank/mixed_artifact.py shard audit/shard-aggregation/FirstRealData.lean
+          python3 -B independent_bank/mixed_lean_producer.py > "$RUNNER_TEMP/MixedPrefixGenerated.lean"
+          python3 -B independent_bank/mixed_artifact.py full "$RUNNER_TEMP/MixedPrefixGenerated.lean"
+          python3 -B independent_bank/first_shard.py --check
+          python3 -B -O independent_bank/first_shard.py --check
+          python3 -B independent_bank/test_mixed_lean_producer.py
+          python3 -B -O independent_bank/test_mixed_lean_producer.py
+          python3 -B -m unittest discover -s independent_bank -p test_mixed_roundtrip.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_mixed_roundtrip.py
+          python3 -B independent_bank/audit_case_trim_prefix.py
+          python3 -B audit/bank-row-pack/test_candidate.py
+          python3 -B -O audit/bank-row-pack/test_candidate.py
+          python3 -B audit/bank-row-pack/archive1090.py --check
+          python3 -B audit/bank-row-pack/test_archive1090.py
+          python3 -B -O audit/bank-row-pack/test_archive1090.py
+          python3 -B tests/test_upper_project.py
+          python3 -B -O tests/test_upper_project.py
+          python3 -B tests/test_multiplicity_ci.py
+          python3 -B -O tests/test_multiplicity_ci.py
+          if grep -nE "\b(sorry|admit|native_decide)\b" lean/BankRowPack*.lean lean/MixedDag*.lean lean/MixedCaseTrimCandidate*.lean; then exit 1; fi
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Prepare project and compile prototype
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/pack-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
+          cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090,MixedDag,MixedDagTests,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate,MixedCaseTrimCandidateTest}.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
+          lake build Erdos302Lower.Defs
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag BankRowPack BankRowPackTests BankRowPackArchive1090 MixedDag MixedDagTests CaseRules CaseDual CaseTree MixedCaseTrimCandidate MixedCaseTrimCandidateTest; do
+            echo "Checking $f"
+            lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Dag.log" ArchiveDag.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/PackRule.log" ArchivePack.sound ArchivePack.scaled_bound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPack.log" BankRowPack.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPackTests.log" BankRowPack.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPackArchive1090.log" BankRowPackArchive1090.prior BankRowPackArchive1090.checked BankRowPackArchive1090.bound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedDag.log" MixedDag.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedDagTests.log" MixedDag.sound
+
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseRules.log" BankCase.residual_sound BankCase.force_sound BankCase.budget_reject BankCase.split_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseDual.log" BankCase.dualCheck_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseTree.log" BankCase.check_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidate.log" MixedCaseTrimCandidate.image_bound MixedCaseTrimCandidate.image_projection MixedCaseTrimCandidate.case_sound MixedCaseTrimCandidate.trim_sound MixedCaseTrimCandidate.extra_sound MixedCaseTrimCandidate.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidateTest.log" MixedCaseTrimCandidateTest.mixed_valid MixedCaseTrimCandidateTest.mixed_bound MixedCaseTrimCandidateTest.mixed_trim_valid MixedCaseTrimCandidateTest.mixed_trim_bound MixedCaseTrimCandidateTest.outside_valid MixedCaseTrimCandidateTest.outside_bound MixedCaseTrimCandidateTest.negative_row MixedCaseTrimCandidateTest.negative_dual_rejected
+
+          # Shard aggregation is an isolated diagnostic, not a 1091-node replay.
+          if grep -nE "\b(sorry|admit|native_decide)\b" "$GITHUB_WORKSPACE"/audit/shard-aggregation/*.lean; then exit 1; fi
+          cp "$GITHUB_WORKSPACE"/audit/shard-aggregation/*.lean "$p/"
+          for f in ShardAggregation ShardAggregationTests MixedPrefixShards; do
+            lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ShardAggregation.log" ShardAggregation.chain_sound ShardAggregation.prefix_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ShardAggregationTests.log" toy_chain
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedPrefixShards.log" MixedPrefixShards.checked MixedPrefixShards.sound
+          export LEAN_NUM_THREADS=1
+          for f in FirstRealData FirstRealShard; do
+            timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/FirstRealShard.log" FirstRealShard.check0 FirstRealShard.check1 FirstRealShard.check2 FirstRealShard.check3 FirstRealShard.check4 FirstRealShard.check5 FirstRealShard.check6 FirstRealShard.check7 FirstRealShard.check8 FirstRealShard.checked FirstRealShard.bound8
+          for f in ActualPrefix32Data ActualPrefix32Checks0 ActualPrefix32Checks1 ActualPrefix32Checks2 ActualPrefix32Sound; do
+            timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          for shard in 0 1 2; do
+            case "$shard" in 0) start=0; end=8;; 1) start=9; end=15;; 2) start=16; end=31;; esac
+            declarations=()
+            for i in $(seq "$start" "$end"); do declarations+=("ActualPrefix32.check$i"); done
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix32Checks$shard.log" "${declarations[@]}"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix32Sound.log" ActualPrefix32.checked ActualPrefix32.sound
+
+          # Candidate only: bounded per-module compilation and explicit axiom gates.
+          for f in ActualPrefix256Data $(printf 'ActualPrefix256Checks%s ' $(seq 0 15)) ActualPrefix256Sound; do
+            timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          for shard in $(seq 0 15); do
+            declarations=()
+            for i in $(seq "$((shard * 16))" "$((shard * 16 + 15))"); do declarations+=("ActualPrefix256.check$i"); done
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix256Checks$shard.log" "${declarations[@]}"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix256Sound.log" ActualPrefix256.checked ActualPrefix256.sound
