@@ -56,7 +56,7 @@ theorem indexed_error :
       (fun i => (2 : ℝ) ^ cellExponent i) = (55064831540 : ℝ) := by
   have h : (∑ i : Index, (contribution (entry i) : ℝ)) =
       ((entries.map contribution).sum : ℝ) := by
-    have cast_sum (xs : List ℕ) : ((xs.map (fun n => (n : ℝ))).sum) = (xs.sum : ℝ) := by
+    have cast_sum (xs : List ℕ) : ((xs.map (fun (n : ℕ) => (n : ℝ))).sum) = (xs.sum : ℝ) := by
       induction xs with
       | nil => simp
       | cons n xs ih => simp only [List.map_cons, List.sum_cons, Nat.cast_add, ih]
@@ -66,8 +66,7 @@ theorem indexed_error :
     rw [← List.map_ofFn (f := fun i : Index => entry i)
       (g := fun e => (contribution e : ℝ))]
     rw [show List.ofFn (fun i : Index => entry i) = entries from List.ofFn_getElem]
-    rw [← List.map_map]
-    exact cast_sum (entries.map contribution)
+    simpa only [List.map_map, Function.comp_def] using cast_sum (entries.map contribution)
   simpa [ArchiveSummation.weightedError, cellHeight, cellExponent,
     contribution, Nat.cast_mul, Nat.cast_pow, occurrence_error] using h
 

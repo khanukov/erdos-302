@@ -10,6 +10,9 @@ def sample : List ArchiveLedger.Level := [⟨3, [c, c]⟩, ⟨2, []⟩, ⟨5, [c
 example : ((entriesFrom [] sample).map contribution).sum = 12 := by decide
 example : (ArchiveLedger.error sample) = 12 := by decide
 example : ((entriesFrom [] sample).map contribution).sum ≠ 10 := by decide
+-- Indexing the literal list retains both copies of the equal cell.
+example : ((List.ofFn (fun i : Fin (entriesFrom [] sample).length =>
+    (entriesFrom [] sample)[i])).map contribution).sum = 12 := by decide
 example : ((entriesFrom [7] ([] : List ArchiveLedger.Level)).map contribution).sum = 0 := by decide
 example : ((entriesFrom [] sample).map contribution).sum =
     (sample.foldl ArchiveLedger.step (1, 0, 0, 2)).2.2.1 := by
