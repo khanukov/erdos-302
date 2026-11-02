@@ -79,6 +79,8 @@ theorem image_projection (U T C : Finset ℕ) (r : ℕ)
   have heq : A ∩ (U ∩ T) = C ∩ (U ∩ T) := by
     ext x
     simp [A]
+    intro _ ht _ hnt
+    exact False.elim (hnt ht)
   simpa only [BankCase.Row, heq] using hp
 
 theorem case_sound (nodes : ℕ → MixedDag.Node Payload) (i : ℕ)
