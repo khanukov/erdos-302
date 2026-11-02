@@ -35,3 +35,15 @@ example (Q A : Finset ℕ)
     hA hf hr hd (by decide) (by decide)
   have hv : (∑ i ∈ cells, height i * count i) = 3 := by decide
   simpa only [hv] using h
+
+-- The real-valued bridge retains the same nonzero overlapping allocation.
+example (Q A : Finset ℕ)
+    (hA : A ⊆ Icc 1 3)
+    (hf : ∀ x y z, SmoothRenewal.Triple x y z → x ∈ A → y ∈ A → z ∈ A → False)
+    (hr : ∀ q ∈ blocks, SmoothPartition.Rough Q q)
+    (hd : ∀ q ∈ blocks, RenewalNext.Demand SmoothRenewal.Edge
+      (SmoothRenewal.vertices Q (3 / q)) 3) :
+    (A.card : ℝ) + ArchiveSummation.weightedCount cells
+      (fun i => (height i : ℝ)) (fun i => (count i : ℝ)) ≤ (3 : ℝ) := by
+  exact occurrence_hcover cells blocks Q A 3 height mult count (fun _ => 3)
+    hA hf hr hd (by decide) (by decide)

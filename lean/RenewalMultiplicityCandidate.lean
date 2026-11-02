@@ -78,8 +78,10 @@ theorem occurrence_hcover {ι : Type*} [DecidableEq ι]
       (fun i => (height i : ℝ)) (fun i => (count i : ℝ)) ≤ N := by
   have h := occurrence_cover cells s Q A N height mult count r
     hA hfree hrough hd matching allocation
+  have h' : ((A.card + ∑ i ∈ cells, height i * count i : ℕ) : ℝ) ≤ (N : ℝ) := by
+    exact_mod_cast h
   unfold ArchiveSummation.weightedCount
-  exact_mod_cast h
+  simpa only [Nat.cast_add, Nat.cast_sum, Nat.cast_mul] using h'
 
 #print axioms expansion_eq
 #print axioms occurrence_cover
