@@ -1,8 +1,10 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 04:02 UTC. The last successful selected integration commit is [`5a878c7e6fa8c9ac9f0f3ac0af049922148a681a`](https://github.com/khanukov/erdos-302/commit/5a878c7e6fa8c9ac9f0f3ac0af049922148a681a). Later candidate builds failed as described below; CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 04:09 UTC. The last successful selected integration commit is [`5a878c7e6fa8c9ac9f0f3ac0af049922148a681a`](https://github.com/khanukov/erdos-302/commit/5a878c7e6fa8c9ac9f0f3ac0af049922148a681a). Later candidate builds failed as described below; CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* On `1fd2ae2`, integration [41386480628](https://github.com/khanukov/erdos-302/actions/runs/41386480628) failed in `BankProfileTests`; the ledger [41386480346](https://github.com/khanukov/erdos-302/actions/runs/41386480346) passed small tests but its full build failed creating a thread; the reflective chain [41386482727](https://github.com/khanukov/erdos-302/actions/runs/41386482727) failed creating a thread at module 20/235. Neither thread failure's underlying cause is established; no final axiom gates were reached. These are not successful proof checks.
 
 * The selected integration run [41384384135](https://github.com/khanukov/erdos-302/actions/runs/41384384135) passed at `5a878c7`, including one-level `PrimePowerRenewal` and eight allowed-axiom reports. The subsequent run [41385790723](https://github.com/khanukov/erdos-302/actions/runs/41385790723) at `78c17b1` failed in new bridge tests; the final integration axiom gate was not reached. These new declarations are not checked.
 * Literal ledger run [41385790170](https://github.com/khanukov/erdos-302/actions/runs/41385790170) at `78c17b1` passed Python checks and small Lean tests but failed to reduce its full `decide` proof. No literal ledger theorem is claimed, and the ledger does not by itself establish archive/profile provenance.
