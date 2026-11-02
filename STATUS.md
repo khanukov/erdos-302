@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 06:50 UTC. The last successful selected integration commit is [`8a5d048a5e188d6f8f5fe33b0263d24f464433a3`](https://github.com/khanukov/erdos-302/commit/8a5d048a5e188d6f8f5fe33b0263d24f464433a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 07:12 UTC. The last successful selected integration commit is [`691a1da3d9eb41953cdf5e506ce889b93bca63b8`](https://github.com/khanukov/erdos-302/commit/691a1da3d9eb41953cdf5e506ce889b93bca63b8). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* Error-match [41404224844](https://github.com/khanukov/erdos-302/actions/runs/41404224844) passed at `d1be210`, including tests and three standard-axiom gates. `ArchiveErrorMatchCandidate.indexed_error` proves the occurrence-indexed analytic weighted error equals 55,064,831,540 without an explicit hypothesis. The existing indexed endpoint still has an `herror` parameter until this result is integrated; it does not establish `hgain`, `hcover` or provenance.
+* Density [41402452520](https://github.com/khanukov/erdos-302/actions/runs/41402452520) passed at `691a1da`, including the seven-theorem axiom gate and tests. HGain [41402449102](https://github.com/khanukov/erdos-302/actions/runs/41402449102) on that SHA failed; its final theorem is not established.
 
 * [41400356436](https://github.com/khanukov/erdos-302/actions/runs/41400356436) passed selected integration at `8a5d048` and 42 allowed-axiom reports. `ArchiveTrim5.bound5` derives the literal node-5 demand 3 without explicit hypotheses from the checked node-4 semantic bound; `ArchiveTrim5.sound` checks the semantic prefix 0–5, not a complete archive DAG replay. Python corroborates archive transcription externally. The endpoint assumptions remain.
 * Error matching [41400359686](https://github.com/khanukov/erdos-302/actions/runs/41400359686) failed: two intermediate declarations printed standard axioms, but `indexed_error` printed `sorryAx` after errors and is not verified.
