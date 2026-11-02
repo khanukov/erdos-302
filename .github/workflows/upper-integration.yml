@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    env:
+      LEAN_NUM_THREADS: "1"
+      LEAN_STACK_SIZE_KB: "262144"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -23,6 +26,9 @@ jobs:
           python3 -B -m unittest discover -s independent_bank -p test_archive_seed.py
           python3 -B -O -m unittest discover -s independent_bank -p test_archive_seed.py
           python3 -B independent_bank/archive_seed.py
+          python3 -B -m unittest discover -s audit/ledger-candidate/tests -v
+          python3 -B -O -m unittest discover -s audit/ledger-candidate/tests -v
+          if grep -nE '\b(sorry|admit|native_decide)\b' audit/ledger-candidate/lean/*.lean; then exit 1; fi
           python3 audit/mathlib-bridge-ci/test_check_axioms.py
       - name: Install pinned Lean
         shell: bash
@@ -45,4 +51,4 @@ jobs:
           lake exe cache get
           lake build UpperIntegration
           lake env lean lean/UpperIntegration.lean 2>&1 | tee "$RUNNER_TEMP/upper-axioms.log"
-          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/upper-axioms.log" UpperBridge.finite_card_bound ArchiveSumBridge.boundaryOK_of_pos ArchiveSumBridge.global_upper_archive SmoothPartition.global_from_prefix_demands PrimePowerReindex.bounded_decomposition PrimePowerSum.sum_reindex PrimePowerRenewal.sum_unroll PrimePowerRenewal.sum_update BankProfile.checked_node_seed BankProfileConcrete.full_prefix PrefixArchiveBridge.cells_le_prefix PrefixArchiveBridge.upper_from_prefix
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/upper-axioms.log" UpperBridge.finite_card_bound ArchiveSumBridge.boundaryOK_of_pos ArchiveSumBridge.global_upper_archive SmoothPartition.global_from_prefix_demands PrimePowerReindex.bounded_decomposition PrimePowerSum.sum_reindex PrimePowerRenewal.sum_unroll PrimePowerRenewal.sum_update BankProfile.checked_node_seed BankProfileConcrete.full_prefix PrefixArchiveBridge.cells_le_prefix PrefixArchiveBridge.upper_from_prefix ArchiveLedger.archive_check ArchiveLedger.archive_valid ArchiveLedger.archive_arithmetic ArchiveLedgerSumBridge.ledger_gain_complement ArchiveLedgerSumBridge.ledger_error_real ArchiveLedgerSumBridge.conditional_literal_endpoint ArchiveLedgerSumBridge.conditional_indexed_endpoint

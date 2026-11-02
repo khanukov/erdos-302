@@ -23,6 +23,8 @@ import PrimePowerRenewalTest
 import BankProfileTests
 import PrefixArchiveBridgeTests
 import ExactComparison
+import ArchiveLedgerSumBridge
+import LedgerTests
 
 /-! Integration is a collection of partial results, not an endpoint theorem. -/
 #print axioms UpperBridge.finite_card_bound
@@ -38,3 +40,11 @@ import ExactComparison
 #print axioms BankProfileConcrete.full_prefix
 #print axioms PrefixArchiveBridge.cells_le_prefix
 #print axioms PrefixArchiveBridge.upper_from_prefix
+
+#print axioms ArchiveLedger.archive_check
+#print axioms ArchiveLedger.archive_valid
+#print axioms ArchiveLedger.archive_arithmetic
+#print axioms ArchiveLedgerSumBridge.ledger_gain_complement
+#print axioms ArchiveLedgerSumBridge.ledger_error_real
+#print axioms ArchiveLedgerSumBridge.conditional_literal_endpoint
+#print axioms ArchiveLedgerSumBridge.conditional_indexed_endpoint

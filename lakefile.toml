@@ -10,14 +10,9 @@ rev = "da1f94df976c7cd38117281c57d6ee3046c8d104"
 [[lean_lib]]
 name = "UpperIntegration"
 srcDir = "lean"
-roots = ["ArchiveCase4", "ArchiveCase4Semantic", "ArchiveSeedNode0", "BankProfile", "BankProfileTests", "BlockAccounting", "CaseDual", "CaseRules", "CaseTree", "CaseTreeTest", "CellEquivalence", "CellEquivalenceTests", "Dag", "DagForce", "DagForceTests", "Erdos302Lower.Defs", "ExactComparison", "Extended", "LocalBlockDemand", "LocalBlockDemandTests", "Pack1094", "Pack1094Shard", "PackRule", "PackShard", "PackShardTests", "PrefixArchiveBridge", "PrefixArchiveBridgeTests", "PrimePowerReindex", "PrimePowerReindexTest", "PrimePowerRenewal", "PrimePowerRenewalTest", "PrimePowerSum", "Projection", "Renewal", "RenewalUnroll", "RenewalUnrollTest", "RoughCoprime", "RoughCoprimeTest", "RoughCount", "RoughCountTest", "RoughDiscrepancy", "RoughDiscrepancyTests", "RoughFinal", "RoughFinalTests", "RoughIEPartial", "RoughIntersection", "RoughIntersectionTests", "RoughRounding", "RoughRoundingTests", "Scaling", "ScalingTest", "SmoothCover", "SmoothCoverTest", "SmoothExistence", "SmoothPartition", "SmoothRenewal", "SumBridge", "SumBridgeTest", "Summation", "UpperBank", "UpperBridge", "UpperIntegration", "UpperRenewal", "Weighted"]
+roots = ["ArchiveLedgerSumBridge", "ArchiveCase4", "ArchiveCase4Semantic", "ArchiveSeedNode0", "BankProfile", "BankProfileTests", "BlockAccounting", "CaseDual", "CaseRules", "CaseTree", "CaseTreeTest", "CellEquivalence", "CellEquivalenceTests", "Dag", "DagForce", "DagForceTests", "Erdos302Lower.Defs", "ExactComparison", "Extended", "LocalBlockDemand", "LocalBlockDemandTests", "Pack1094", "Pack1094Shard", "PackRule", "PackShard", "PackShardTests", "PrefixArchiveBridge", "PrefixArchiveBridgeTests", "PrimePowerReindex", "PrimePowerReindexTest", "PrimePowerRenewal", "PrimePowerRenewalTest", "PrimePowerSum", "Projection", "Renewal", "RenewalUnroll", "RenewalUnrollTest", "RoughCoprime", "RoughCoprimeTest", "RoughCount", "RoughCountTest", "RoughDiscrepancy", "RoughDiscrepancyTests", "RoughFinal", "RoughFinalTests", "RoughIEPartial", "RoughIntersection", "RoughIntersectionTests", "RoughRounding", "RoughRoundingTests", "Scaling", "ScalingTest", "SmoothCover", "SmoothCoverTest", "SmoothExistence", "SmoothPartition", "SmoothRenewal", "SumBridge", "SumBridgeTest", "Summation", "UpperBank", "UpperBridge", "UpperIntegration", "UpperRenewal", "Weighted"]
 
 [[lean_lib]]
 name = "ArchiveLedgerPilot"
 srcDir = "audit/ledger-candidate/lean"
 roots = ["LedgerChecker", "LedgerTests", "ArchiveLedger"]
-
-[[lean_lib]]
-name = "ArchiveLedgerSumBridge"
-srcDir = "lean"
-roots = ["ArchiveLedgerSumBridge"]

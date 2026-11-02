@@ -21,20 +21,67 @@ class UpperProjectTests(unittest.TestCase):
         import re
         import tomllib
         config = tomllib.loads((ROOT / 'lakefile.toml').read_text())
-        roots = set(config['lean_lib'][0]['roots'])
+        libs = {lib['name']: lib for lib in config['lean_lib']}
+        self.assertEqual(set(libs), {'UpperIntegration', 'ArchiveLedgerPilot'})
+        self.assertEqual(config['defaultTargets'], ['UpperIntegration'])
+        self.assertEqual(libs['UpperIntegration']['srcDir'], 'lean')
+        self.assertEqual(libs['ArchiveLedgerPilot']['srcDir'], 'audit/ledger-candidate/lean')
+        sources = {}
+        for lib in libs.values():
+            directory = ROOT / lib['srcDir']
+            for path in directory.rglob('*.lean'):
+                name = '.'.join(path.relative_to(directory).with_suffix('').parts)
+                self.assertNotIn(name, sources, f'duplicate module: {name}')
+                sources[name] = path
         seen = set()
         def visit(name):
-            if name in seen or name.startswith(('Mathlib', 'Lean', 'Std')):
+            if name in seen or name.split('.')[0] in {'Mathlib', 'Lean', 'Std'}:
                 return
-            path = ROOT / 'lean' / (name.replace('.', '/') + '.lean')
-            self.assertTrue(path.is_file(), name)
+            self.assertIn(name, sources, f'unresolved local import: {name}')
             seen.add(name)
-            for dep in re.findall(r'^import\s+([\w.]+)', path.read_text(), re.M):
-                visit(dep)
+            for line in re.findall(r'^import\s+([^\n]+)', sources[name].read_text(), re.M):
+                for dep in line.split():
+                    visit(dep)
         visit('UpperIntegration')
-        self.assertEqual(roots, seen)
-        self.assertIn('PrimePowerSum', seen)
+        for lib in libs.values():
+            roots = lib['roots']
+            self.assertEqual(len(roots), len(set(roots)), 'duplicate root')
+            owned = {name for name, path in sources.items()
+                     if path.is_relative_to(ROOT / lib['srcDir'])}
+            expected = seen & owned
+            self.assertEqual(set(roots), expected, lib['name'])
+            # Lake roots are namespace prefixes, not just individual modules.
+            expanded = {name for name in owned for root in roots
+                        if name == root or name.startswith(root + '.')}
+            self.assertEqual(expanded, expected, 'implicit extra root descendants')
+        exclusions = (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines()
+        exclusions = [line for line in exclusions if line and not line.startswith('#')]
+        self.assertEqual(len(exclusions), len(set(exclusions)))
+        self.assertEqual(set(exclusions), set(sources) - seen, 'unrecorded source exclusion')
+        self.assertIn('ArchiveLedgerSumBridge', seen)
+        self.assertIn('ArchiveLedger', seen)
+        self.assertIn('LedgerChecker', seen)
+        self.assertIn('LedgerTests', seen)
+        self.assertNotIn('PilotAudit', seen)  # Reports are integrated directly.
         self.assertNotIn('Pack1094Tests', seen)  # monolithic proof previously exited 143
+
+    def test_integrated_axiom_audit_and_ledger_gates(self):
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        commands = [line.strip() for line in workflow.splitlines()
+                    if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py ')]
+        self.assertEqual(len(commands), 1)
+        audit_args = commands[0].split()
+        for name in ['ArchiveLedger.archive_check', 'ArchiveLedger.archive_valid',
+                     'ArchiveLedger.archive_arithmetic',
+                     'ArchiveLedgerSumBridge.ledger_gain_complement',
+                     'ArchiveLedgerSumBridge.ledger_error_real',
+                     'ArchiveLedgerSumBridge.conditional_literal_endpoint',
+                     'ArchiveLedgerSumBridge.conditional_indexed_endpoint']:
+            self.assertIn('#print axioms ' + name, source)
+            self.assertIn(name, audit_args)
+        self.assertIn('unittest discover -s audit/ledger-candidate/tests', workflow)
+        self.assertIn('python3 -B -O -m unittest discover -s audit/ledger-candidate/tests', workflow)
 
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
