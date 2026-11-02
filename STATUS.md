@@ -1,8 +1,10 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 07:39 UTC. The last successful selected integration commit is [`67cc2a9ac98ad08775478864efe50fedd67a11a3`](https://github.com/khanukov/erdos-302/commit/67cc2a9ac98ad08775478864efe50fedd67a11a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 07:47 UTC. The last successful selected integration commit is [`67cc2a9ac98ad08775478864efe50fedd67a11a3`](https://github.com/khanukov/erdos-302/commit/67cc2a9ac98ad08775478864efe50fedd67a11a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* Hosted [41407924497](https://github.com/khanukov/erdos-302/actions/runs/41407924497) at `354340b` passed `EndpointPremisesCandidate.endpoint_of_cover`, its tests and ten allowed-axiom reports. For arbitrary `N : ℕ` and `f : ℝ`, its **sole explicit hypothesis** is the literal occurrence-weighted `hcover`; from it, Lean derives `f ≤ targetC * N + 55064831540`. Positivity, prime, interval-order, density, budget, `hgain` and `herror` are discharged for the generated literals. This does not prove `hcover`, identify `f` with the extremal function, or establish archive-to-literal provenance; it is not an unconditional bound. Mathlib cache was reused.
 
 * [41406858237](https://github.com/khanukov/erdos-302/actions/runs/41406858237) passed the occurrence-indexed `HGainCandidate.indexed_hgain` at `cc5b067` with the standard axioms and tests. It establishes the exact gain matching for the literal indexed ledger without an explicit hypothesis, preserving repeated occurrences. At this snapshot it remains a separate checked workflow; removal of `hgain` from the unified endpoint requires an additional checked specialization. This is not `hcover` or archive provenance.
 
