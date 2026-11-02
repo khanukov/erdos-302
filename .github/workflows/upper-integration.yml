@@ -42,4 +42,4 @@ jobs:
           lake exe cache get
           lake build UpperIntegration
           lake env lean lean/UpperIntegration.lean 2>&1 | tee "$RUNNER_TEMP/upper-axioms.log"
-          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/upper-axioms.log" UpperBridge.finite_card_bound ArchiveSumBridge.boundaryOK_of_pos ArchiveSumBridge.global_upper_archive SmoothPartition.global_from_prefix_demands PrimePowerReindex.bounded_decomposition PrimePowerSum.sum_reindex PrimePowerRenewal.sum_unroll PrimePowerRenewal.sum_update
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/upper-axioms.log" UpperBridge.finite_card_bound ArchiveSumBridge.boundaryOK_of_pos ArchiveSumBridge.global_upper_archive SmoothPartition.global_from_prefix_demands PrimePowerReindex.bounded_decomposition PrimePowerSum.sum_reindex PrimePowerRenewal.sum_unroll PrimePowerRenewal.sum_update BankProfile.checked_node_seed PrefixArchiveBridge.cells_le_prefix PrefixArchiveBridge.upper_from_prefix

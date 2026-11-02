@@ -20,6 +20,8 @@ import LocalBlockDemandTests
 import PrimePowerReindexTest
 import PrimePowerSum
 import PrimePowerRenewalTest
+import BankProfileTests
+import PrefixArchiveBridgeTests
 import ExactComparison
 
 /-! Integration is a collection of partial results, not an endpoint theorem. -/
@@ -31,3 +33,7 @@ import ExactComparison
 #print axioms PrimePowerSum.sum_reindex
 #print axioms PrimePowerRenewal.sum_unroll
 #print axioms PrimePowerRenewal.sum_update
+
+#print axioms BankProfile.checked_node_seed
+#print axioms PrefixArchiveBridge.cells_le_prefix
+#print axioms PrefixArchiveBridge.upper_from_prefix
