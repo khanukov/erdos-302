@@ -55,7 +55,7 @@ theorem indexed_hgain (N : ℕ) :
     (N : ℝ) * ((((entry i).prior.foldl ArchiveGainPrefix.update 1 : ℚ) : ℝ) *
       ((cellHeight i) * (1 / (cellA i : ℝ) - 1 / (cellB i : ℝ))))
   rw [show (((entry i).prior.foldl ArchiveGainPrefix.update 1 : ℚ) : ℝ) =
-    ArchiveSumBridge.density (cellPrimes i) by simpa [ArchiveGainPrefix.update, DensityPrefixCandidate.update] using hd]
+    ArchiveSumBridge.density (cellPrimes i) by exact hd]
   ring
 
 #print axioms entries_match
