@@ -10,6 +10,11 @@ class Case4StagedTests(unittest.TestCase):
         bank = archive_prefix.load_bank()
         self.assertEqual(case4_staged.render(bank), case4_staged.TARGET.read_text())
 
+    def test_rows_eliminate_empty_list_before_substitution(self):
+        proof = case4_staged.render(archive_prefix.load_bank())
+        self.assertIn('List.mem_cons, List.not_mem_nil, or_false', proof)
+        self.assertIn('rcases hc with rfl | rfl | rfl', proof)
+
     def test_mutations_rejected(self):
         bank = archive_prefix.load_bank()
         for change in ('source', 'image', 'case', 'tree'):

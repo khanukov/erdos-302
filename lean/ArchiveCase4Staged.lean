@@ -43,7 +43,7 @@ theorem bound4 : Extended.Bound ArchiveCase4.target ArchiveCase4.demand := by
   have hC : UpperBridge.OrderedCover ArchiveCase4.target C := Extended.cover_inter hS
   have rows : ∀ c ∈ ArchiveCase4.rows, BankCase.Row c.1 c.2 C := by
     intro c hc
-    simp only [ArchiveCase4.rows, List.mem_cons, List.mem_singleton] at hc
+    simp only [ArchiveCase4.rows, List.mem_cons, List.not_mem_nil, or_false] at hc
     rcases hc with rfl | rfl | rfl
     · have h := image0 (C ∩ ({4, 5, 20} : Finset ℕ))
           (Extended.cover_inter (Extended.cover_mono (by decide) hC))

@@ -1,6 +1,14 @@
 import DensityPrefixCandidate
 open DensityPrefixCandidate
 
+-- Exercise the implicit take length, including beyond the literal list length.
+example (k : ℕ) : (primePrefix k).Nodup := all_prefixes_nodup k
+example : (primePrefix 100).Nodup := all_prefixes_nodup 100
+
+-- Both ends of the finite rational-prefix range are covered by the theorem.
+example : prefixFold 0 = prefixProduct 0 := rational_prefixes 0 (by decide)
+example : prefixFold 20 = prefixProduct 20 := rational_prefixes 20 (by decide)
+
 example : primePrefix 0 = [] := by decide
 example : primePrefix 2 = [3, 2] := by decide
 example : prefixFold 2 = (1 : ℚ) / 3 := by decide

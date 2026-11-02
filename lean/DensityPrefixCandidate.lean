@@ -24,19 +24,23 @@ def prefixFold (k : ℕ) : ℚ := (primePrefix k).foldl update 1
 theorem primes_nodup : ArchiveLedger.primes.Nodup := by decide
 
 theorem all_prefixes_nodup (k : ℕ) : (primePrefix k).Nodup := by
-  exact primes_nodup.take k
+  exact primes_nodup.take
 
 /-- The literal 20-level ledger yields 21 possible preceding prefixes.  This is
 independent of cell equality: duplicate cells are kept as list occurrences. -/
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 0 in
 theorem entry_prefixes :
     ∀ e ∈ entries, e.prior ∈ (List.range 21).map primePrefix := by
-  decide
+  decide +kernel
 
 /-- The actual rational density update agrees with the Finset product for
 all 21 literal prefixes.  No generic equality is supplied as a hypothesis. -/
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 0 in
 theorem rational_prefixes :
     ∀ k ∈ Finset.range 21, prefixFold k = prefixProduct k := by
-  decide
+  decide +kernel
 
 /-- Cast the actual rational product into the real-valued analytic density. -/
 theorem real_prefix (k : ℕ) (hk : k ∈ Finset.range 21) :

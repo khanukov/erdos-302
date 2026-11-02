@@ -20,7 +20,10 @@ example (d a : ℚ) :
 -- Duplicates are occurrences, and the empty level still changes the prefix.
 example : GainPrefix.entriesFrom [] (sample.map convert) =
     [([], c), ([], c), ([3, 2], c)] := by decide
-example : (ArchiveLedger.totals sample).2.1 = (2 : ℚ) / 3 := by decide
+-- Two cells contribute 1/2; after primes 3 and 2 the last adds 1/12.
+example : (ArchiveLedger.totals sample).2.1 = (7 : ℚ) / 12 := by
+  norm_num [ArchiveLedger.totals, sample, ArchiveLedger.step,
+    ArchiveLedger.levelMass, ArchiveLedger.cellMass, c]
 example : (ArchiveLedger.totals sample).2.1 =
     ((GainPrefix.entriesFrom [] (sample.map convert)).map
       (fun e => weight (e.1.foldl update 1) e.2)).foldl (· + ·) 0 := by

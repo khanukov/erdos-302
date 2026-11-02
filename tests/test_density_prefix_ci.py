@@ -14,6 +14,14 @@ class DensityCI(unittest.TestCase):
             text = (ROOT / 'lean' / (name + '.lean')).read_text()
             self.assertNotRegex(text, r'\b(sorry|admit|native_decide|axiom|unsafe)\b')
 
+    def test_finite_checks_use_kernel_reduction_with_bounded_scope(self):
+        text = (ROOT / 'lean/DensityPrefixCandidate.lean').read_text()
+        self.assertNotIn('primes_nodup.take k', text)
+        self.assertRegex(text, r'exact primes_nodup\.take\s*\n')
+        for name in ('entry_prefixes', 'rational_prefixes'):
+            self.assertRegex(text, r'set_option maxRecDepth 100000 in\s*set_option maxHeartbeats 0 in\s*theorem ' + name)
+        self.assertEqual(text.count('decide +kernel'), 2)
+
     def test_hosted_compile_and_axiom_gate(self):
         workflow = (ROOT / '.github/workflows/density-prefix.yml').read_text()
         self.assertIn('workflow_dispatch:', workflow)
