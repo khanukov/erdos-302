@@ -22,4 +22,4 @@ lake env lean lean/UpperIntegration.lean
 python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/upper-axioms.log" UpperBridge.finite_card_bound ArchiveSumBridge.boundaryOK_of_pos ArchiveSumBridge.global_upper_archive SmoothPartition.global_from_prefix_demands PrimePowerReindex.bounded_decomposition
 ```
 
-The workflow captures the penultimate command with `tee` into the named log and uses `pipefail`. CI requires network access to fetch pinned dependencies and cache. No Lean execution or remote writes were performed when preparing this candidate; the new project has **not yet been CI-verified**. A failing integrated build must be debugged rather than interpreted as proof.
+The workflow captures the penultimate command with `tee` into the named log and uses `pipefail`. CI requires network access to fetch pinned dependencies and cache. The initial integration build passed for commit `665c9ab576a10e33495ac7ef3e15a7014da71cca` in run `41374590165`; see [STATUS.md](STATUS.md) for the dated evidence and limitations. A result for that commit does not establish a result for later changes.
