@@ -35,5 +35,6 @@ import ExactComparison
 #print axioms PrimePowerRenewal.sum_update
 
 #print axioms BankProfile.checked_node_seed
+#print axioms BankProfileConcrete.full_prefix
 #print axioms PrefixArchiveBridge.cells_le_prefix
 #print axioms PrefixArchiveBridge.upper_from_prefix

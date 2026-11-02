@@ -1,4 +1,4 @@
-import BankProfile
+import ArchiveSeedNode0
 
 open Finset UpperBridge
 
@@ -27,10 +27,8 @@ namespace BankProfileConcrete
 -- The filter predicates in theorem statements need decidability while elaborating.
 open scoped Classical
 
--- A complete one-node DAG: no semantic bound is assumed.
-def nodes : ℕ → ArchiveDag.Node
-  | 0 => ⟨{2, 3, 6}, 1, .edge 2 3 6⟩
-  | _ => ⟨∅, 0, .small⟩
+-- Literal node zero from the pinned bank; no semantic bound is assumed.
+abbrev nodes := ArchiveSeedNode0.nodes
 
 theorem valid : ∀ i < 1, ArchiveDag.Check nodes i := by
   intro i hi

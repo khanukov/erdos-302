@@ -36,12 +36,17 @@ This is not a proof of a numerical profile or of the final bound. In particular:
 
 ## Concrete test candidate
 
-`BankProfileTests` instantiates the full `checked_node_seed` theorem with a
-one-node edge certificate, including a proof of every required `Check`. For
-Q = {2,3}, it claims the nonzero bound 1 at threshold 6, and checks thresholds
+`BankProfileTests` instantiates the full `checked_node_seed` theorem with
+node 0 from the pinned source bank, including a proof candidate for every required
+`Check`. `independent_bank/archive_seed.py` checks the compressed bank SHA-256,
+rejects duplicate JSON keys, and reproduces `lean/ArchiveSeedNode0.lean` from
+that node's exact `small` support and demand. This is a Python source-byte
+correspondence check, not a Lean proof of parsing or a verification of the full
+bank. The resulting no-hypothesis Lean theorem candidate is
+`BankProfileConcrete.full_prefix : Extended.Bound ({2, 3, 6} : Finset ℕ) 1`.
+For Q = {2,3}, it claims the nonzero bound 1 at threshold 6, and checks thresholds
 5 and 0. For Q = {3}, it checks the even non-smooth projection loss and
-natural-subtraction saturation. These are synthetic certificate fixtures, not
-a verified transcription of archive bytes. The test theorem axiom reports are
+natural-subtraction saturation. The test theorem axiom report is
 included in the integration gate. This candidate has not been Lean-checked:
 remote writes and local Lean execution are prohibited. The generic and global
 open obligations listed above remain open.
