@@ -1,0 +1,62 @@
+name: Error occurrence match candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  density:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      LEAN_NUM_THREADS: "1"
+      LEAN_STACK_SIZE_KB: "262144"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Structural and independent rational tests
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s audit/ledger-candidate/tests -v
+          python3 -B -O -m unittest discover -s audit/ledger-candidate/tests -v
+          python3 audit/mathlib-bridge-ci/test_check_axioms.py
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Mathlib and caches
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          timeout 30m lake exe cache get
+      - name: Build density candidate and inspect axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 24000000
+          timeout 120m lake build ArchiveLedgerSumBridge 2>&1 | tee "$RUNNER_TEMP/error-match-build.log"
+          export LEAN_PATH="$PWD/lean:$(lake env printenv LEAN_PATH)"
+          timeout 30m lake env lean -o lean/ArchiveErrorMatchCandidate.olean lean/ArchiveErrorMatchCandidate.lean 2>&1 | tee "$RUNNER_TEMP/error-match-axioms.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/error-match-axioms.log" ArchiveErrorMatchCandidate.entries_error ArchiveErrorMatchCandidate.occurrence_error ArchiveErrorMatchCandidate.indexed_error
+          timeout 10m lake env lean lean/ArchiveErrorMatchCandidateTests.lean 2>&1 | tee "$RUNNER_TEMP/error-match-tests.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/error-match-tests.log" ArchiveErrorMatchCandidate.entries_error ArchiveErrorMatchCandidate.occurrence_error ArchiveErrorMatchCandidate.indexed_error
+      - name: Retain diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: error-match-logs
+          path: |
+            ${{ runner.temp }}/error-match-build.log
+            ${{ runner.temp }}/error-match-axioms.log
+            ${{ runner.temp }}/error-match-tests.log
+          if-no-files-found: warn
