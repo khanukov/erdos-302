@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 07:12 UTC. The last successful selected integration commit is [`691a1da3d9eb41953cdf5e506ce889b93bca63b8`](https://github.com/khanukov/erdos-302/commit/691a1da3d9eb41953cdf5e506ce889b93bca63b8). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 07:32 UTC. The last successful selected integration commit is [`67cc2a9ac98ad08775478864efe50fedd67a11a3`](https://github.com/khanukov/erdos-302/commit/67cc2a9ac98ad08775478864efe50fedd67a11a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41405242183](https://github.com/khanukov/erdos-302/actions/runs/41405242183) passed selected integration at `67cc2a9`, including semantic node 6 and `ArchiveLedgerSumBridge.indexed_endpoint_no_error`, with 49 allowed-axiom reports. The latter removes `herror` using the verified occurrence-indexed error sum; it still assumes `hgain`, `hcover`, and its other stated interval, prime, density and budget conditions.
+* Separate [41405367129](https://github.com/khanukov/erdos-302/actions/runs/41405367129) at `e0c685d` checked `ArchiveCase7Staged.bound7` and its row bounds with standard axioms. It is a concrete node-7 semantic bound, not a complete bank replay. Transcription from archive bytes is checked by Python, not Lean.
 
 * Error-match [41404224844](https://github.com/khanukov/erdos-302/actions/runs/41404224844) passed at `d1be210`, including tests and three standard-axiom gates. `ArchiveErrorMatchCandidate.indexed_error` proves the occurrence-indexed analytic weighted error equals 55,064,831,540 without an explicit hypothesis. The existing indexed endpoint still has an `herror` parameter until this result is integrated; it does not establish `hgain`, `hcover` or provenance.
 * Density [41402452520](https://github.com/khanukov/erdos-302/actions/runs/41402452520) passed at `691a1da`, including the seven-theorem axiom gate and tests. HGain [41402449102](https://github.com/khanukov/erdos-302/actions/runs/41402449102) on that SHA failed; its final theorem is not established.
