@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 06:34 UTC. The last successful selected integration commit is [`f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef`](https://github.com/khanukov/erdos-302/commit/f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef). Later candidate integrations failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 06:50 UTC. The last successful selected integration commit is [`8a5d048a5e188d6f8f5fe33b0263d24f464433a3`](https://github.com/khanukov/erdos-302/commit/8a5d048a5e188d6f8f5fe33b0263d24f464433a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41400356436](https://github.com/khanukov/erdos-302/actions/runs/41400356436) passed selected integration at `8a5d048` and 42 allowed-axiom reports. `ArchiveTrim5.bound5` derives the literal node-5 demand 3 without explicit hypotheses from the checked node-4 semantic bound; `ArchiveTrim5.sound` checks the semantic prefix 0–5, not a complete archive DAG replay. Python corroborates archive transcription externally. The endpoint assumptions remain.
+* Error matching [41400359686](https://github.com/khanukov/erdos-302/actions/runs/41400359686) failed: two intermediate declarations printed standard axioms, but `indexed_error` printed `sorryAx` after errors and is not verified.
 
 * Density workflow [41400356419](https://github.com/khanukov/erdos-302/actions/runs/41400356419) at `8a5d048` **failed overall on three test examples**, but `DensityPrefixCandidate.lean` compiled first and its seven-theorem axiom gate passed. In particular `indexed_density_direct` establishes, for each indexed generated ledger occurrence, equality between its rational prefix fold cast to real and analytic finite-set density. This is not the aggregate `hgain` identity or archive provenance.
 
