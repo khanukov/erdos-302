@@ -25,6 +25,7 @@ import PrefixArchiveBridgeTests
 import ExactComparison
 import ArchiveLedgerSumBridge
 import LedgerTests
+import GainPrefixTest
 
 /-! Integration is a collection of partial results, not an endpoint theorem. -/
 #print axioms UpperBridge.finite_card_bound
@@ -48,3 +49,9 @@ import LedgerTests
 #print axioms ArchiveLedgerSumBridge.ledger_error_real
 #print axioms ArchiveLedgerSumBridge.conditional_literal_endpoint
 #print axioms ArchiveLedgerSumBridge.conditional_indexed_endpoint
+
+#print axioms GainFold.fold_gain_occurrences
+#print axioms GainFold.fold_gain_fin
+#print axioms GainFold.fold_project
+#print axioms GainPrefix.occurrences_eq_prefix_entries
+#print axioms GainPrefix.fold_eq_prefix_entries

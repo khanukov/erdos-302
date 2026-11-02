@@ -58,6 +58,7 @@ class UpperProjectTests(unittest.TestCase):
         exclusions = [line for line in exclusions if line and not line.startswith('#')]
         self.assertEqual(len(exclusions), len(set(exclusions)))
         self.assertEqual(set(exclusions), set(sources) - seen, 'unrecorded source exclusion')
+        self.assertTrue({'GainFold', 'GainPrefix', 'GainPrefixTest'} <= seen)
         self.assertIn('ArchiveLedgerSumBridge', seen)
         self.assertIn('ArchiveLedger', seen)
         self.assertIn('LedgerChecker', seen)
@@ -72,7 +73,10 @@ class UpperProjectTests(unittest.TestCase):
                     if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py ')]
         self.assertEqual(len(commands), 1)
         audit_args = commands[0].split()
-        for name in ['ArchiveLedger.archive_check', 'ArchiveLedger.archive_valid',
+        for name in ['GainFold.fold_gain_occurrences', 'GainFold.fold_gain_fin',
+                     'GainFold.fold_project', 'GainPrefix.occurrences_eq_prefix_entries',
+                     'GainPrefix.fold_eq_prefix_entries',
+                     'ArchiveLedger.archive_check', 'ArchiveLedger.archive_valid',
                      'ArchiveLedger.archive_arithmetic',
                      'ArchiveLedgerSumBridge.ledger_gain_complement',
                      'ArchiveLedgerSumBridge.ledger_error_real',
