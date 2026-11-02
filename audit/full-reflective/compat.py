@@ -10,6 +10,9 @@ OLD = b'Finset.sum_inter_add_sum_diff'
 NEW = b'Finset.sum_inter_add_sum_sdiff'
 GROUP_ORIGINAL_SHA256 = '47d616df958b2f0178edc836551093e3eaef29e152fdbfe89b83c9acf2e497ff'
 GROUP_TRANSFORMED_SHA256 = 'd8c7f614ccbad624a0227e957b5b891a75eb2a6206499455805cd21ee4a636e2'
+GROUP29_ORIGINAL_SHA256 = '901e79e6fbe312193938982f08d50b08f1c930167ab585b33617c5ee0df56b5e'
+GROUP29_TRANSFORMED_SHA256 = 'ffca2ef8c4ca888c3da150b6ff1643a4dedaafc672170a582960ad6d6470cce8'
+THEOREMS29 = (b'theorem rl_P02_c62_G_valid :', b'theorem rl_P02_c63_G_valid :')
 THEOREM = b'theorem rl_P02_c60_G_valid :'
 OPTION = b'set_option maxHeartbeats 1000000 in\n'
 
@@ -33,14 +36,27 @@ def main(root):
     group_transformed = group_original.replace(THEOREM, OPTION + THEOREM)
     if digest(group_transformed) != GROUP_TRANSFORMED_SHA256:
         raise ValueError('unexpected transformed group bytes')
+    group29 = root / 'Erdos302RLGroup0029FC.lean'
+    group29_original = group29.read_bytes()
+    if digest(group29_original) != GROUP29_ORIGINAL_SHA256 or any(group29_original.count(t) != 1 for t in THEOREMS29):
+        raise ValueError('unexpected upstream group 0029 bytes or occurrence count')
+    group29_transformed = group29_original
+    for theorem in THEOREMS29:
+        group29_transformed = group29_transformed.replace(theorem, OPTION + theorem)
+    if digest(group29_transformed) != GROUP29_TRANSFORMED_SHA256:
+        raise ValueError('unexpected transformed group 0029 bytes')
     leaf.write_bytes(transformed)
     group.write_bytes(group_transformed)
+    group29.write_bytes(group29_transformed)
     if digest(leaf.read_bytes()) != TRANSFORMED_SHA256:
         raise ValueError('staged leaf write verification failed')
     if digest(group.read_bytes()) != GROUP_TRANSFORMED_SHA256:
         raise ValueError('staged group write verification failed')
+    if digest(group29.read_bytes()) != GROUP29_TRANSFORMED_SHA256:
+        raise ValueError('staged group 0029 write verification failed')
     print(f'Erdos302ReflectiveLeafFC.lean original_sha256={ORIGINAL_SHA256} transformed_sha256={TRANSFORMED_SHA256} replacements=4')
     print(f'Erdos302RLGroup0027FC.lean original_sha256={GROUP_ORIGINAL_SHA256} transformed_sha256={GROUP_TRANSFORMED_SHA256} theorem=rl_P02_c60_G_valid maxHeartbeats=1000000')
+    print(f'Erdos302RLGroup0029FC.lean original_sha256={GROUP29_ORIGINAL_SHA256} transformed_sha256={GROUP29_TRANSFORMED_SHA256} theorems=rl_P02_c62_G_valid,rl_P02_c63_G_valid maxHeartbeats=1000000 occurrences=2')
 
 
 if __name__ == '__main__':
