@@ -8,6 +8,8 @@ DagTests
 FactorCountAxioms
 FactorCountCandidateTests
 FreshExistentialLowerCheck
+LedgerTailDemand
+LedgerTailDemandTests
 LiteralFactorMatchingCandidate
 LowerNext
 LowerNextLiminf
