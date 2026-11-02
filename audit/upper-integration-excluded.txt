@@ -5,6 +5,8 @@ Bridge
 BridgeScaled
 CaseRulesTest
 DagTests
+DemandRenewalChain
+DemandRenewalChainTests
 FactorCountAxioms
 FactorCountCandidate
 FactorCountCandidateTests

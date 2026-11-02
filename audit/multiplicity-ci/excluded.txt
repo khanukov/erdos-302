@@ -41,6 +41,8 @@ Dag
 DagForce
 DagForceTests
 DagTests
+DemandRenewalChain
+DemandRenewalChainTests
 DensityPrefixCandidate
 DensityPrefixCandidateTests
 EndpointPremisesCandidate

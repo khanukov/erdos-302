@@ -26,7 +26,7 @@ jobs:
           p="$RUNNER_TEMP/smooth-partition-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest,RenewalUnroll,RenewalUnrollTest,LocalBlockDemand,LocalBlockDemandTests,PrimePowerReindex,PrimePowerReindexTest,PrimePowerSum,PrimePowerRenewal,PrimePowerRenewalTest}.lean "$p/"
+          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,DemandRenewalChain,DemandRenewalChainTests,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest,RenewalUnroll,RenewalUnrollTest,LocalBlockDemand,LocalBlockDemandTests,PrimePowerReindex,PrimePowerReindexTest,PrimePowerSum,PrimePowerRenewal,PrimePowerRenewalTest}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -47,6 +47,10 @@ jobs:
           python3 "$check" "$RUNNER_TEMP/Renewal.log" RenewalNext.demand_image RenewalNext.disjoint_scaled RenewalNext.update_demand RenewalNext.tail_sound RenewalNext.demand_disjoint RenewalNext.update_sound RenewalNext.correction_identity
           lean -o SmoothRenewal.olean SmoothRenewal.lean 2>&1 | tee "$RUNNER_TEMP/SmoothRenewal.log"
           python3 "$check" "$RUNNER_TEMP/SmoothRenewal.log" SmoothRenewal.triple_scale_iff SmoothRenewal.vertices_partition SmoothRenewal.vertices_disjoint SmoothRenewal.demand_recurrence SmoothRenewal.cover_pullback SmoothRenewal.edge_image SmoothRenewal.demand_scaled
+          lean -o DemandRenewalChain.olean DemandRenewalChain.lean 2>&1 | tee "$RUNNER_TEMP/DemandRenewalChain.log"
+          python3 "$check" "$RUNNER_TEMP/DemandRenewalChain.log" DemandRenewalChain.update_graph_demand DemandRenewalChain.tail_graph_demand DemandRenewalChain.levels_graph_demand
+          lean DemandRenewalChainTests.lean 2>&1 | tee "$RUNNER_TEMP/DemandRenewalChainTests.log"
+          python3 "$check" "$RUNNER_TEMP/DemandRenewalChainTests.log" DemandRenewalChain.update_graph_demand DemandRenewalChain.tail_graph_demand DemandRenewalChain.levels_graph_demand
           lean -o SmoothPartition.olean SmoothPartition.lean 2>&1 | tee "$RUNNER_TEMP/SmoothPartition.log"
           python3 "$check" "$RUNNER_TEMP/SmoothPartition.log" SmoothPartition.decomposition_unique SmoothPartition.blocks_disjoint SmoothPartition.global_accounting
           lean SmoothPartitionTest.lean 2>&1 | tee "$RUNNER_TEMP/SmoothPartitionTest.log"
