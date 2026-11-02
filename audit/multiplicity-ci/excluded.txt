@@ -26,6 +26,8 @@ ArchiveTrim8
 ArchiveTrim8Test
 BankProfile
 BankProfileTests
+BankRowPack
+BankRowPackTests
 BlockAccountingTests
 BoundaryCertificatesStd
 Bridge

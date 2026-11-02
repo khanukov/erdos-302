@@ -1,4 +1,6 @@
 # Modules outside the integrated closure; see UPPER_INTEGRATION.md.
+BankRowPack
+BankRowPackTests
 BlockAccountingTests
 BoundaryCertificatesStd
 Bridge
