@@ -52,8 +52,8 @@ theorem indexed_hgain (N : ℕ) :
     Rat.cast_mul, Rat.cast_sub, Rat.cast_div, Rat.cast_one, Rat.cast_natCast]
   change (cellHeight i) * ((N : ℝ) * ArchiveSumBridge.density (cellPrimes i) *
     (1 / (cellA i : ℝ) - 1 / (cellB i : ℝ))) =
-    (N : ℝ) * (((entry i).prior.foldl ArchiveGainPrefix.update 1 : ℚ) : ℝ) *
-      ((cellHeight i) * (1 / (cellA i : ℝ) - 1 / (cellB i : ℝ)))
+    (N : ℝ) * ((((entry i).prior.foldl ArchiveGainPrefix.update 1 : ℚ) : ℝ) *
+      ((cellHeight i) * (1 / (cellA i : ℝ) - 1 / (cellB i : ℝ))))
   rw [show (((entry i).prior.foldl ArchiveGainPrefix.update 1 : ℚ) : ℝ) =
     ArchiveSumBridge.density (cellPrimes i) by simpa [ArchiveGainPrefix.update, DensityPrefixCandidate.update] using hd]
   ring
