@@ -1,0 +1,9 @@
+import FactorCountCandidate
+
+#print axioms SmoothPartition.decomposition_exists
+#print axioms SmoothPartition.decomposition_unique
+#print axioms SmoothPartition.rough_iff_coprime_product
+#print axioms ArchiveSummation.quotient_cell_iff
+#print axioms SuffixBijectionCandidate.split_exists_unique
+#print axioms SuffixBijectionCandidate.product_prefix_rough
+#print axioms SuffixBijectionCandidate.cellCount_eq_sum_multiplicity

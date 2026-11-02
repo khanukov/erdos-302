@@ -1,0 +1,59 @@
+name: Factor count candidate
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'lean/**'
+      - 'audit/factor-count-ci/**'
+      - 'audit/mathlib-bridge-ci/**'
+      - 'tests/*factor*.py'
+      - '.github/workflows/factor-count-candidate.yml'
+permissions:
+  contents: read
+jobs:
+  factor-count:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      LEAN_NUM_THREADS: "1"
+      LEAN_STACK_SIZE_KB: "262144"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate inventory and finite countermodels
+        run: |
+          set -euo pipefail
+          python3 audit/factor-count-ci/closure.py
+          python3 -m unittest discover -s tests -p 'test_*factor*.py'
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Build complete closure and gate axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/factor-count-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lean/{Renewal,SmoothRenewal,Summation,BlockAccounting,SmoothPartition,SmoothExistence,SmoothCover,RoughCoprime,CellEquivalence,SuffixBijectionCandidate,FactorCountCandidate,FactorCountCandidateTests,FactorCountAxioms}.lean "$p/"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Real.Basic Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Nat.Factorization.Induction Mathlib.Data.Nat.Prime.Basic Mathlib.Data.Nat.GCD.BigOperators Mathlib.Order.Interval.Finset.Nat Mathlib.Tactic
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          for module in Renewal SmoothRenewal Summation BlockAccounting SmoothPartition SmoothExistence SmoothCover RoughCoprime CellEquivalence SuffixBijectionCandidate FactorCountCandidate; do
+            lean -o "$module.olean" "$module.lean" 2>&1 | tee "$RUNNER_TEMP/$module.log"
+          done
+          lean FactorCountAxioms.lean 2>&1 | tee "$RUNNER_TEMP/axioms.log"
+          lean FactorCountCandidateTests.lean 2>&1 | tee "$RUNNER_TEMP/tests.log"
+          check="$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py"
+          python3 "$check" "$RUNNER_TEMP/axioms.log" SmoothPartition.decomposition_exists SmoothPartition.decomposition_unique SmoothPartition.rough_iff_coprime_product ArchiveSummation.quotient_cell_iff SuffixBijectionCandidate.split_exists_unique SuffixBijectionCandidate.product_prefix_rough SuffixBijectionCandidate.cellCount_eq_sum_multiplicity
+          python3 "$check" "$RUNNER_TEMP/tests.log" factorCount_nonzero factorCount_nonempty_sets factorCount_zero_N factorCount_reversed

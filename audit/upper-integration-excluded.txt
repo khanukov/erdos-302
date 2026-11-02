@@ -5,6 +5,9 @@ Bridge
 BridgeScaled
 CaseRulesTest
 DagTests
+FactorCountAxioms
+FactorCountCandidate
+FactorCountCandidateTests
 FreshExistentialLowerCheck
 LowerNext
 LowerNextLiminf
@@ -19,9 +22,11 @@ Pack1094Vertex8
 Pack1094Vertex9
 PackTests
 PilotAudit
-SmoothExistenceTest
-SmoothPartitionTest
-SummationTest
-Tests
 RenewalMultiplicityCandidate
 RenewalMultiplicityCandidateTests
+SmoothExistenceTest
+SmoothPartitionTest
+SuffixBijectionCandidate
+SuffixBijectionCandidateTests
+SummationTest
+Tests

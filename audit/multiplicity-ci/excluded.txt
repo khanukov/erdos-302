@@ -48,6 +48,9 @@ EndpointPremisesCandidateTests
 Erdos302Lower.Defs
 ExactComparison
 Extended
+FactorCountAxioms
+FactorCountCandidate
+FactorCountCandidateTests
 FreshExistentialLowerCheck
 GainFold
 GainPrefix
@@ -98,6 +101,8 @@ SmoothCoverTest
 SmoothExistence
 SmoothExistenceTest
 SmoothPartitionTest
+SuffixBijectionCandidate
+SuffixBijectionCandidateTests
 SumBridgeTest
 SummationTest
 Tests
