@@ -71,10 +71,12 @@ example : MixedDagLocality.SameData good bad 1 := by
 example : MixedDagLocality.CaseTrim.payloadReads (.trimRule ref) 0 := by
   simp [MixedDagLocality.CaseTrim.payloadReads, ref]
 example : Check extraCheck good 1 := by
-  unfold Check extraCheck TrimCheck RefCheck image good ref UpperBridge.OrderedEdge
+  change TrimCheck good 1 ref
+  unfold TrimCheck RefCheck image good ref UpperBridge.OrderedEdge
   decide
 example : ¬ Check extraCheck bad 1 := by
-  unfold Check extraCheck TrimCheck RefCheck image bad ref UpperBridge.OrderedEdge
+  change ¬ TrimCheck bad 1 ref
+  unfold TrimCheck RefCheck image bad ref UpperBridge.OrderedEdge
   decide
 
 -- Concrete specialization cannot assume bounds for unrelated predecessors.

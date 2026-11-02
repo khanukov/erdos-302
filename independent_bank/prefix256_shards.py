@@ -39,7 +39,7 @@ def generate():
             if kind == 'case_placeholder':
                 proof = ('by\n  change CaseCheck nodes ' + str(i) + ' _ _\n'
                          '  unfold CaseCheck RefCheck row image nodes\n'
-                         '  decide')
+                         '  simp only [BankCase.check] <;> decide')
             elif kind == 'trim_placeholder':
                 proof = (f'by\n  change TrimCheck nodes {i} _\n'
                          '  unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge\n'

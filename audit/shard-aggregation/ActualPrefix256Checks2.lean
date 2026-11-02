@@ -9,7 +9,7 @@ theorem check34 : MixedDag.Check extraCheck nodes 34 := by decide
 theorem check35 : MixedDag.Check extraCheck nodes 35 := by
   change CaseCheck nodes 35 _ _
   unfold CaseCheck RefCheck row image nodes
-  decide
+  simp only [BankCase.check] <;> decide
 theorem check36 : MixedDag.Check extraCheck nodes 36 := by decide
 theorem check37 : MixedDag.Check extraCheck nodes 37 := by decide
 theorem check38 : MixedDag.Check extraCheck nodes 38 := by decide

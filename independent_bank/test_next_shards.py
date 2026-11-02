@@ -10,7 +10,7 @@ class NextShardsTest(unittest.TestCase):
         generated = next_shards.generate()
         for i in (4, 7, 14):
             shard = next(n for n, (start, end) in enumerate(next_shards.RANGES) if start <= i < end)
-            self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes\n  decide', generated[f'ActualPrefix32Checks{shard}.lean'])
+            self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes', generated[f'ActualPrefix32Checks{shard}.lean'])
 
     def test_generated_artifacts_match_pinned_archive(self):
         generated = next_shards.generate()
