@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 06:06 UTC. The last successful selected integration commit is [`e64c58cf947632336669915ab5137e1c1020bc89`](https://github.com/khanukov/erdos-302/commit/e64c58cf947632336669915ab5137e1c1020bc89). Subsequent candidate integrations failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 06:27 UTC. The last successful selected integration commit is [`f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef`](https://github.com/khanukov/erdos-302/commit/f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef). Later candidate integrations failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41398181495](https://github.com/khanukov/erdos-302/actions/runs/41398181495) passed selected integration at `f6de4e2` with 35 allowed-axiom reports, including `ArchiveGainPrefix.gain_eq_prefix` and the semantic archive node-4 proof `ArchiveCase4Staged.bound4`/`sound`. Node 4 follows from checked node 0, 2, 3 bounds through scaling and the case checker; it is **not** a full five-node DAG replay. Python checks the archive-byte transcription externally. The `hgain`, `herror` and `hcover` endpoint assumptions remain.
+* At `be0bb2e`, [41398338831](https://github.com/khanukov/erdos-302/actions/runs/41398338831) failed compiling the node-5 trim candidate; no sound node-5 conclusion is claimed. Density [41398182070](https://github.com/khanukov/erdos-302/actions/runs/41398182070) and error matching [41398246680](https://github.com/khanukov/erdos-302/actions/runs/41398246680) also failed.
 
 * [41396315505](https://github.com/khanukov/erdos-302/actions/runs/41396315505) at `b537471` failed overall in a concrete gain test and node-4 case proof, so no full integration gate passed. Separately, `ArchiveGainPrefix.distribute`, `step_project`, `project_fold`, and `gain_eq_prefix` compiled and printed only `[propext, Classical.choice, Quot.sound]` in the log. These connect the literal ledger's rational gain fold to prefix-labelled cell occurrences; they do not prove the real-density/finite-index `hgain` equality. The node-4 candidate was not checked.
 * Density [41396315036](https://github.com/khanukov/erdos-302/actions/runs/41396315036) failed on its prefix proof; it does not establish density correspondence.
