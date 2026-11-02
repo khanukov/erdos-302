@@ -1,8 +1,12 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 02:11 UTC. The checked code commit is [`f8ae1676868c1a875df0ba2bfc5d26b859f9c6a6`](https://github.com/khanukov/erdos-302/commit/f8ae1676868c1a875df0ba2bfc5d26b859f9c6a6); this status file may be updated by a later commit. CI results below are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 04:02 UTC. The last successful selected integration commit is [`5a878c7e6fa8c9ac9f0f3ac0af049922148a681a`](https://github.com/khanukov/erdos-302/commit/5a878c7e6fa8c9ac9f0f3ac0af049922148a681a). Later candidate builds failed as described below; CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* The selected integration run [41384384135](https://github.com/khanukov/erdos-302/actions/runs/41384384135) passed at `5a878c7`, including one-level `PrimePowerRenewal` and eight allowed-axiom reports. The subsequent run [41385790723](https://github.com/khanukov/erdos-302/actions/runs/41385790723) at `78c17b1` failed in new bridge tests; the final integration axiom gate was not reached. These new declarations are not checked.
+* Literal ledger run [41385790170](https://github.com/khanukov/erdos-302/actions/runs/41385790170) at `78c17b1` passed Python checks and small Lean tests but failed to reduce its full `decide` proof. No literal ledger theorem is claimed, and the ledger does not by itself establish archive/profile provenance.
+* Full reflective rebuild [41385859771](https://github.com/khanukov/erdos-302/actions/runs/41385859771) at `8a0a044` failed on the fourth of 235 upstream modules due to an unavailable Mathlib lemma. The 4.27-to-4.33 chain and profile bridge are not verified.
 
 * The selected-component target `UpperIntegration` built successfully on code commit `f8ae167` in [41375919944](https://github.com/khanukov/erdos-302/actions/runs/41375919944), including `PrimePowerSum` and six allowed-axiom reports. It does not include the entire bank, upstream reflective chain, or the resource-heavy `Pack1094Tests`; it is not a final theorem. Mathlib cache objects were reused. See [integration scope](UPPER_INTEGRATION.md).
 * `ArchiveSumBridge.boundaryOK_of_pos` and the revised `global_upper_archive` passed [41374589948](https://github.com/khanukov/erdos-302/actions/runs/41374589948) at `665c9ab`: positivity of the endpoints suffices, so `boundaryOK` is no longer an external premise. The global cover inequality and other explicitly typed hypotheses remain.
