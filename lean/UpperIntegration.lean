@@ -3,6 +3,7 @@ import UpperRenewal
 import Projection
 import CaseTreeTest
 import ArchiveCase4Semantic
+import ArchiveCase4StagedTest
 import DagForceTests
 import Pack1094Shard
 import PackShardTests
@@ -43,6 +44,11 @@ import GainPrefixTest
 #print axioms BankProfileConcrete.full_prefix
 #print axioms ArchiveSmallPrefix.valid
 #print axioms ArchiveSmallPrefix.sound
+#print axioms ArchiveCase4Staged.image0
+#print axioms ArchiveCase4Staged.image1
+#print axioms ArchiveCase4Staged.image2
+#print axioms ArchiveCase4Staged.bound4
+#print axioms ArchiveCase4Staged.sound
 #print axioms PrefixArchiveBridge.cells_le_prefix
 #print axioms PrefixArchiveBridge.upper_from_prefix
 

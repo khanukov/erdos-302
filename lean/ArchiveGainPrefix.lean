@@ -18,8 +18,8 @@ private theorem fold_add_shift (xs : List ℚ) (a : ℚ) :
   induction xs generalizing a with
   | nil => simp
   | cons x xs ih =>
-    simp only [List.foldl_cons]
-    rw [ih, ih x]
+    simp only [List.foldl_cons, zero_add]
+    rw [ih (a + x), ih x]
     ring
 
 /-- Distribute the level density over its ordered cell occurrences. -/
@@ -31,8 +31,9 @@ theorem distribute (d a : ℚ) (cs : List ArchiveLedger.Cell) :
   induction cs with
   | nil => simp
   | cons c cs ih =>
-    simp only [List.map_cons, List.foldl_cons]
-    rw [fold_add_shift, fold_add_shift, ih]
+    simp only [List.map_cons, List.foldl_cons, zero_add]
+    rw [fold_add_shift (cs.map (weight d)) (weight d c),
+      fold_add_shift (cs.map ArchiveLedger.cellMass) (ArchiveLedger.cellMass c), ih]
     simp only [weight]
     ring
 

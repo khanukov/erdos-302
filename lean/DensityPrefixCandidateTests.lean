@@ -1,12 +1,12 @@
 import DensityPrefixCandidate
 open DensityPrefixCandidate
 
-example : prefix 0 = [] := by decide
-example : prefix 2 = [3, 2] := by decide
+example : primePrefix 0 = [] := by decide
+example : primePrefix 2 = [3, 2] := by decide
 example : prefixFold 2 = (1 : ℚ) / 3 := by decide
 example : prefixProduct 2 = (1 : ℚ) / 3 := by decide
 example : ((prefixFold 2 : ℚ) : ℝ) =
-    ArchiveSumBridge.density (prefix 2).toFinset := by
+    ArchiveSumBridge.density (primePrefix 2).toFinset := by
   apply real_prefix
   decide
 
@@ -20,4 +20,10 @@ example :
       [⟨3, [⟨6, 24, 1⟩, ⟨6, 24, 1⟩]⟩] =
       [⟨[], ⟨6, 24, 1⟩⟩, ⟨[], ⟨6, 24, 1⟩⟩] := by decide
 
+example (i : ArchiveLedgerSumBridge.Index) :
+    (((ArchiveLedgerSumBridge.entry i).prior.foldl update 1 : ℚ) : ℝ) =
+      ArchiveSumBridge.density (ArchiveLedgerSumBridge.cellPrimes i) :=
+  indexed_density_direct i
+
 #print axioms indexed_density
+#print axioms indexed_density_direct

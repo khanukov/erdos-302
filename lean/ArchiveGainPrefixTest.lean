@@ -7,6 +7,16 @@ open ArchiveGainPrefix
 def c : ArchiveLedger.Cell := ⟨2, 4, 1⟩
 def sample : List ArchiveLedger.Level := [⟨3, [c, c]⟩, ⟨2, []⟩, ⟨5, [c]⟩]
 
+-- Exercise distribution with a nonzero accumulator and repeated occurrences.
+example (d a : ℚ) :
+    ([c, c].map (weight d)).foldl (· + ·) a =
+      a + d * ([c, c].map ArchiveLedger.cellMass).foldl (· + ·) 0 := by
+  exact distribute d a [c, c]
+
+example (d a : ℚ) :
+    (([] : List ArchiveLedger.Cell).map (weight d)).foldl (· + ·) a = a := by
+  simp
+
 -- Duplicates are occurrences, and the empty level still changes the prefix.
 example : GainPrefix.entriesFrom [] (sample.map convert) =
     [([], c), ([], c), ([3, 2], c)] := by decide
