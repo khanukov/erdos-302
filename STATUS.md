@@ -1,8 +1,10 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 07:47 UTC. The last successful selected integration commit is [`67cc2a9ac98ad08775478864efe50fedd67a11a3`](https://github.com/khanukov/erdos-302/commit/67cc2a9ac98ad08775478864efe50fedd67a11a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 07:58 UTC. The last successful selected integration commit is [`354340b30576d24c753f46820b37a8ea638c81d2`](https://github.com/khanukov/erdos-302/commit/354340b30576d24c753f46820b37a8ea638c81d2). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* Unified [41407925082](https://github.com/khanukov/erdos-302/actions/runs/41407925082) passed on `354340b`, with 68 allowed-axiom reports, integrating both literal gain and error matches and their conditional endpoint specialization. It does not import the separately checked `endpoint_of_cover` at this SHA and does not prove `hcover`.
 
 * Hosted [41407924497](https://github.com/khanukov/erdos-302/actions/runs/41407924497) at `354340b` passed `EndpointPremisesCandidate.endpoint_of_cover`, its tests and ten allowed-axiom reports. For arbitrary `N : ℕ` and `f : ℝ`, its **sole explicit hypothesis** is the literal occurrence-weighted `hcover`; from it, Lean derives `f ≤ targetC * N + 55064831540`. Positivity, prime, interval-order, density, budget, `hgain` and `herror` are discharged for the generated literals. This does not prove `hcover`, identify `f` with the extremal function, or establish archive-to-literal provenance; it is not an unconditional bound. Mathlib cache was reused.
 
