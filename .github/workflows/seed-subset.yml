@@ -1,0 +1,28 @@
+name: Conditional seed subset replay
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  subset:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Adversarial tests
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s independent_bank -p test_seed_subset.py -v
+          python3 -B -O -m unittest discover -s independent_bank -p test_seed_subset.py -v
+      - name: Replay and compare committed certificate
+        run: |
+          set -euo pipefail
+          PYTHONPATH=independent_bank python3 -B -O -c '
+          import json, pathlib, seed_subset
+          actual = (json.dumps(seed_subset.build(), sort_keys=True, separators=(",", ":")) + "\n").encode()
+          expected = pathlib.Path("independent_bank/seed_subset_certificate.json").read_bytes()
+          if actual != expected: raise SystemExit("certificate mismatch")
+          print("PASS: regenerated certificate matches committed bytes")
+          '
