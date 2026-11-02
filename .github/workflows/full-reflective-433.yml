@@ -55,6 +55,13 @@ jobs:
           git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
           test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           lake exe cache get
+          # Cache get can succeed with missing entries, including Mathlib.olean.
+          # Build the umbrella module and any uncached imports from the pinned sources;
+          # unlike building the whole library this requests only its olean facet.
+          lake build '@mathlib/+Mathlib:olean'
+          test -f .lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean
+          printf 'import Mathlib\n' > "$RUNNER_TEMP/check-mathlib-import.lean"
+          lake env lean "$RUNNER_TEMP/check-mathlib-import.lean"
           sha256sum -c "$RUNNER_TEMP/manifest.sha256"
           python3 audit/full-reflective/verify_dependencies.py "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/logs/dependency-revisions.txt"
       - name: Fresh chain and candidate bridge, same environment

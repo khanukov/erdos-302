@@ -64,12 +64,13 @@ private theorem no_outside :
     ({2, 3, 6} : Finset ℕ).filter
       (fun x => ¬ UpperProjection.Smooth {2, 3} x ∧ x % 2 = 0) = ∅ := by
   ext x
-  simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton,
-    Finset.mem_empty, iff_false]
-  rintro ⟨(rfl | rfl | rfl), hn, _⟩
-  · exact hn smooth2
-  · exact hn smooth3
-  · exact hn smooth6
+  simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
+  constructor
+  · rintro ⟨(rfl | rfl | rfl), hn, _⟩
+    · exact (hn smooth2).elim
+    · exact (hn smooth3).elim
+    · exact (hn smooth6).elim
+  · simp
 
 /-- Nonzero result from the full checked-node theorem, with no hypotheses. -/
 theorem full_prefix : Extended.Bound ({2, 3, 6} : Finset ℕ) 1 := by
