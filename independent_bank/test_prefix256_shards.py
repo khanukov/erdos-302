@@ -16,7 +16,7 @@ class Prefix256Test(unittest.TestCase):
         for i, node in enumerate(doc['nodes'][:256]):
             if node['kind'] == 'case_placeholder':
                 text = self.files[f'ActualPrefix256Checks{i // 16}.lean']
-                self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes', text)
+                self.assertIn(f'set_option maxRecDepth 16384 in\ntheorem check{i} : MixedDag.Check extraCheck nodes {i} := by\n  change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes\n  simp only [BankCase.check] <;> decide', text)
         self.assertEqual(doc['nodes'][14]['kind'], 'case_placeholder')
 
     @classmethod

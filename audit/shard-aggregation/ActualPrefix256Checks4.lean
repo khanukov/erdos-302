@@ -6,6 +6,7 @@ set_option maxHeartbeats 4000000
 theorem check64 : MixedDag.Check extraCheck nodes 64 := by decide
 theorem check65 : MixedDag.Check extraCheck nodes 65 := by decide
 theorem check66 : MixedDag.Check extraCheck nodes 66 := by decide
+set_option maxRecDepth 16384 in
 theorem check67 : MixedDag.Check extraCheck nodes 67 := by
   change CaseCheck nodes 67 _ _
   unfold CaseCheck RefCheck row image nodes
@@ -14,6 +15,7 @@ theorem check68 : MixedDag.Check extraCheck nodes 68 := by decide
 theorem check69 : MixedDag.Check extraCheck nodes 69 := by decide
 theorem check70 : MixedDag.Check extraCheck nodes 70 := by decide
 theorem check71 : MixedDag.Check extraCheck nodes 71 := by decide
+set_option maxRecDepth 16384 in
 theorem check72 : MixedDag.Check extraCheck nodes 72 := by
   change CaseCheck nodes 72 _ _
   unfold CaseCheck RefCheck row image nodes
@@ -23,6 +25,7 @@ theorem check74 : MixedDag.Check extraCheck nodes 74 := by decide
 theorem check75 : MixedDag.Check extraCheck nodes 75 := by decide
 theorem check76 : MixedDag.Check extraCheck nodes 76 := by decide
 theorem check77 : MixedDag.Check extraCheck nodes 77 := by decide
+set_option maxRecDepth 16384 in
 theorem check78 : MixedDag.Check extraCheck nodes 78 := by
   change CaseCheck nodes 78 _ _
   unfold CaseCheck RefCheck row image nodes

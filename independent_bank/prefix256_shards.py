@@ -48,6 +48,8 @@ def generate():
                 proof = 'by decide'
             else:
                 raise ValueError(f'unsupported shard rule {kind}')
+            if kind == 'case_placeholder':
+                parts.append('set_option maxRecDepth 16384 in\n')
             parts.append(f'theorem check{i} : MixedDag.Check extraCheck nodes {i} := {proof}\n')
         parts.extend(f'#print axioms check{i}\n' for i in range(start, end))
         parts.append('end ActualPrefix256\n')

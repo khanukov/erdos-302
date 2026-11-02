@@ -6,6 +6,7 @@ set_option maxHeartbeats 4000000
 theorem check32 : MixedDag.Check extraCheck nodes 32 := by decide
 theorem check33 : MixedDag.Check extraCheck nodes 33 := by decide
 theorem check34 : MixedDag.Check extraCheck nodes 34 := by decide
+set_option maxRecDepth 16384 in
 theorem check35 : MixedDag.Check extraCheck nodes 35 := by
   change CaseCheck nodes 35 _ _
   unfold CaseCheck RefCheck row image nodes
