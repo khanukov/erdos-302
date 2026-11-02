@@ -119,6 +119,32 @@ class UpperProjectTests(unittest.TestCase):
                         'python3 -B independent_bank/case7_translation.py'):
             self.assertIn(command, workflow)
 
+    def test_trim8_integrated_and_audited(self):
+        import tomllib
+        roots = next(lib['roots'] for lib in tomllib.loads(
+            (ROOT / 'lakefile.toml').read_text())['lean_lib']
+            if lib['name'] == 'UpperIntegration')
+        for module in ('ArchiveTrim8', 'ArchiveTrim8Test'):
+            self.assertIn(module, roots)
+            self.assertNotIn(module, (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines())
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text().splitlines()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        self.assertIn('import ArchiveTrim8Test', source)
+        audit = next(line.split() for line in workflow.splitlines()
+                     if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py '))
+        for name in ('ArchiveTrim8.all_edges_retained', 'ArchiveTrim8.target_subset',
+                     'ArchiveTrim8.witnesses_valid', 'ArchiveTrim8.every_retained_has_witness',
+                     'ArchiveTrim8.image7_eq', 'ArchiveTrim8.image7_bound',
+                     'ArchiveTrim8.bound8', 'ArchiveTrim8Test.replay_bound'):
+            self.assertIn('#print axioms ' + name, source)
+            self.assertIn(name, audit)
+        for command in ('python3 -B -m unittest discover -s independent_bank -p test_trim8.py',
+                        'python3 -B -O -m unittest discover -s independent_bank -p test_trim8.py',
+                        'python3 -B independent_bank/trim8.py'):
+            self.assertIn(command, workflow)
+        test = (ROOT / 'lean/ArchiveTrim8Test.lean').read_text()
+        self.assertIn('using ArchiveTrim8.bound8', test)
+
     def test_hgain_endpoint_is_integration_gated(self):
         source = (ROOT / 'lean/UpperIntegration.lean').read_text()
         workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()

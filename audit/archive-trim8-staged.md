@@ -19,8 +19,8 @@ normal and optimized Python.
 
 `trim8-staged.yml` is a dispatch-only CI candidate that rebuilds the existing
 integration closure and node-7 dependencies, then checks node 8 and its axiom
-report using pinned Lean and Mathlib (with cached Mathlib objects). It has not
-been run here; the candidate theorem is not claimed kernel-verified. Node 8
-is explicitly excluded from the automatic integration closure until verified.
+report using pinned Lean and Mathlib (with cached Mathlib objects). The staged run 41409255067 succeeded for commit 2d6f310. The automatic
+integration closure now includes node 8 and a literal-support replay test;
+the integrated candidate still requires its own exact-commit CI run.
 No proof of the whole bank, bank-to-profile bridge, or unconditional archive
 endpoint follows from this node. No local Lean build was attempted.

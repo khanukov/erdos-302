@@ -9,6 +9,7 @@ import CaseTreeTest
 import ArchiveCase4Semantic
 import ArchiveCase4StagedTest
 import ArchiveTrim5Test
+import ArchiveTrim8Test
 import ArchiveCase7StagedTest
 import ArchiveNextSmallTest
 import DagForceTests
@@ -94,6 +95,15 @@ import GainPrefixTest
 #print axioms ArchiveErrorMatchCandidate.occurrence_error
 #print axioms ArchiveErrorMatchCandidate.indexed_error
 #print axioms ArchiveLedgerSumBridge.indexed_endpoint_no_error
+
+#print axioms ArchiveTrim8.all_edges_retained
+#print axioms ArchiveTrim8.target_subset
+#print axioms ArchiveTrim8.witnesses_valid
+#print axioms ArchiveTrim8.every_retained_has_witness
+#print axioms ArchiveTrim8.image7_eq
+#print axioms ArchiveTrim8.image7_bound
+#print axioms ArchiveTrim8.bound8
+#print axioms ArchiveTrim8Test.replay_bound
 
 #print axioms ArchiveCase7.check_valid
 #print axioms ArchiveCase7Staged.image0

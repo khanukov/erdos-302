@@ -23,6 +23,7 @@ ArchiveSmallPrefixTest
 ArchiveTrim5
 ArchiveTrim5Test
 ArchiveTrim8
+ArchiveTrim8Test
 BankProfile
 BankProfileTests
 BlockAccountingTests
