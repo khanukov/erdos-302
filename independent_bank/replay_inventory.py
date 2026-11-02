@@ -64,6 +64,13 @@ def inventory(bank, extensions):
         t = node["t"]
         need(set(node) == FIELDS[t], "node fields")
         refs = []
+        if t in ("small", "case"):
+            need(type(node["v"]) is list and all(type(x) is int and x > 0 for x in node["v"]), "vertex list")
+            need(type(node["r"]) is int and node["r"] > 0, "demand")
+        elif t == "externalActive":
+            need(type(node["n"]) is int and node["n"] > 0, "external size")
+        if t == "pack":
+            need(type(node["D"]) is int and node["D"] > 0, "packing denominator")
         if t in ("pack", "qpack"):
             rows = node["rows"]
             need(type(rows) is list and rows, "packing rows")

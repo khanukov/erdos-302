@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'independent_bank/**'
+      - 'audit/source/erdos302_boundary_certificates/baseline/bank.json.xz'
       - 'input/erdos302_boundary_certificates_publication.zip'
       - '.github/workflows/independent-bank.yml'
 permissions: {}
