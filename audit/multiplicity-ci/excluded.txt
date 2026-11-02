@@ -5,6 +5,7 @@ ArchiveCase4StagedTest
 ArchiveCase7
 ArchiveCase7Staged
 ArchiveCase7StagedTest
+ArchiveCorrectionBridgeCandidate
 ArchiveErrorMatchCandidate
 ArchiveErrorMatchCandidateTests
 ArchiveGainPrefix
@@ -40,6 +41,7 @@ CaseTree
 CaseTreeTest
 CellEquivalence
 CellEquivalenceTests
+CorrectionOccurrenceGeneric
 Dag
 DagForce
 DagForceTests
@@ -57,6 +59,8 @@ FactorCountAxioms
 FactorCountCandidate
 FactorCountCandidateTests
 FreshExistentialLowerCheck
+FullLocalAssemblyCandidate
+FullLocalFirstShardTest
 GainFold
 GainPrefix
 GainPrefixTest
@@ -68,10 +72,14 @@ LedgerTailDemandTests
 LedgerTests
 LiteralFactorMatchingCandidate
 LocalBlockDemandTests
-MixedDag
-MixedDagTests
 LowerNext
 LowerNextLiminf
+MixedCaseTrimCandidate
+MixedCaseTrimCandidateTest
+MixedDag
+MixedDagLocality
+MixedDagLocalityTests
+MixedDagTests
 Pack1094
 Pack1094Shard
 Pack1094Tests
@@ -121,9 +129,3 @@ UpperBridge
 UpperIntegration
 UpperRenewal
 Weighted
-MixedCaseTrimCandidate
-MixedCaseTrimCandidateTest
-MixedDagLocality
-MixedDagLocalityTests
-ArchiveCorrectionBridgeCandidate
-CorrectionOccurrenceGeneric

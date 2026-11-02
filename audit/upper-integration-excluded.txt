@@ -1,23 +1,33 @@
+
+# Locality candidate is checked separately by bank-row-pack-candidate.
 # Modules outside the integrated closure; see UPPER_INTEGRATION.md.
+ArchiveCorrectionBridgeCandidate
 BankRowPack
 BankRowPackArchive1090
 BankRowPackTests
-MixedDag
-MixedDagTests
 BlockAccountingTests
 BoundaryCertificatesStd
 Bridge
 BridgeScaled
 CaseRulesTest
+CorrectionOccurrenceGeneric
 DagTests
 FactorCountAxioms
 FactorCountCandidateTests
 FreshExistentialLowerCheck
+FullLocalAssemblyCandidate
+FullLocalFirstShardTest
 LedgerTailDemand
 LedgerTailDemandTests
 LiteralFactorMatchingCandidate
 LowerNext
 LowerNextLiminf
+MixedCaseTrimCandidate
+MixedCaseTrimCandidateTest
+MixedDag
+MixedDagLocality
+MixedDagLocalityTests
+MixedDagTests
 OccurrenceIndex
 OccurrenceIndexTests
 Pack1094Tests
@@ -40,11 +50,3 @@ SmoothPartitionTest
 SuffixBijectionCandidateTests
 SummationTest
 Tests
-MixedCaseTrimCandidate
-MixedCaseTrimCandidateTest
-
-# Locality candidate is checked separately by bank-row-pack-candidate.
-MixedDagLocality
-MixedDagLocalityTests
-ArchiveCorrectionBridgeCandidate
-CorrectionOccurrenceGeneric
