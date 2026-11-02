@@ -13,7 +13,13 @@ python3 -B -O -m unittest discover -s audit/ledger-candidate/tests -v
 
 These tests regenerate both files into a temporary directory and compare their exact bytes to the committed files. The JSON is taken from `input/erdos302_boundary_certificates_publication.zip` and hash-pinned; the exporter reads the same bytes it hashed. The archive is not an attestation of authorship. See `audit/ledger-source-map.md` for the distinct, unproved source obligations.
 
-## Bounded hosted pilot (not executed)
+## Full-build diagnosis and candidate mitigation
+
+Hosted run 41385160741 at 64ffb6f failed before checking the full ledger: elaboration of `cells17` (1,565 cells) hit the default recursion-depth limit. The later noncomputable `cells17` dependency, stuck `decide`, and `sorryAx` reports followed that failed declaration and do not establish an independent arithmetic failure. The `maxRecDepth` option on `archive_check` does not apply to earlier definitions.
+
+The generator now emits at most 128 literal cells per definition, concatenated in original order into the same per-level list. Python regression tests reconstruct and compare all cells and chunk references against the pinned data. Chunking avoids the single oversized literal, but may not solve kernel reduction depth, time, or memory at `archive_check`; neither compilation nor axiom audit has been verified for this candidate. If full replay remains infeasible, a separately justified compositional proof is needed; do not replace kernel `decide` with `native_decide` or weaken the proposition.
+
+## Bounded hosted pilot
 
 Dispatch `.github/workflows/archive-ledger-pilot.yml` on the exact candidate ref on a GitHub-hosted runner. The default `full_candidate=false` runs only the small `LedgerTests`; to attempt the full declaration and axiom audit, explicitly dispatch with `full_candidate=true` (for example, `gh workflow run archive-ledger-pilot.yml --ref <candidate-ref> -f full_candidate=true`). This is an invocation for a future run, not evidence of one; do not dispatch without authorization.
 

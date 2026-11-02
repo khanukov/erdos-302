@@ -5,10 +5,11 @@ open Finset UpperBridge
 /-! The first archived edge is a genuine source bound, not a synthetic
 assumption. Dropping its largest vertex loses exactly one unit. -/
 example : Extended.Bound ({2, 3} : Finset ℕ) 0 := by
+  classical
   have h := BankProfile.restrict_bound
     (S := ({2, 3, 6} : Finset ℕ)) (T := ({2, 3} : Finset ℕ))
     (r := 1) (by decide) Extended.edge_0
-  simpa using h
+  simpa [Finset.sdiff_eq_filter, Finset.filter_insert] using h
 
 /-- A seed cannot keep the original bound when a necessary vertex is removed. -/
 example : ¬ Extended.Bound ({2, 3} : Finset ℕ) 1 := by
@@ -51,13 +52,15 @@ private theorem smooth6 : UpperProjection.Smooth ({2, 3} : Finset ℕ) 6 :=
 theorem full_prefix : Extended.Bound ({2, 3, 6} : Finset ℕ) 1 := by
   classical
   have h := BankProfile.checked_node_seed nodes 1 0 valid (by decide) {2, 3} 6
-  simpa [nodes, smooth2, smooth3, smooth6] using h
+  simpa [nodes, Finset.sdiff_eq_filter, Finset.filter_insert,
+    smooth2, smooth3, smooth6] using h
 
 /-- Just below the final vertex the prefix loses one unit. -/
 theorem before_last : Extended.Bound ({2, 3} : Finset ℕ) 0 := by
   classical
   have h := BankProfile.checked_node_seed nodes 1 0 valid (by decide) {2, 3} 5
-  simpa [nodes, smooth2, smooth3, smooth6] using h
+  simpa [nodes, Finset.sdiff_eq_filter, Finset.filter_insert,
+    smooth2, smooth3, smooth6] using h
 
 /-- At the final vertex the positive bound is restored. -/
 theorem at_last : Extended.Bound ({2, 3, 6} : Finset ℕ) 1 :=
@@ -67,7 +70,8 @@ theorem at_last : Extended.Bound ({2, 3, 6} : Finset ℕ) 1 :=
 theorem empty_prefix : Extended.Bound (∅ : Finset ℕ) 0 := by
   classical
   have h := BankProfile.checked_node_seed nodes 1 0 valid (by decide) {2, 3} 0
-  simpa [nodes, smooth2, smooth3, smooth6] using h
+  simpa [nodes, Finset.sdiff_eq_filter, Finset.filter_insert,
+    smooth2, smooth3, smooth6] using h
 
 private theorem smooth3_only : UpperProjection.Smooth ({3} : Finset ℕ) 3 := by
   intro p hp hd
@@ -88,7 +92,8 @@ private theorem nonsmooth6 : ¬ UpperProjection.Smooth ({3} : Finset ℕ) 6 := b
 theorem outside_loss : Extended.Bound ({3} : Finset ℕ) 0 := by
   classical
   have h := BankProfile.checked_node_seed nodes 1 0 valid (by decide) {3} 6
-  simpa [nodes, smooth3_only, nonsmooth2, nonsmooth6] using h
+  simpa [nodes, Finset.sdiff_eq_filter, Finset.filter_insert,
+    smooth3_only, nonsmooth2, nonsmooth6] using h
 
 #print axioms full_prefix
 #print axioms before_last

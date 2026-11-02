@@ -8,8 +8,12 @@ def render(data):
     levels = data['levels']
     parts = ['-- Generated from ledger.json; Python transcription is outside Lean trust.\nimport LedgerChecker\n\nnamespace ArchiveLedger\n']
     for i, level in enumerate(levels):
-        cells = ',\n'.join(f'  ⟨{a}, {b}, {h}⟩' for a,b,h in level['cells'])
-        parts.append(f'def cells{i} : List Cell := [\n{cells}\n]\n')
+        chunks = [level['cells'][j:j+128] for j in range(0, len(level['cells']), 128)]
+        for j, chunk in enumerate(chunks):
+            cells = ',\n'.join(f'  ⟨{a}, {b}, {h}⟩' for a,b,h in chunk)
+            parts.append(f'def cells{i}_chunk{j} : List Cell := [\n{cells}\n]\n')
+        expr = ' ++ '.join(f'cells{i}_chunk{j}' for j in range(len(chunks))) or '[]'
+        parts.append(f'def cells{i} : List Cell := {expr}\n')
     parts.append('def ledger : List Level := [\n' + ',\n'.join(f'  ⟨{x["prime"]}, cells{i}⟩' for i,x in enumerate(levels)) + '\n]\n')
     parts.append('''-- Candidate kernel replay; this declaration is NOT verified until hosted compilation succeeds.
 set_option maxRecDepth 100000 in

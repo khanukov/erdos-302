@@ -9,7 +9,7 @@ namespace PrefixArchiveBridgeTests
 def cells : Finset (Fin 2) := univ
 def support : Finset ℕ := {1}
 def member (_ : Fin 2) (q : ℕ) : Prop := q = 1
-instance : DecidableRel member := fun _ _ => inferInstance
+instance : DecidableRel member := fun _ q => inferInstanceAs (Decidable (q = 1))
 
 def height (_ : Fin 2) : ℝ := 1
 def count (_ : Fin 2) : ℝ := 1

@@ -30,11 +30,6 @@ class Audit(unittest.TestCase):
         self.assertEqual(self.d['levels'],[{'prime':l['prime'],'cells':l['cells']} for l in source['levels']])
         self.assertTrue(independent_check(self.d['levels']))
         text=(ROOT/'lean/ArchiveLedger.lean').read_text()
-        pieces=re.findall(r'def cells(\d+) : List Cell := \[\n(.*?)\n\]',text,re.S)
-        self.assertEqual(len(pieces),20)
-        for i,chunk in pieces:
-            triples=[list(map(int,x)) for x in re.findall(r'⟨(\d+), (\d+), (\d+)⟩',chunk)]
-            self.assertEqual(triples,self.d['levels'][int(i)]['cells'])
         pairs=re.findall(r'⟨(\d+), cells(\d+)⟩',text)
         self.assertEqual([(int(p),int(i)) for p,i in pairs],list(zip(ORDER,range(20))))
     def test_mutations_rejected(self):
@@ -46,6 +41,22 @@ class Audit(unittest.TestCase):
             elif kind=='missing': d[1]['cells'].pop()
             else: d[1]['cells'].reverse()
             self.assertFalse(independent_check(d),kind)
+    def test_generated_literals_are_bounded_and_preserve_order(self):
+        text=(ROOT/'lean/ArchiveLedger.lean').read_text()
+        pieces=re.findall(r'def cells(\d+)_chunk(\d+) : List Cell := \[\n(.*?)\n\]',text,re.S)
+        self.assertTrue(pieces, 'expected bounded literal chunks')
+        for level, expected in enumerate(self.d['levels']):
+            chunks=[(int(j), body) for i,j,body in pieces if int(i)==level]
+            self.assertEqual([j for j,_ in chunks],list(range(len(chunks))))
+            triples=[]
+            for _,body in chunks:
+                cells=[list(map(int,x)) for x in re.findall(r'⟨(\d+), (\d+), (\d+)⟩',body)]
+                self.assertLessEqual(len(cells),128)
+                triples.extend(cells)
+            self.assertEqual(triples,expected['cells'])
+            expected_expr=' ++ '.join(f'cells{level}_chunk{j}' for j,_ in chunks) or '[]'
+            self.assertIn(f'def cells{level} : List Cell := {expected_expr}\n', text)
+
     def test_deterministic_generator(self):
         spec=importlib.util.spec_from_file_location('gen',ROOT/'tools/generate_lean.py'); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
         self.assertEqual(mod.render(self.d),(ROOT/'lean/ArchiveLedger.lean').read_text())
