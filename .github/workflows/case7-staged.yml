@@ -1,0 +1,45 @@
+name: Archive case 7 staged candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      LEAN_NUM_THREADS: "1"
+      LEAN_STACK_SIZE_KB: "262144"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify transcription
+        run: |
+          python3 -B -m unittest discover -s independent_bank -p test_case7_translation.py -v
+          python3 -B -O -m unittest discover -s independent_bank -p test_case7_translation.py -v
+          python3 -B independent_bank/case7_translation.py
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile and audit candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          lake build UpperIntegration
+          lake env lean -o .lake/build/lib/lean/ArchiveCase7.olean lean/ArchiveCase7.lean 2>&1 | tee "$RUNNER_TEMP/case7-data.log"
+          lake env lean -o .lake/build/lib/lean/ArchiveCase7Staged.olean lean/ArchiveCase7Staged.lean 2>&1 | tee "$RUNNER_TEMP/case7-staged.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/case7-data.log" ArchiveCase7.check_valid
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/case7-staged.log" ArchiveCase7Staged.image0 ArchiveCase7Staged.image1 ArchiveCase7Staged.image2 ArchiveCase7Staged.image3 ArchiveCase7Staged.bound7
