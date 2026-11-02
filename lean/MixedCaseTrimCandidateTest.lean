@@ -68,8 +68,57 @@ theorem mixed_trim_bound : Extended.Bound (mixedTrimNodes 1).support
     (mixedTrimNodes 1).demand :=
   sound mixedTrimNodes 2 mixed_trim_valid 1 (by decide)
 
+-- One outside vertex is charged exactly once: 3 - 1 = 2.
+def outsideNodes (i : ℕ) : MixedDag.Node Payload :=
+  if i = 0 then ⟨{2,3,4,5,6,7,8,10,12,14,15,16,20,21,24}, 3, .small⟩
+  else ⟨{2,3,4,5,6,8,10,12,14,15,16,20,21,24}, 2, .small⟩
+def outsideTree : BankCase.Tree ℕ :=
+  .dual [((({2,3,4,5,6,8,10,12,14,15,16,20,21,24} : Finset ℕ), (2 : ℤ)), (1 : ℤ))] 1
+
+example : (image outsideNodes ref0 \ (outsideNodes 1).support).card = 1 := by
+  unfold image outsideNodes ref0
+  decide
+example : row outsideNodes 1 ref0 =
+    ((outsideNodes 1).support, (2 : ℤ)) := by
+  unfold row image outsideNodes ref0 BankCase.Residual
+  decide
+theorem outside_valid : CaseCheck outsideNodes 1 [ref0] outsideTree := by
+  unfold CaseCheck RefCheck image row outsideNodes ref0 outsideTree BankCase.Residual
+  simp only [BankCase.check] <;> decide
+theorem outside_bound : Extended.Bound (outsideNodes 1).support (outsideNodes 1).demand := by
+  apply case_sound outsideNodes 1 [ref0] outsideTree
+  · unfold CaseCheck RefCheck image row outsideNodes ref0 outsideTree BankCase.Residual
+    simp only [BankCase.check] <;> decide
+  · intro j hj
+    have : j = 0 := by omega
+    subst j
+    simpa [outsideNodes] using Extended.bank_node_4
+
+-- Signed residuals must remain negative rather than truncate to zero.
+example : (row outsideNodes 1 ⟨0, 1, 1⟩).2 = (2 : ℤ) := by
+  unfold row image outsideNodes BankCase.Residual
+  decide
+example : BankCase.Residual ({1,2,3} : Finset ℕ) ∅ 1 = -2 := by decide
+def negativeNodes (i : ℕ) : MixedDag.Node Payload :=
+  if i = 0 then ⟨{1,2,3}, 1, .small⟩ else ⟨∅, 0, .small⟩
+def negativeTree : BankCase.Tree ℕ :=
+  .dual [(((∅ : Finset ℕ), (-2 : ℤ)), (1 : ℤ))] 1
+theorem negative_row : (row negativeNodes 1 ref0).2 = (-2 : ℤ) := by
+  unfold row image negativeNodes ref0 BankCase.Residual
+  decide
+theorem negative_dual_rejected : ¬ CaseCheck negativeNodes 1 [ref0] negativeTree := by
+  unfold CaseCheck RefCheck image row negativeNodes ref0 negativeTree BankCase.Residual
+  simp only [BankCase.check] <;> decide
+example : ¬ RefCheck outsideNodes 1 ⟨0, 0, 1⟩ := by decide
+example : ¬ RefCheck outsideNodes 1 ⟨0, 1, 0⟩ := by decide
+example : ¬ RefCheck outsideNodes 1 ⟨0, 1, 2⟩ := by decide
+
 #print axioms mixed_trim_valid
 #print axioms mixed_trim_bound
+#print axioms outside_valid
+#print axioms outside_bound
+#print axioms negative_row
+#print axioms negative_dual_rejected
 
 #print axioms mixed_valid
 #print axioms mixed_bound

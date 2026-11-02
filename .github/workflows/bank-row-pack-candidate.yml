@@ -80,8 +80,8 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseRules.log" BankCase.residual_sound BankCase.force_sound BankCase.budget_reject BankCase.split_sound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseDual.log" BankCase.dualCheck_sound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseTree.log" BankCase.check_sound
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidate.log" MixedCaseTrimCandidate.image_bound MixedCaseTrimCandidate.case_sound MixedCaseTrimCandidate.trim_sound MixedCaseTrimCandidate.extra_sound MixedCaseTrimCandidate.sound
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidateTest.log" MixedCaseTrimCandidateTest.mixed_valid MixedCaseTrimCandidateTest.mixed_bound MixedCaseTrimCandidateTest.mixed_trim_valid MixedCaseTrimCandidateTest.mixed_trim_bound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidate.log" MixedCaseTrimCandidate.image_bound MixedCaseTrimCandidate.image_projection MixedCaseTrimCandidate.case_sound MixedCaseTrimCandidate.trim_sound MixedCaseTrimCandidate.extra_sound MixedCaseTrimCandidate.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidateTest.log" MixedCaseTrimCandidateTest.mixed_valid MixedCaseTrimCandidateTest.mixed_bound MixedCaseTrimCandidateTest.mixed_trim_valid MixedCaseTrimCandidateTest.mixed_trim_bound MixedCaseTrimCandidateTest.outside_valid MixedCaseTrimCandidateTest.outside_bound MixedCaseTrimCandidateTest.negative_row MixedCaseTrimCandidateTest.negative_dual_rejected
 
           # Shard aggregation is an isolated diagnostic, not a 1091-node replay.
           if grep -nE "\b(sorry|admit|native_decide)\b" "$GITHUB_WORKSPACE"/audit/shard-aggregation/*.lean; then exit 1; fi
