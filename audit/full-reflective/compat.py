@@ -14,6 +14,9 @@ GROUP29_ORIGINAL_SHA256 = '901e79e6fbe312193938982f08d50b08f1c930167ab585b33617c
 GROUP29_TRANSFORMED_SHA256 = 'ffca2ef8c4ca888c3da150b6ff1643a4dedaafc672170a582960ad6d6470cce8'
 GROUP30_ORIGINAL_SHA256 = 'ffc6b48c60712ca2002dfc91b3fb6d71dc00ccc68618d25593cc231a15d4f734'
 GROUP30_TRANSFORMED_SHA256 = 'ff5bfb7b29eb4cfd8fb02029447ec1648bc7212083cdd41502b7a4b91dda0bab'
+GROUP174_ORIGINAL_SHA256 = '725f9e4de2261a95cb83bd1e92d53b09525519fcac03e71e3a30b210143ac03e'
+GROUP174_TRANSFORMED_SHA256 = 'c9bdd5c0490ff152e6860f1ea094b9e8c935668126e9cb777020756ac8b138bf'
+THEOREM174 = b'theorem rl_T02_c139_G_valid :'
 THEOREM30 = b'theorem rl_P02_c64_G_valid :'
 THEOREMS29 = (b'theorem rl_P02_c62_G_valid :', b'theorem rl_P02_c63_G_valid :')
 THEOREM = b'theorem rl_P02_c60_G_valid :'
@@ -55,10 +58,18 @@ def main(root):
     group30_transformed = group30_original.replace(THEOREM30, OPTION + THEOREM30)
     if digest(group30_transformed) != GROUP30_TRANSFORMED_SHA256:
         raise ValueError('unexpected transformed group 0030 bytes')
+    group174 = root / 'Erdos302RLGroup0174FC.lean'
+    group174_original = group174.read_bytes()
+    if digest(group174_original) != GROUP174_ORIGINAL_SHA256 or group174_original.count(THEOREM174) != 1:
+        raise ValueError('unexpected upstream group 0174 bytes or occurrence count')
+    group174_transformed = group174_original.replace(THEOREM174, OPTION + THEOREM174)
+    if digest(group174_transformed) != GROUP174_TRANSFORMED_SHA256:
+        raise ValueError('unexpected transformed group 0174 bytes')
     leaf.write_bytes(transformed)
     group.write_bytes(group_transformed)
     group29.write_bytes(group29_transformed)
     group30.write_bytes(group30_transformed)
+    group174.write_bytes(group174_transformed)
     if digest(leaf.read_bytes()) != TRANSFORMED_SHA256:
         raise ValueError('staged leaf write verification failed')
     if digest(group.read_bytes()) != GROUP_TRANSFORMED_SHA256:
@@ -67,6 +78,9 @@ def main(root):
         raise ValueError('staged group 0029 write verification failed')
     if digest(group30.read_bytes()) != GROUP30_TRANSFORMED_SHA256:
         raise ValueError('staged group 0030 write verification failed')
+    if digest(group174.read_bytes()) != GROUP174_TRANSFORMED_SHA256:
+        raise ValueError('staged group 0174 write verification failed')
+    print(f'Erdos302RLGroup0174FC.lean original_sha256={GROUP174_ORIGINAL_SHA256} transformed_sha256={GROUP174_TRANSFORMED_SHA256} theorem=rl_T02_c139_G_valid maxHeartbeats=1000000 occurrences=1')
     print(f'Erdos302ReflectiveLeafFC.lean original_sha256={ORIGINAL_SHA256} transformed_sha256={TRANSFORMED_SHA256} replacements=4')
     print(f'Erdos302RLGroup0027FC.lean original_sha256={GROUP_ORIGINAL_SHA256} transformed_sha256={GROUP_TRANSFORMED_SHA256} theorem=rl_P02_c60_G_valid maxHeartbeats=1000000')
     print(f'Erdos302RLGroup0029FC.lean original_sha256={GROUP29_ORIGINAL_SHA256} transformed_sha256={GROUP29_TRANSFORMED_SHA256} theorems=rl_P02_c62_G_valid,rl_P02_c63_G_valid maxHeartbeats=1000000 occurrences=2')

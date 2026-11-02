@@ -14,6 +14,8 @@ NEW = b'Finset.sum_inter_add_sum_sdiff'
 GROUP = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0027FC.lean.gz').read_bytes())
 GROUP29 = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0029FC.lean.gz').read_bytes())
 GROUP30 = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0030FC.lean.gz').read_bytes())
+GROUP174 = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0174FC.lean.gz').read_bytes())
+THEOREM174 = b'theorem rl_T02_c139_G_valid :'
 THEOREM30 = b'theorem rl_P02_c64_G_valid :'
 THEOREMS29 = (b'theorem rl_P02_c62_G_valid :', b'theorem rl_P02_c63_G_valid :')
 THEOREM = b'theorem rl_P02_c60_G_valid :'
@@ -33,6 +35,8 @@ class CompatibilityTests(unittest.TestCase):
         self.group29.write_bytes(GROUP29)
         self.group30 = self.root / 'Erdos302RLGroup0030FC.lean'
         self.group30.write_bytes(GROUP30)
+        self.group174 = self.root / 'Erdos302RLGroup0174FC.lean'
+        self.group174.write_bytes(GROUP174)
 
     def run_compat(self):
         return subprocess.run([sys.executable, str(SCRIPT), str(self.root)], capture_output=True, text=True)
@@ -110,6 +114,41 @@ class CompatibilityTests(unittest.TestCase):
         self.assertEqual(self.group29.read_bytes(), GROUP29)
         self.assertEqual(self.group.read_bytes(), GROUP)
         self.assertEqual(self.leaf.read_bytes(), ORIGINAL)
+
+    def test_0174_exact_scoped_option(self):
+        self.assertEqual(hashlib.sha256(GROUP174).hexdigest(), '725f9e4de2261a95cb83bd1e92d53b09525519fcac03e71e3a30b210143ac03e')
+        self.assertEqual(GROUP174.count(THEOREM174), 1)
+        expected = GROUP174.replace(THEOREM174, OPTION + THEOREM174)
+        self.assertEqual(hashlib.sha256(expected).hexdigest(), 'c9bdd5c0490ff152e6860f1ea094b9e8c935668126e9cb777020756ac8b138bf')
+        result = self.run_compat()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.group174.read_bytes(), expected)
+        self.assertIn(hashlib.sha256(expected).hexdigest(), result.stdout)
+        self.assertIn('rl_T02_c139_G_valid', result.stdout)
+
+    def test_modified_0174_rejected_before_any_mutation(self):
+        modified = GROUP174 + b'\n-- unexpected\n'
+        self.group174.write_bytes(modified)
+        result = self.run_compat()
+        self.assertNotEqual(result.returncode, 0)
+        for path, expected in ((self.leaf, ORIGINAL), (self.group, GROUP),
+                               (self.group29, GROUP29), (self.group30, GROUP30),
+                               (self.group174, modified)):
+            self.assertEqual(path.read_bytes(), expected)
+
+    def test_0174_bad_expected_output_hash_rejected_before_mutation(self):
+        code = ("import importlib.util, pathlib, sys; "
+                "s=importlib.util.spec_from_file_location('compat', sys.argv[1]); "
+                "m=importlib.util.module_from_spec(s); s.loader.exec_module(m); "
+                "m.GROUP174_TRANSFORMED_SHA256='0'*64; m.main(pathlib.Path(sys.argv[2]))")
+        result = subprocess.run([sys.executable, '-c', code, str(SCRIPT), str(self.root)],
+                                capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('unexpected transformed group 0174 bytes', result.stderr)
+        for path, expected in ((self.leaf, ORIGINAL), (self.group, GROUP),
+                               (self.group29, GROUP29), (self.group30, GROUP30),
+                               (self.group174, GROUP174)):
+            self.assertEqual(path.read_bytes(), expected)
 
     def test_reapplication_rejected_without_mutation(self):
         self.assertEqual(self.run_compat().returncode, 0)
