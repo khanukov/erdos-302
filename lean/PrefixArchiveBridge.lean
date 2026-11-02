@@ -29,9 +29,10 @@ theorem cells_le_prefix {ι : Type*} [DecidableEq ι]
       intro i hi
       rw [hcount i hi]
       rw [← Finset.sum_filter]
-      simp
+      simp [mul_comm]
     _ = ∑ q ∈ s, contribution cells h member q := by
-      simp only [contribution, Finset.sum_comm]
+      unfold contribution
+      exact Finset.sum_comm
     _ ≤ ∑ q ∈ s, (r q : ℝ) := Finset.sum_le_sum hallocate
 
 /-- Finite analytic upper bound from local graph demands. `ι` may be taken as
