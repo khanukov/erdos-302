@@ -12,12 +12,12 @@ def caseTree : BankCase.Tree ℕ :=
 
 -- Positive, satisfiable graph and positive demand; not an assumed bound.
 example : CaseCheck caseNodes 1 caseRows caseTree := by
-  unfold CaseCheck RefCheck image row caseNodes caseRows ref0 caseTree
+  unfold CaseCheck RefCheck row image caseNodes caseRows ref0 caseTree
   simp only [BankCase.check] <;> decide
 
 example : Extended.Bound (caseNodes 1).support (caseNodes 1).demand := by
   apply case_sound caseNodes 1 caseRows caseTree
-  · unfold CaseCheck RefCheck image row caseNodes caseRows ref0 caseTree
+  · unfold CaseCheck RefCheck row image caseNodes caseRows ref0 caseTree
     simp only [BankCase.check] <;> decide
   · intro j hj
     simpa [caseNodes] using Extended.edge_0
@@ -51,7 +51,7 @@ theorem mixed_valid : ∀ i < 2, MixedDag.Check extraCheck mixedNodes i := by
   interval_cases i
   · decide
   · change CaseCheck mixedNodes 1 caseRows caseTree
-    unfold CaseCheck RefCheck image row mixedNodes caseRows ref0 caseTree
+    unfold CaseCheck RefCheck row image mixedNodes caseRows ref0 caseTree
     simp only [BankCase.check] <;> decide
 
 theorem mixed_bound : Extended.Bound (mixedNodes 1).support (mixedNodes 1).demand :=
@@ -83,11 +83,11 @@ example : row outsideNodes 1 ref0 =
   unfold row image outsideNodes ref0 BankCase.Residual
   decide
 theorem outside_valid : CaseCheck outsideNodes 1 [ref0] outsideTree := by
-  unfold CaseCheck RefCheck image row outsideNodes ref0 outsideTree BankCase.Residual
+  unfold CaseCheck RefCheck row image outsideNodes ref0 outsideTree BankCase.Residual
   simp only [BankCase.check] <;> decide
 theorem outside_bound : Extended.Bound (outsideNodes 1).support (outsideNodes 1).demand := by
   apply case_sound outsideNodes 1 [ref0] outsideTree
-  · unfold CaseCheck RefCheck image row outsideNodes ref0 outsideTree BankCase.Residual
+  · unfold CaseCheck RefCheck row image outsideNodes ref0 outsideTree BankCase.Residual
     simp only [BankCase.check] <;> decide
   · intro j hj
     have : j = 0 := by omega
@@ -107,11 +107,17 @@ theorem negative_row : (row negativeNodes 1 ref0).2 = (-2 : ℤ) := by
   unfold row image negativeNodes ref0 BankCase.Residual
   decide
 theorem negative_dual_rejected : ¬ CaseCheck negativeNodes 1 [ref0] negativeTree := by
-  unfold CaseCheck RefCheck image row negativeNodes ref0 negativeTree BankCase.Residual
+  unfold CaseCheck RefCheck row image negativeNodes ref0 negativeTree BankCase.Residual
   simp only [BankCase.check] <;> decide
-example : ¬ RefCheck outsideNodes 1 ⟨0, 0, 1⟩ := by decide
-example : ¬ RefCheck outsideNodes 1 ⟨0, 1, 0⟩ := by decide
-example : ¬ RefCheck outsideNodes 1 ⟨0, 1, 2⟩ := by decide
+example : ¬ RefCheck outsideNodes 1 ⟨0, 0, 1⟩ := by
+  unfold RefCheck outsideNodes
+  decide
+example : ¬ RefCheck outsideNodes 1 ⟨0, 1, 0⟩ := by
+  unfold RefCheck outsideNodes
+  decide
+example : ¬ RefCheck outsideNodes 1 ⟨0, 1, 2⟩ := by
+  unfold RefCheck outsideNodes
+  decide
 
 #print axioms mixed_trim_valid
 #print axioms mixed_trim_bound
