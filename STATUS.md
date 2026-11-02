@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 05:47 UTC. The last successful selected integration commit is [`e64c58cf947632336669915ab5137e1c1020bc89`](https://github.com/khanukov/erdos-302/commit/e64c58cf947632336669915ab5137e1c1020bc89). The subsequent candidate integration failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 06:06 UTC. The last successful selected integration commit is [`e64c58cf947632336669915ab5137e1c1020bc89`](https://github.com/khanukov/erdos-302/commit/e64c58cf947632336669915ab5137e1c1020bc89). Subsequent candidate integrations failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41396315505](https://github.com/khanukov/erdos-302/actions/runs/41396315505) at `b537471` failed overall in a concrete gain test and node-4 case proof, so no full integration gate passed. Separately, `ArchiveGainPrefix.distribute`, `step_project`, `project_fold`, and `gain_eq_prefix` compiled and printed only `[propext, Classical.choice, Quot.sound]` in the log. These connect the literal ledger's rational gain fold to prefix-labelled cell occurrences; they do not prove the real-density/finite-index `hgain` equality. The node-4 candidate was not checked.
+* Density [41396315036](https://github.com/khanukov/erdos-302/actions/runs/41396315036) failed on its prefix proof; it does not establish density correspondence.
 
 * [41395233341](https://github.com/khanukov/erdos-302/actions/runs/41395233341) passed selected integration at `e64c58c`, including kernel checking and semantic soundness of archive nodes 0–3. The Python byte-to-Lean transcription check is external; the full bank and endpoint remain open.
 * The concrete gain specialization failed compilation in [41395379627](https://github.com/khanukov/erdos-302/actions/runs/41395379627) at `45b4be5`; its four printed declarations contained `sorryAx` after errors. The separate density-prefix candidate failed in [41395294407](https://github.com/khanukov/erdos-302/actions/runs/41395294407) at `702150b`; it is not verified. Neither result discharges `hgain`.
