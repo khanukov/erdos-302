@@ -23,7 +23,8 @@ class ArchiveTranslation(unittest.TestCase):
 
     def test_prior_reduces_dead_match_branches_before_decide(self):
         generated = a.render(a.translate(self.bank))
-        self.assertIn('  split_ifs <;> dsimp only <;> decide', generated)
+        self.assertIn('  split_ifs <;> dsimp only [UpperBridge.OrderedEdge] <;> decide', generated)
+        self.assertIn('theorem prior (i : ℕ) : ArchiveDag.Check nodes i := by', generated)
 
     def test_invalid_mutations(self):
         mutations = [

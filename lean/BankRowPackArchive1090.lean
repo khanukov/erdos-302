@@ -24,7 +24,7 @@ def support : Finset ℕ := {2,3,4,5,6,8,9,10,12,14,16,18,20,21,24,30,36,40,42,4
 
 theorem prior (i : ℕ) : ArchiveDag.Check nodes i := by
   unfold ArchiveDag.Check nodes
-  split_ifs <;> dsimp only <;> decide
+  split_ifs <;> dsimp only [UpperBridge.OrderedEdge] <;> decide
 
 theorem checked : BankRowPack.Check nodes 1090 7 rows 1 7 support := by
   decide
