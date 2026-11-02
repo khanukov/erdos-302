@@ -24,3 +24,5 @@ SmoothPartitionTest
 SummationTest
 Tests
 ArchiveTrim8
+RenewalMultiplicityCandidate
+RenewalMultiplicityCandidateTests

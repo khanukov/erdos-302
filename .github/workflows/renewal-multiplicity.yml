@@ -1,0 +1,64 @@
+name: Renewal multiplicity candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      LEAN_NUM_THREADS: "1"
+      LEAN_STACK_SIZE_KB: "262144"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Inventory and reference checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B tests/test_multiplicity_ci.py
+          python3 -B -O tests/test_multiplicity_ci.py
+          python3 -B -m unittest discover -s tests -p test_renewal_occurrences.py -v
+          python3 -B -O -m unittest discover -s tests -p test_renewal_occurrences.py -v
+          python3 -B audit/multiplicity-ci/check_inventory.py "$PWD"
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+          while IFS= read -r m; do
+            f="lean/${m//.//}.lean"
+            if grep -nE '\b(sorry|admit|native_decide)\b' "$f"; then exit 1; fi
+          done < audit/multiplicity-ci/included.txt
+      - name: Install digest-pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Build source closure and gate axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/multiplicity-project"
+          mkdir -p "$p/lean" "$p/.lake/packages/mathlib"
+          cp lake-manifest.json lean-toolchain "$p/"
+          while IFS= read -r m; do
+            f="${m//.//}.lean"
+            mkdir -p "$p/lean/$(dirname "$f")"
+            cp "lean/$f" "$p/lean/$f"
+          done < audit/multiplicity-ci/included.txt
+          printf '%s\n' 'name = "multiplicity_ci"' '[[require]]' 'name = "mathlib"' 'git = "https://github.com/teorth/mathlib4.git"' 'rev = "da1f94df976c7cd38117281c57d6ee3046c8d104"' '[[lean_lib]]' 'name = "MultiplicityCI"' 'srcDir = "lean"' 'roots = ["RenewalMultiplicityCandidateTests"]' > "$p/lakefile.toml"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p/lean"
+          while IFS= read -r m; do
+            lean -o "lean/$m.olean" "lean/$m.lean" 2>&1 | tee "$RUNNER_TEMP/$m.log"
+          done < "$GITHUB_WORKSPACE/audit/multiplicity-ci/build-order.txt"
+          cp "$RUNNER_TEMP/RenewalMultiplicityCandidate.log" "$RUNNER_TEMP/multiplicity-axioms.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/multiplicity-axioms.log" RenewalMultiplicityCandidate.expansion_eq RenewalMultiplicityCandidate.occurrence_cover RenewalMultiplicityCandidate.occurrence_hcover
