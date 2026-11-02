@@ -16,3 +16,8 @@ roots = ["ArchiveCase4", "ArchiveCase4Semantic", "ArchiveSeedNode0", "BankProfil
 name = "ArchiveLedgerPilot"
 srcDir = "audit/ledger-candidate/lean"
 roots = ["LedgerChecker", "LedgerTests", "ArchiveLedger"]
+
+[[lean_lib]]
+name = "ArchiveLedgerSumBridge"
+srcDir = "lean"
+roots = ["ArchiveLedgerSumBridge"]

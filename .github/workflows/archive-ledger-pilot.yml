@@ -66,6 +66,15 @@ jobs:
           test "$status" -eq 0
           timeout 2m lake env lean audit/ledger-candidate/lean/PilotAudit.lean 2>&1 | tee "$RUNNER_TEMP/ledger-axioms.log"
           python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/ledger-axioms.log" ArchiveLedger.archive_check ArchiveLedger.archive_valid ArchiveLedger.archive_arithmetic
+      - name: Literal ledger to SumBridge candidate
+        if: inputs.full_candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 24000000
+          timeout 10m lake build ArchiveLedgerSumBridge 2>&1 | tee "$RUNNER_TEMP/ledger-bridge-build.log"
+          timeout 2m lake env lean lean/ArchiveLedgerSumBridge.lean 2>&1 | tee "$RUNNER_TEMP/ledger-bridge-axioms.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/ledger-bridge-axioms.log" ArchiveLedgerSumBridge.ledger_gain_complement ArchiveLedgerSumBridge.ledger_error_real ArchiveLedgerSumBridge.conditional_literal_endpoint ArchiveLedgerSumBridge.conditional_indexed_endpoint
       - name: Retain full-attempt diagnostics
         if: always() && inputs.full_candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -76,4 +85,6 @@ jobs:
             ${{ runner.temp }}/ledger-status.txt
             ${{ runner.temp }}/ledger-resources.jsonl
             ${{ runner.temp }}/ledger-axioms.log
+            ${{ runner.temp }}/ledger-bridge-build.log
+            ${{ runner.temp }}/ledger-bridge-axioms.log
           if-no-files-found: warn
