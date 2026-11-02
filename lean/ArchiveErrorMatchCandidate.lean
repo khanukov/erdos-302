@@ -1,6 +1,6 @@
 import ArchiveLedgerSumBridge
 
-/-! Candidate, not yet CI-checked. The index is a position in the literal list;
+/-! The index is a position in the literal list;
 no deduplication or archive-byte provenance is assumed. -/
 namespace ArchiveErrorMatchCandidate
 open ArchiveLedgerSumBridge

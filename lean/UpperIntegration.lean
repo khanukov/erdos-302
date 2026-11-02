@@ -28,6 +28,8 @@ import ArchiveSmallPrefixTest
 import PrefixArchiveBridgeTests
 import ExactComparison
 import ArchiveLedgerSumBridge
+import ArchiveErrorMatchCandidateTests
+import ArchiveIndexedEndpointTests
 import LedgerTests
 import GainPrefixTest
 
@@ -78,3 +80,8 @@ import GainPrefixTest
 #print axioms ArchiveGainPrefix.step_project
 #print axioms ArchiveGainPrefix.project_fold
 #print axioms ArchiveGainPrefix.gain_eq_prefix
+
+#print axioms ArchiveErrorMatchCandidate.entries_error
+#print axioms ArchiveErrorMatchCandidate.occurrence_error
+#print axioms ArchiveErrorMatchCandidate.indexed_error
+#print axioms ArchiveLedgerSumBridge.indexed_endpoint_no_error

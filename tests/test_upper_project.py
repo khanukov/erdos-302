@@ -60,6 +60,8 @@ class UpperProjectTests(unittest.TestCase):
         self.assertEqual(set(exclusions), set(sources) - seen, 'unrecorded source exclusion')
         self.assertTrue({'GainFold', 'GainPrefix', 'GainPrefixTest'} <= seen)
         self.assertIn('ArchiveLedgerSumBridge', seen)
+        self.assertTrue({'ArchiveErrorMatchCandidate', 'ArchiveErrorMatchCandidateTests',
+                         'ArchiveIndexedEndpoint', 'ArchiveIndexedEndpointTests'} <= seen)
         self.assertIn('ArchiveLedger', seen)
         self.assertIn('LedgerChecker', seen)
         self.assertIn('LedgerTests', seen)
@@ -82,7 +84,11 @@ class UpperProjectTests(unittest.TestCase):
                      'ArchiveLedgerSumBridge.ledger_gain_complement',
                      'ArchiveLedgerSumBridge.ledger_error_real',
                      'ArchiveLedgerSumBridge.conditional_literal_endpoint',
-                     'ArchiveLedgerSumBridge.conditional_indexed_endpoint']:
+                     'ArchiveLedgerSumBridge.conditional_indexed_endpoint',
+                     'ArchiveErrorMatchCandidate.entries_error',
+                     'ArchiveErrorMatchCandidate.occurrence_error',
+                     'ArchiveErrorMatchCandidate.indexed_error',
+                     'ArchiveLedgerSumBridge.indexed_endpoint_no_error']:
             self.assertIn('#print axioms ' + name, source)
             self.assertIn(name, audit_args)
         self.assertIn('unittest discover -s audit/ledger-candidate/tests', workflow)
