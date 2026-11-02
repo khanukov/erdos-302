@@ -1,0 +1,5 @@
+# Archive node 5 trim candidate
+
+`ArchiveTrim5.bound5 : Extended.Bound ArchiveTrim5.target ArchiveTrim5.demand` has no explicit assumptions: it uses `ArchiveCase4Staged.bound4`, ultimately the node 0–3 checked prefix, plus a kernel-decidable complete-edge containment check. `target` is `{2,3,4,5,6,8,10,12,15,20,24}` and demand is 3. `image3_eq` checks image 3 = (node 4, 1/1); gcd of the retained support is 1, so normalization does not change it. The reverse active-support direction is certified via explicit edge witnesses. `isolated_trim` is the reusable rule and has the explicit hypotheses subset, every source edge retained, and upstream bound.
+
+This is a six-node semantic prefix, not an ArchiveDag checker or full bank replay. Python pins the bank bytes, validates the transitive case translation, checks exact node/image fields, and compares generated Lean source. This external correspondence is not a Lean theorem. No Lean compilation was attempted here; all Lean proofs and axiom audits are CI candidates, and node 4 remains pending CI. The Python checks are not substitutes for Lean kernel verification.

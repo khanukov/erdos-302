@@ -4,6 +4,7 @@ import Projection
 import CaseTreeTest
 import ArchiveCase4Semantic
 import ArchiveCase4StagedTest
+import ArchiveTrim5Test
 import DagForceTests
 import Pack1094Shard
 import PackShardTests
@@ -49,6 +50,13 @@ import GainPrefixTest
 #print axioms ArchiveCase4Staged.image2
 #print axioms ArchiveCase4Staged.bound4
 #print axioms ArchiveCase4Staged.sound
+#print axioms ArchiveTrim5.all_edges_retained
+#print axioms ArchiveTrim5.witnesses_valid
+#print axioms ArchiveTrim5.every_retained_has_witness
+#print axioms ArchiveTrim5.isolated_trim
+#print axioms ArchiveTrim5.image3_bound
+#print axioms ArchiveTrim5.bound5
+#print axioms ArchiveTrim5.sound
 #print axioms PrefixArchiveBridge.cells_le_prefix
 #print axioms PrefixArchiveBridge.upper_from_prefix
 
