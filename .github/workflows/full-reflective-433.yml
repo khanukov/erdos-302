@@ -31,6 +31,8 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s audit/full-reflective -p 'test_*.py' -v
           python3 audit/full-reflective/stage.py upstream/lean "$RUNNER_TEMP/staged" .github/kitamura/build_chain.py
           cp "$RUNNER_TEMP/staged/closure.txt" "$RUNNER_TEMP/logs/closure.txt"
+          (cd "$RUNNER_TEMP/staged" && sha256sum $(cat closure.txt | tr '.' '/' | sed 's/$/.lean/')) > "$RUNNER_TEMP/logs/upstream-source-sha256.txt"
+          python3 audit/full-reflective/compat.py "$RUNNER_TEMP/staged" | tee "$RUNNER_TEMP/logs/compatibility-transform.txt"
           (cd "$RUNNER_TEMP/staged" && sha256sum $(cat closure.txt | tr '.' '/' | sed 's/$/.lean/')) > "$RUNNER_TEMP/logs/source-sha256.txt"
       - name: Install pinned Lean
         shell: bash

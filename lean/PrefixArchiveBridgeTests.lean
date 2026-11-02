@@ -30,7 +30,7 @@ example : ArchiveSummation.weightedCount cells height count ≤
     ∑ q ∈ support, (demandTwo q : ℝ) := by
   apply cells_le_prefix cells support height member demandTwo count
   · intro i hi
-    simp [count, support, member]
+    fin_cases i <;> norm_num [count, support, member, Finset.filter_singleton]
   · intro q hq
     have : q = 1 := by simpa [support] using hq
     subst q
@@ -48,6 +48,6 @@ example : ArchiveSummation.weightedCount (∅ : Finset (Fin 2)) height count ≤
 example : ¬ (∀ i ∈ cells, (0 : ℝ) = ((support.filter (member i)).card : ℝ)) := by
   intro h
   have h0 := h (0 : Fin 2) (by simp [cells])
-  norm_num [support, member] at h0
+  norm_num [support, member, Finset.filter_singleton] at h0
 
 end PrefixArchiveBridgeTests

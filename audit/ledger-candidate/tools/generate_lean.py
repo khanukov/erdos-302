@@ -2,6 +2,7 @@
 """Transcribe canonical exporter JSON into Lean literals; NOT a proof of fidelity."""
 import argparse
 import json
+from fractions import Fraction
 from pathlib import Path
 
 def render(data):
@@ -15,12 +16,29 @@ def render(data):
         expr = ' ++ '.join(f'cells{i}_chunk{j}' for j in range(len(chunks))) or '[]'
         parts.append(f'def cells{i} : List Cell := {expr}\n')
     parts.append('def ledger : List Level := [\n' + ',\n'.join(f'  ⟨{x["prime"]}, cells{i}⟩' for i,x in enumerate(levels)) + '\n]\n')
-    parts.append('''-- Candidate kernel replay; this declaration is NOT verified until hosted compilation succeeds.
-set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-theorem archive_check : check ledger = true := by decide
+    parts.append('''-- Candidate only: the rational computations are separated by level.
+-- Every proposed equality is checked by kernel reduction, not trusted Python.
+set_option maxRecDepth 100000
+set_option maxHeartbeats 0
+''')
+    for i, level in enumerate(levels):
+        mass = sum((h * (Fraction(1, a) - Fraction(1, b))
+                    for a, b, h in level['cells']), Fraction(0))
+        parts.append(f'theorem mass{i} : levelMass ⟨{level["prime"]}, cells{i}⟩ = '
+                     f'(({mass.numerator} : ℚ) / {mass.denominator}) := by decide +kernel\n')
+    mass_names = ', '.join(f'mass{i}' for i in range(len(levels)))
+    parts.append('''
+theorem archive_valid : Valid ledger := by
+  unfold Valid Arithmetic
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · decide +kernel
+  · decide +kernel
+  · decide +kernel
+  · simp only [coefficient, totals, ledger, List.foldl_cons, List.foldl_nil, step, ''' + mass_names + '''] <;> decide +kernel
+  · decide +kernel
 
-theorem archive_valid : Valid ledger := of_decide_eq_true archive_check
+theorem archive_check : check ledger = true := by
+  exact decide_eq_true archive_valid
 
 theorem archive_arithmetic : Arithmetic ledger := check_sound archive_check
 

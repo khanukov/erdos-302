@@ -4839,12 +4839,42 @@ def ledger : List Level := [
   ⟨67, cells18⟩,
   ⟨71, cells19⟩
 ]
--- Candidate kernel replay; this declaration is NOT verified until hosted compilation succeeds.
-set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-theorem archive_check : check ledger = true := by decide
+-- Candidate only: the rational computations are separated by level.
+-- Every proposed equality is checked by kernel reduction, not trusted Python.
+set_option maxRecDepth 100000
+set_option maxHeartbeats 0
+theorem mass0 : levelMass ⟨3, cells0⟩ = ((0 : ℚ) / 1) := by decide +kernel
+theorem mass1 : levelMass ⟨2, cells1⟩ = ((36822579830843 : ℚ) / 214991277981696) := by decide +kernel
+theorem mass2 : levelMass ⟨5, cells2⟩ = ((93040541 : ℚ) / 1749600000) := by decide +kernel
+theorem mass3 : levelMass ⟨7, cells3⟩ = ((31219913 : ℚ) / 1066867200) := by decide +kernel
+theorem mass4 : levelMass ⟨11, cells4⟩ = ((26100425801 : ℚ) / 1290909312000) := by decide +kernel
+theorem mass5 : levelMass ⟨13, cells5⟩ = ((233163216493 : ℚ) / 20200340160000) := by decide +kernel
+theorem mass6 : levelMass ⟨17, cells6⟩ = ((13440077144971 : ℚ) / 1854391226688000) := by decide +kernel
+theorem mass7 : levelMass ⟨19, cells7⟩ = ((15813653017637 : ℚ) / 1957412961504000) := by decide +kernel
+theorem mass8 : levelMass ⟨23, cells8⟩ = ((47838118986121 : ℚ) / 7420961227680000) := by decide +kernel
+theorem mass9 : levelMass ⟨29, cells9⟩ = ((475836413926883 : ℚ) / 145967080843584000) := by decide +kernel
+theorem mass10 : levelMass ⟨31, cells10⟩ = ((64423956648868183 : ℚ) / 28020065403474144000) := by decide +kernel
+theorem mass11 : levelMass ⟨37, cells11⟩ = ((2332278996246929 : ℚ) / 1683023408974908000) := by decide +kernel
+theorem mass12 : levelMass ⟨41, cells12⟩ = ((195317213192889857 : ℚ) / 83897534737048032000) := by decide +kernel
+theorem mass13 : levelMass ⟨43, cells13⟩ = ((144772360461718681692977 : ℚ) / 44260871659265039819040000) := by decide +kernel
+theorem mass14 : levelMass ⟨47, cells14⟩ = ((163932965913836693093871521 : ℚ) / 42809580972753349302868320000) := by decide +kernel
+theorem mass15 : levelMass ⟨53, cells15⟩ = ((2439395349567603525536656511 : ℚ) / 540226465092054981675699264000) := by decide +kernel
+theorem mass16 : levelMass ⟨59, cells16⟩ = ((720254733845188184243332890927579583 : ℚ) / 140741564175882666055836342980013600000) := by decide +kernel
+theorem mass17 : levelMass ⟨61, cells17⟩ = ((3013507008681748483255946035513399160542091398892844017 : ℚ) / 317160247332742671025266650967046920783514837366348800000) := by decide +kernel
+theorem mass18 : levelMass ⟨67, cells18⟩ = ((73281812340617934333186087693761755362387461057070607 : ℚ) / 6788159533469355914626481528627828067994494104778240000) := by decide +kernel
+theorem mass19 : levelMass ⟨71, cells19⟩ = ((3374400850490304401231370664333562402030337842897563 : ℚ) / 273491744033181289763520655972179875533157468659200000) := by decide +kernel
 
-theorem archive_valid : Valid ledger := of_decide_eq_true archive_check
+theorem archive_valid : Valid ledger := by
+  unfold Valid Arithmetic
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · decide +kernel
+  · decide +kernel
+  · decide +kernel
+  · simp only [coefficient, totals, ledger, List.foldl_cons, List.foldl_nil, step, mass0, mass1, mass2, mass3, mass4, mass5, mass6, mass7, mass8, mass9, mass10, mass11, mass12, mass13, mass14, mass15, mass16, mass17, mass18, mass19] <;> decide +kernel
+  · decide +kernel
+
+theorem archive_check : check ledger = true := by
+  exact decide_eq_true archive_valid
 
 theorem archive_arithmetic : Arithmetic ledger := check_sound archive_check
 

@@ -30,7 +30,8 @@ class Audit(unittest.TestCase):
         self.assertEqual(self.d['levels'],[{'prime':l['prime'],'cells':l['cells']} for l in source['levels']])
         self.assertTrue(independent_check(self.d['levels']))
         text=(ROOT/'lean/ArchiveLedger.lean').read_text()
-        pairs=re.findall(r'⟨(\d+), cells(\d+)⟩',text)
+        ledger_text=text.split('def ledger : List Level := [\n',1)[1].split('\n]',1)[0]
+        pairs=re.findall(r'⟨(\d+), cells(\d+)⟩',ledger_text)
         self.assertEqual([(int(p),int(i)) for p,i in pairs],list(zip(ORDER,range(20))))
     def test_mutations_rejected(self):
         for kind in ('prime','height','endpoint','missing','order'):
@@ -56,6 +57,16 @@ class Audit(unittest.TestCase):
             self.assertEqual(triples,expected['cells'])
             expected_expr=' ++ '.join(f'cells{level}_chunk{j}' for j,_ in chunks) or '[]'
             self.assertIn(f'def cells{level} : List Cell := {expected_expr}\n', text)
+
+    def test_generated_mass_claims(self):
+        text=(ROOT/'lean/ArchiveLedger.lean').read_text()
+        claims=re.findall(r'theorem mass(\d+) : levelMass ⟨(\d+), cells(\d+)⟩ = \(\((\d+) : ℚ\) / (\d+)\) := by decide \+kernel', text)
+        self.assertEqual(len(claims), len(self.d['levels']))
+        for i, (idx, prime, cells, num, den) in enumerate(claims):
+            level=self.d['levels'][i]
+            self.assertEqual((int(idx), int(prime), int(cells)), (i, level['prime'], i))
+            independent=sum((Fraction(h*(b-a), a*b) for a,b,h in level['cells']), Fraction())
+            self.assertEqual(Fraction(int(num), int(den)), independent)
 
     def test_deterministic_generator(self):
         spec=importlib.util.spec_from_file_location('gen',ROOT/'tools/generate_lean.py'); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
