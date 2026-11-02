@@ -1,8 +1,12 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 08:29 UTC. The last successful selected integration commit is [`bb827e64203b110af8d61ad35f914498f4a5335b`](https://github.com/khanukov/erdos-302/commit/bb827e64203b110af8d61ad35f914498f4a5335b). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 08:51 UTC. The last successful selected integration commit is [`df1eb6108b7a7207a4bd4addf9f4898a657ce031`](https://github.com/khanukov/erdos-302/commit/df1eb6108b7a7207a4bd4addf9f4898a657ce031). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41415553727](https://github.com/khanukov/erdos-302/actions/runs/41415553727) at `d286f6a` passed `DemandRenewalChain.update_graph_demand`, `tail_graph_demand`, and `levels_graph_demand` plus their tests and axiom gates. These establish graph-demand propagation under the theorem's seed, old-profile, base and prime-schedule hypotheses; the literal 20-level hypotheses are not yet proved.
+* Factor workflow [41415550542](https://github.com/khanukov/erdos-302/actions/runs/41415550542) at `d286f6a` **failed overall on test examples**, after `SuffixBijectionCandidate.cellCount_eq_sum_multiplicity` and its dependency declarations compiled and printed `[propext, Classical.choice, Quot.sound]`. The theorem proves the per-cell count equality for positive endpoints, prime prefix and disjoint prefix/suffix sets. Its final axiom gate did not run; archive-index specialization and local allocation remain open.
+* Unified [41414366723](https://github.com/khanukov/erdos-302/actions/runs/41414366723) at `df1eb61` passed with occurrence-aware conditional recurrence and block accounting integrated. It does not discharge their per-cell matching or per-block allocation hypotheses.
 
 * Unified [41411171157](https://github.com/khanukov/erdos-302/actions/runs/41411171157) passed `UpperIntegration` at `bb827e6` with 86 allowed-axiom reports, including semantic node 8 and the cover-conditional numerical endpoint. This is not a full bank replay.
 * Separate [41411391206](https://github.com/khanukov/erdos-302/actions/runs/41411391206) at `451faf0` passed `RenewalMultiplicityCandidate.expansion_eq`, `occurrence_cover` and `occurrence_hcover`, with three allowed-axiom reports. The cover lemmas assume per-cell matching, per-block joint allocation and demands; neither archive-specific matching nor allocation is discharged. See [the multiplicity proof obligations](audit/hcover-renewal-exact-gap.md).
