@@ -5,6 +5,7 @@ import CaseTreeTest
 import ArchiveCase4Semantic
 import ArchiveCase4StagedTest
 import ArchiveTrim5Test
+import ArchiveNextSmallTest
 import DagForceTests
 import Pack1094Shard
 import PackShardTests
@@ -59,6 +60,9 @@ import GainPrefixTest
 #print axioms ArchiveTrim5.image3_bound
 #print axioms ArchiveTrim5.bound5
 #print axioms ArchiveTrim5.sound
+#print axioms ArchiveNextSmall.bound6
+#print axioms ArchiveNextSmall.sound
+#print axioms ArchiveNextSmallTest.overstated_rejected
 #print axioms PrefixArchiveBridge.cells_le_prefix
 #print axioms PrefixArchiveBridge.upper_from_prefix
 
