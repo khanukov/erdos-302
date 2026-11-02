@@ -21,6 +21,10 @@ class ArchiveTranslation(unittest.TestCase):
         self.assertEqual((cap, demand, len(support)), (1,7,21))
         self.assertEqual(a.OUTPUT.read_text(), a.render((sources,rows,cap,demand,support)))
 
+    def test_prior_reduces_dead_match_branches_before_decide(self):
+        generated = a.render(a.translate(self.bank))
+        self.assertIn('  split_ifs <;> dsimp only <;> decide', generated)
+
     def test_invalid_mutations(self):
         mutations = [
             lambda b: b['nodes'][1090].update(rows=[]),
