@@ -68,9 +68,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # One Lean worker, 10 GiB virtual address space per process, job deadline 355 min.
+          # One Lean worker, 24 GiB virtual address space per process, job deadline 355 min.
           # This is not a job-wide aggregate memory limit.
-          ulimit -v 10485760
+          ulimit -v 25165824
           python3 .github/kitamura/resource_monitor.py > "$RUNNER_TEMP/logs/resources.jsonl" &
           monitor=$!
           trap 'kill "$monitor" 2>/dev/null || :; wait "$monitor" 2>/dev/null || :' EXIT
