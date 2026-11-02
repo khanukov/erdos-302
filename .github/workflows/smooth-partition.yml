@@ -26,7 +26,7 @@ jobs:
           p="$RUNNER_TEMP/smooth-partition-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest}.lean "$p/"
+          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest,RenewalUnroll,RenewalUnrollTest}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -63,3 +63,7 @@ jobs:
           python3 "$check" "$RUNNER_TEMP/RoughCoprime.log" SmoothPartition.rough_iff_coprime_product SmoothPartition.roughIndices_eq_coprime SmoothPartition.coprime_blocks_cover SmoothPartition.coprime_indexed_blocks_disjoint
           lean RoughCoprimeTest.lean 2>&1 | tee "$RUNNER_TEMP/RoughCoprimeTest.log"
           python3 "$check" "$RUNNER_TEMP/RoughCoprimeTest.log" SmoothPartition.rough_iff_coprime_product SmoothPartition.coprime_blocks_cover
+          lean -o RenewalUnroll.olean RenewalUnroll.lean 2>&1 | tee "$RUNNER_TEMP/RenewalUnroll.log"
+          python3 "$check" "$RUNNER_TEMP/RenewalUnroll.log" ArchiveRenewalUnroll.quotient_eq_div_pow ArchiveRenewalUnroll.quotient_eq_zero ArchiveRenewalUnroll.unroll_with_residual ArchiveRenewalUnroll.unroll ArchiveRenewalUnroll.update_unroll
+          lean RenewalUnrollTest.lean 2>&1 | tee "$RUNNER_TEMP/RenewalUnrollTest.log"
+          python3 "$check" "$RUNNER_TEMP/RenewalUnrollTest.log" ArchiveRenewalUnroll.unroll ArchiveRenewalUnroll.update_unroll
