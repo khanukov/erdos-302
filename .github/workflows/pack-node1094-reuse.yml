@@ -1,0 +1,124 @@
+name: Reuse node 1094 proof shards (run 41347502663)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  assembly-reuse:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Verify source and original producer jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git diff --exit-code 5201645d256bdbecb248833993ee475dee11c069 -- lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Pack1094,PackShard,Pack1094Shard}.lean audit/mathlib-bridge-ci/project audit/mathlib-bridge-ci/check_axioms.py scripts/assemble_pack1094_artifacts.py
+          printf '%s  %s\n' 1774f4b4787776ac7deb655f12ece827f7f0b3f9b8cfdf739d8f815f28ace41c lean/Pack1094.lean | sha256sum -c -
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/41347502663" > "$RUNNER_TEMP/original-run.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/41347502663/attempts/1/jobs?per_page=100" > "$RUNNER_TEMP/original-jobs.json"
+          python3 scripts/verify_pack1094_reuse.py "$RUNNER_TEMP/original-run.json" "$RUNNER_TEMP/original-jobs.json"
+          python3 -m unittest discover -s tests -p 'test_pack1094*.py'
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Prepare matching dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/pack-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Pack1094,PackShard,Pack1094Shard,PackShardTests}.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
+          lake build Erdos302Lower.Defs
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+      - name: Restore upstream modules from this workflow run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: node1094-upstream-olean
+          path: ${{ runner.temp }}/upstream-artifact
+          run-id: 41347502663
+          github-token: ${{ github.token }}
+      - name: Download all batch proof artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: node1094-proof-batch-*
+          path: ${{ runner.temp }}/batch-artifacts
+          run-id: 41347502663
+          github-token: ${{ github.token }}
+      - name: Verify complete artifacts and check all capacities
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/pack-project"
+          python3 scripts/generate_pack1094_scale.py --out "$p/generated"
+          test "$(wc -l < "$p/generated/batches.txt")" -eq 88
+          python3 - "$RUNNER_TEMP/upstream-artifact" "$p" <<'PYCODE'
+          import pathlib, shutil, sys
+          source, target = map(pathlib.Path, sys.argv[1:])
+          names = {f'{x}.olean' for x in ('UpperBridge','UpperBank','Extended','Weighted','Scaling','PackRule','Pack1094')}
+          files = list(source.iterdir())
+          if {f.name for f in files} != names or any(f.is_symlink() or not f.is_file() or f.stat().st_size == 0 for f in files):
+              raise SystemExit('invalid upstream artifact inventory or empty file')
+          for f in files: shutil.copyfile(f, target / f.name)
+          PYCODE
+          python3 - "$RUNNER_TEMP/batch-artifacts" <<'PYCODE'
+          import pathlib, sys
+          for f in pathlib.Path(sys.argv[1]).rglob('*.olean'):
+              if f.is_symlink() or not f.is_file() or f.stat().st_size == 0:
+                  raise SystemExit(f'invalid proof artifact file: {f}')
+          PYCODE
+          python3 scripts/assemble_pack1094_artifacts.py "$p/generated/batches.txt" "$RUNNER_TEMP/batch-artifacts" "$p"
+          cd "$p"
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          for f in PackShard Pack1094Shard; do
+            lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Pack1094Shard.log" ArchivePack1094.capacity_vertex_two
+          cp generated/Pack1094AllCapacities.lean .
+          lean -o Pack1094AllCapacities.olean Pack1094AllCapacities.lean 2>&1 | tee "$RUNNER_TEMP/Pack1094AllCapacities.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Pack1094AllCapacities.log" ArchivePack1094.support_partition ArchivePack1094.all_capacities
+          cat > ExactStatement.lean <<'LEAN'
+          import Pack1094AllCapacities
+          open Finset UpperBridge
+          open scoped BigOperators
+          namespace ArchivePack1094
+          example : ∀ x ∈ support, (∑ i ∈ indices.filter (fun i => x ∈ T i), w i) ≤ 1000 := all_capacities
+          end ArchivePack1094
+          LEAN
+          lean ExactStatement.lean
+          mkdir -p "$GITHUB_WORKSPACE/assembly-proof"
+          cp Pack1094AllCapacities.lean Pack1094AllCapacities.olean "$RUNNER_TEMP/Pack1094AllCapacities.log" "$GITHUB_WORKSPACE/assembly-proof/"
+      - name: Save assembly proof and axiom report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: node1094-reused-capacity-proof
+          path: assembly-proof/*
+          if-no-files-found: error

@@ -1,0 +1,7 @@
+# Node 1094 targeted assembly reuse
+
+`pack-node1094-reuse.yml` is a manual-only workflow for run 41347502663, attempt 1, commit 5201645d256bdbecb248833993ee475dee11c069. It requires the original upstream job and all 88 shard jobs to have succeeded; the original assembly may still be running or may have failed. The workflow prints its current status, which is not a success claim. The workflow must first be made available for manual dispatch by an authorized maintainer; this change does not dispatch it.
+
+It checks the original proof sources and project files against the original commit, pins the Pack1094 source hash, checks producer job identity via the GitHub API, downloads artifacts from that run, checks their expected filenames and nonempty contents, then compiles the hierarchical assembly and an independent exact-statement check with pinned Lean and an axiom gate. No shard is rerun.
+
+**Trust boundary:** the downloaded upstream and shard `.olean` bytes are trusted GitHub Actions artifacts from the identified producer jobs, not independently source-rebuilt or kernel-replayed in this job. The artifacts have no independently pinned per-file digests; inventory and nonemptiness checks do not authenticate their contents or establish source-to-binary correspondence. Mathlib's cache is also trusted as in the original workflow. The new Lean compile and axiom report do not remove those assumptions. A successful reuse run is not a cache-free verification or a successful result for the original assembly run.

@@ -21,6 +21,10 @@ class ScaleGenerationTest(unittest.TestCase):
             self.assertIn('∀ x ∈ support', full)
             self.assertIn('capacity_vertex_two', full)
             self.assertIn('capacity_vertex_1564', (out / 'Pack1094Batch087.lean').read_text())
+            self.assertIn('support_partition', full)
+            self.assertIn('Finset.insert_union', full)
+            self.assertIn('capacity_group_000', full)
+            self.assertNotIn('simp only [support, Finset.mem_insert', full)
             self.assertNotIn('native_decide', full)
             self.assertNotIn('sorry', full)
 

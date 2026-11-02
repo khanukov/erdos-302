@@ -26,7 +26,7 @@ jobs:
           p="$RUNNER_TEMP/smooth-partition-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest}.lean "$p/"
+          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
@@ -55,3 +55,7 @@ jobs:
           python3 "$check" "$RUNNER_TEMP/SmoothExistence.log" SmoothPartition.decomposition_exists
           lean SmoothExistenceTest.lean 2>&1 | tee "$RUNNER_TEMP/SmoothExistenceTest.log"
           python3 "$check" "$RUNNER_TEMP/SmoothExistenceTest.log" SmoothPartition.decomposition_exists
+          lean -o SmoothCover.olean SmoothCover.lean 2>&1 | tee "$RUNNER_TEMP/SmoothCover.log"
+          python3 "$check" "$RUNNER_TEMP/SmoothCover.log" SmoothPartition.blocks_cover SmoothPartition.indexed_blocks_disjoint
+          lean SmoothCoverTest.lean 2>&1 | tee "$RUNNER_TEMP/SmoothCoverTest.log"
+          python3 "$check" "$RUNNER_TEMP/SmoothCoverTest.log" SmoothPartition.blocks_cover SmoothPartition.indexed_blocks_disjoint
