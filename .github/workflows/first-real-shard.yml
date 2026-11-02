@@ -24,6 +24,10 @@ jobs:
           python3 -B audit/bank-row-pack/check_mixed_inventory.py
           python3 -B audit/bank-row-pack/test_mixed_inventory.py
           python3 -B -O audit/bank-row-pack/test_mixed_inventory.py
+          python3 -B independent_bank/test_next_shards.py
+          python3 -B -O independent_bank/test_next_shards.py
+          python3 -B independent_bank/next_shards.py --check
+          python3 -B -O independent_bank/next_shards.py --check
           python3 -B independent_bank/test_first_shard.py
           python3 -B -O independent_bank/test_first_shard.py
           python3 -B independent_bank/test_mixed_artifact.py
@@ -110,3 +114,13 @@ jobs:
             timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/FirstRealShard.log" FirstRealShard.check0 FirstRealShard.check1 FirstRealShard.check2 FirstRealShard.check3 FirstRealShard.check4 FirstRealShard.check5 FirstRealShard.check6 FirstRealShard.check7 FirstRealShard.check8 FirstRealShard.checked FirstRealShard.bound8
+          for f in ActualPrefix32Data ActualPrefix32Checks0 ActualPrefix32Checks1 ActualPrefix32Checks2 ActualPrefix32Sound; do
+            timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          for shard in 0 1 2; do
+            case "$shard" in 0) start=0; end=8;; 1) start=9; end=15;; 2) start=16; end=31;; esac
+            declarations=()
+            for i in $(seq "$start" "$end"); do declarations+=("ActualPrefix32.check$i"); done
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix32Checks$shard.log" "${declarations[@]}"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix32Sound.log" ActualPrefix32.checked ActualPrefix32.sound
