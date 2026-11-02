@@ -25,6 +25,7 @@ import RoughDiscrepancyTests
 import SumBridgeTest
 import SmoothCoverTest
 import RoughCoprimeTest
+import DemandRenewalChainTests
 import RenewalMultiplicityCandidateTests
 import RenewalUnrollTest
 import LocalBlockDemandTests
@@ -141,3 +142,7 @@ import GainPrefixTest
 #print axioms RenewalMultiplicityCandidate.expansion_eq
 #print axioms RenewalMultiplicityCandidate.occurrence_cover
 #print axioms RenewalMultiplicityCandidate.occurrence_hcover
+
+#print axioms DemandRenewalChain.update_graph_demand
+#print axioms DemandRenewalChain.tail_graph_demand
+#print axioms DemandRenewalChain.levels_graph_demand

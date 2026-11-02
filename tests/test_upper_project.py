@@ -230,6 +230,36 @@ class UpperProjectTests(unittest.TestCase):
                         'lean/RenewalMultiplicityCandidate*.lean'):
             self.assertIn(command, workflow)
 
+    def test_graph_demand_chain_integrated_and_gated(self):
+        import tomllib
+        roots = next(lib['roots'] for lib in tomllib.loads(
+            (ROOT / 'lakefile.toml').read_text())['lean_lib'] if lib['name'] == 'UpperIntegration')
+        excluded = (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines()
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text().splitlines()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        for module in ('DemandRenewalChain', 'DemandRenewalChainTests'):
+            self.assertEqual(roots.count(module), 1)
+            self.assertNotIn(module, excluded)
+        self.assertIn('import DemandRenewalChainTests', source)
+        audit = next(line.split() for line in workflow.splitlines()
+                     if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py '))
+        for suffix in ('update_graph_demand', 'tail_graph_demand', 'levels_graph_demand'):
+            name = 'DemandRenewalChain.' + suffix
+            self.assertIn('#print axioms ' + name, source)
+            self.assertIn(name, audit)
+        self.assertIn('lean/DemandRenewalChain*.lean', workflow)
+        import re
+        chain = (ROOT / 'lean/DemandRenewalChain.lean').read_text()
+        for theorem, premises in {
+            'update_graph_demand': ('hp', 'hpQ', 'hparent', 'hold', 'hseed'),
+            'tail_graph_demand': ('hp', 'hpQ', 'hparent', 'hsmall'),
+            'levels_graph_demand': ('hp', 'hfresh', 'hQ', 'hbase', 'hupdate', 'hold', 'hseed'),
+        }.items():
+            match = re.search(r'theorem ' + theorem + r'\b(.*?)\s*:= by', chain, re.S)
+            self.assertIsNotNone(match)
+            for premise in premises:
+                self.assertRegex(match.group(1), r'\(' + premise + r'\s*:')
+
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
         for s in ['pull_request:', 'push:', 'main', 'lake build UpperIntegration']:
