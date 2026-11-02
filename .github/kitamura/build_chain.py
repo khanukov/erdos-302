@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Dependency-first source rebuild; run under `lake env` in upstream/lean."""
+import json
 import os
 from pathlib import Path
 import re
@@ -12,21 +13,82 @@ TARGETS = {'pilot': 'Erdos302ReflectiveChainData19FC', 'full': 'Erdos302Reflecti
 ALLOWED = {'propext', 'Classical.choice', 'Quot.sound'}
 
 
-def closure(target):
+# Only these roots belong to the separately pinned Lean/Lake environment. All
+# other imports must resolve to source in ROOT, never to an ambient olean.
+EXTERNAL_ROOTS = {'Mathlib', 'Lean', 'Init', 'Std', 'Batteries', 'Aesop', 'Qq',
+                  'ProofWidgets', 'Plausible', 'LeanSearchClient', 'ImportGraph', 'Cli'}
+MODULE = re.compile(r'[A-Za-z_][A-Za-z_0-9\']*(?:\.[A-Za-z_][A-Za-z_0-9\']*)*\Z')
+
+
+def imports(file):
+    """Read the Lean header; reject unsupported import syntax, don't guess it.
+
+    Comments (including nested block comments) may occur between header tokens.
+    Import names must be on the same line as `import`; other forms fail closed.
+    """
+    depth = 0
+    result = []
+    for line in file.read_text().splitlines():
+        clean = []
+        i = 0
+        while i < len(line):
+            pair = line[i:i+2]
+            if pair == '/-':
+                if not depth:
+                    clean.append(' ')
+                depth += 1
+                i += 2
+            elif depth and pair == '-/':
+                depth -= 1
+                i += 2
+            elif depth:
+                i += 1
+            elif pair == '--':
+                break
+            else:
+                clean.append(line[i])
+                i += 1
+        text = ''.join(clean).strip()
+        if not text:
+            continue
+        if text == 'prelude':
+            continue
+        words = text.split()
+        if words[0] == 'import':
+            if len(words) == 1 or any(not MODULE.fullmatch(w) for w in words[1:]):
+                raise ValueError(f'unsupported import in {file}: {text}')
+            for name in words[1:]:
+                if name in result:
+                    raise ValueError(f'duplicate import {name} in {file}')
+                result.append(name)
+        elif re.search(r'\bimport\b', text):
+            raise ValueError(f'unsupported header import in {file}: {text}')
+        elif result and line[:1].isspace() and all(MODULE.fullmatch(w) for w in words):
+            raise ValueError(f'unsupported possible import continuation in {file}: {text}')
+        else:
+            break
+    if depth:
+        raise ValueError(f'unterminated header comment in {file}')
+    return result
+
+
+def closure(target, external_imports=None):
     seen, active, order = set(), set(), []
     def visit(name):
+        if name.split('.')[0] in EXTERNAL_ROOTS:
+            if external_imports is not None:
+                external_imports.add(name)
+            return
         file = ROOT / (name.replace('.', '/') + '.lean')
         if not file.is_file():
-            return
+            raise ValueError(f'missing source for import: {name}')
         if name in active:
             raise ValueError('import cycle: ' + name)
         if name in seen:
             return
         active.add(name)
-        for line in file.read_text().splitlines():
-            if line.startswith('import '):
-                for dep in line.split()[1:]:
-                    visit(dep)
+        for dep in imports(file):
+            visit(dep)
         active.remove(name)
         seen.add(name)
         order.append(name)
@@ -34,9 +96,28 @@ def closure(target):
     return order
 
 
+def check_inventory(actual, expected):
+    if len(actual) != len(set(actual)) or len(expected) != len(set(expected)):
+        raise ValueError('duplicate module in inventory')
+    if set(actual) != set(expected):
+        raise ValueError(f'inventory mismatch: missing={sorted(set(expected)-set(actual))} '
+                         f'extra={sorted(set(actual)-set(expected))}')
+
+
+def audited_full_closure():
+    inventory = json.loads((Path(__file__).resolve().parents[2] / 'audit/full-reflective/upstream-inventory.json').read_text())
+    if inventory['upstream_commit'] != '9447ceb28138949b2fb32442cec506a6f53104f9' or inventory['target'] != TARGETS['full']:
+        raise ValueError('inventory provenance mismatch')
+    external = set()
+    order = closure(TARGETS['full'], external)
+    check_inventory(order, inventory['modules'])
+    check_inventory(list(external), inventory['external_imports'])
+    return order
+
+
 def run(scope, logdir, plan=False):
     target = TARGETS[scope]
-    order = closure(target)
+    order = audited_full_closure() if scope == 'full' else closure(target)
     expected = {'pilot': 8, 'full': 235}[scope]
     if len(order) != expected or target not in order:
         raise RuntimeError(f'unexpected closure: {len(order)} (expected {expected})')

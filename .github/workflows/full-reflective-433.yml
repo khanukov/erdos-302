@@ -1,0 +1,84 @@
+name: Reflective full chain and profile bridge 4.33 (candidate)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    env:
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: KitaKen1/erdos-302-upper-bound
+          ref: 9447ceb28138949b2fb32442cec506a6f53104f9
+          path: upstream
+          persist-credentials: false
+      - name: Verify inputs and stage exact upstream source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream rev-parse HEAD)" = 9447ceb28138949b2fb32442cec506a6f53104f9
+          test "$(cat lean-toolchain)" = 'leanprover/lean4:v4.33.0-rc1'
+          test -z "$(find upstream/lean -name '*.olean' -print -quit)"
+          mkdir -p "$RUNNER_TEMP/logs"
+          sha256sum lake-manifest.json > "$RUNNER_TEMP/manifest.sha256"
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s audit/full-reflective -p 'test_*.py' -v
+          python3 audit/full-reflective/stage.py upstream/lean "$RUNNER_TEMP/staged" .github/kitamura/build_chain.py
+          cp "$RUNNER_TEMP/staged/closure.txt" "$RUNNER_TEMP/logs/closure.txt"
+          (cd "$RUNNER_TEMP/staged" && sha256sum $(cat closure.txt | tr '.' '/' | sed 's/$/.lean/')) > "$RUNNER_TEMP/logs/source-sha256.txt"
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Mathlib cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          sha256sum -c "$RUNNER_TEMP/manifest.sha256"
+          python3 audit/full-reflective/verify_dependencies.py "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/logs/dependency-revisions.txt"
+      - name: Fresh chain and candidate bridge, same environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          # One Lean worker, 10 GiB virtual address space per process, job deadline 355 min.
+          # This is not a job-wide aggregate memory limit.
+          ulimit -v 10485760
+          lake env bash -euo pipefail -c '
+            cd "$RUNNER_TEMP/staged"
+            python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" full "$RUNNER_TEMP/logs" 2>&1 | tee "$RUNNER_TEMP/logs/build.log"
+            python3 -c '"'"'import pathlib, shutil, os; src=pathlib.Path(os.environ["GITHUB_WORKSPACE"])/"lean"; dst=pathlib.Path.cwd(); files=list(src.rglob("*.lean")); collisions=[str(p.relative_to(src)) for p in files if (dst/p.relative_to(src)).exists()]; assert not collisions, collisions; [(dst/p.relative_to(src)).parent.mkdir(parents=True, exist_ok=True) or shutil.copyfile(p,dst/p.relative_to(src)) for p in files]'"'"'
+            cp "$GITHUB_WORKSPACE/audit/full-reflective/ReciprocalBridge.lean" .
+            cp "$GITHUB_WORKSPACE/audit/full-reflective/ProfileBridge.lean" .
+            python3 "$GITHUB_WORKSPACE/audit/full-reflective/build_bridge.py" "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" "$RUNNER_TEMP/logs/fresh-oleans" 2>&1 | tee "$RUNNER_TEMP/logs/bridge-build.log"
+            export LEAN_PATH="$RUNNER_TEMP/logs/fresh-oleans:$LEAN_PATH"
+            lean -j 1 ProfileBridge.lean 2>&1 | tee "$RUNNER_TEMP/logs/bridge-axioms.log"
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/logs/bridge-axioms.log" ReflectiveProfileBridge.upstream_to_demand ReflectiveProfileBridge.profile19
+          '
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reflective-433-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/logs/*.txt
+            ${{ runner.temp }}/logs/*.log
+            ${{ runner.temp }}/logs/Axioms.lean
+          if-no-files-found: warn
+          retention-days: 14
