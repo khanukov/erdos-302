@@ -1,8 +1,12 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 07:58 UTC. The last successful selected integration commit is [`354340b30576d24c753f46820b37a8ea638c81d2`](https://github.com/khanukov/erdos-302/commit/354340b30576d24c753f46820b37a8ea638c81d2). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 08:05 UTC. The last successful selected integration commit is [`70ee2bfed793171f4c6cf51988930385f6eb14fb`](https://github.com/khanukov/erdos-302/commit/70ee2bfed793171f4c6cf51988930385f6eb14fb). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* Unified [41409138985](https://github.com/khanukov/erdos-302/actions/runs/41409138985) passed at `70ee2bf` with 78 allowed-axiom reports, including `EndpointPremisesCandidate.endpoint_of_cover`. Its only explicit assumption is `hcover`, but it does not yet identify `f` with the extremal function or prove `hcover`.
+* Separately [41409255067](https://github.com/khanukov/erdos-302/actions/runs/41409255067) at `2d6f310` passed the node-8 trim proof and axiom gates. Archive-to-Lean transcription remains external Python evidence.
+* Reflective [41400362468](https://github.com/khanukov/erdos-302/actions/runs/41400362468) at `8a5d048` failed on module 224/235 due to a deterministic Lean heartbeat timeout; neither the full chain nor its candidate bridge passed.
 
 * Unified [41407925082](https://github.com/khanukov/erdos-302/actions/runs/41407925082) passed on `354340b`, with 68 allowed-axiom reports, integrating both literal gain and error matches and their conditional endpoint specialization. It does not import the separately checked `endpoint_of_cover` at this SHA and does not prove `hcover`.
 
