@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 08:05 UTC. The last successful selected integration commit is [`70ee2bfed793171f4c6cf51988930385f6eb14fb`](https://github.com/khanukov/erdos-302/commit/70ee2bfed793171f4c6cf51988930385f6eb14fb). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 08:29 UTC. The last successful selected integration commit is [`bb827e64203b110af8d61ad35f914498f4a5335b`](https://github.com/khanukov/erdos-302/commit/bb827e64203b110af8d61ad35f914498f4a5335b). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* Unified [41411171157](https://github.com/khanukov/erdos-302/actions/runs/41411171157) passed `UpperIntegration` at `bb827e6` with 86 allowed-axiom reports, including semantic node 8 and the cover-conditional numerical endpoint. This is not a full bank replay.
+* Separate [41411391206](https://github.com/khanukov/erdos-302/actions/runs/41411391206) at `451faf0` passed `RenewalMultiplicityCandidate.expansion_eq`, `occurrence_cover` and `occurrence_hcover`, with three allowed-axiom reports. The cover lemmas assume per-cell matching, per-block joint allocation and demands; neither archive-specific matching nor allocation is discharged. See [the multiplicity proof obligations](audit/hcover-renewal-exact-gap.md).
 
 * Unified [41409138985](https://github.com/khanukov/erdos-302/actions/runs/41409138985) passed at `70ee2bf` with 78 allowed-axiom reports, including `EndpointPremisesCandidate.endpoint_of_cover`. Its only explicit assumption is `hcover`, but it does not yet identify `f` with the extremal function or prove `hcover`.
 * Separately [41409255067](https://github.com/khanukov/erdos-302/actions/runs/41409255067) at `2d6f310` passed the node-8 trim proof and axiom gates. Archive-to-Lean transcription remains external Python evidence.
