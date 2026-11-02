@@ -1,8 +1,10 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 07:32 UTC. The last successful selected integration commit is [`67cc2a9ac98ad08775478864efe50fedd67a11a3`](https://github.com/khanukov/erdos-302/commit/67cc2a9ac98ad08775478864efe50fedd67a11a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 07:39 UTC. The last successful selected integration commit is [`67cc2a9ac98ad08775478864efe50fedd67a11a3`](https://github.com/khanukov/erdos-302/commit/67cc2a9ac98ad08775478864efe50fedd67a11a3). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41406858237](https://github.com/khanukov/erdos-302/actions/runs/41406858237) passed the occurrence-indexed `HGainCandidate.indexed_hgain` at `cc5b067` with the standard axioms and tests. It establishes the exact gain matching for the literal indexed ledger without an explicit hypothesis, preserving repeated occurrences. At this snapshot it remains a separate checked workflow; removal of `hgain` from the unified endpoint requires an additional checked specialization. This is not `hcover` or archive provenance.
 
 * [41405242183](https://github.com/khanukov/erdos-302/actions/runs/41405242183) passed selected integration at `67cc2a9`, including semantic node 6 and `ArchiveLedgerSumBridge.indexed_endpoint_no_error`, with 49 allowed-axiom reports. The latter removes `herror` using the verified occurrence-indexed error sum; it still assumes `hgain`, `hcover`, and its other stated interval, prime, density and budget conditions.
 * Separate [41405367129](https://github.com/khanukov/erdos-302/actions/runs/41405367129) at `e0c685d` checked `ArchiveCase7Staged.bound7` and its row bounds with standard axioms. It is a concrete node-7 semantic bound, not a complete bank replay. Transcription from archive bytes is checked by Python, not Lean.
