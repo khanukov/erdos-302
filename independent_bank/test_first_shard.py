@@ -9,7 +9,7 @@ class FirstShardTests(unittest.TestCase):
     def test_case_proofs_unfold_row_before_image(self):
         proof = first_shard.generate_proof()
         for i in (4, 7):
-            self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes', proof)
+            self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes\n  decide', proof)
 
     def test_inventory_and_kinds(self):
         doc = mixed_prefix_export.export(archive_prefix.load_bank())

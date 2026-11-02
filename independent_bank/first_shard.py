@@ -23,7 +23,7 @@ def generate_proof():
         if i in (4, 7):
             lines.extend([header, f'  change CaseCheck nodes {i} _ _',
                           '  unfold CaseCheck RefCheck row image nodes',
-                          '  simp only [BankCase.check] <;> decide', ''])
+                          '  decide', ''])
         elif i in (5, 8):
             lines.extend([header, f'  change TrimCheck nodes {i} _',
                           '  unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge',
