@@ -1,0 +1,21 @@
+name: Profile reconstruction (data only)
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reconstruct:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Independent small tests and adversarial cases
+        run: |
+          python3 -B -m unittest discover -s tools -p test_reconstruct_report_profiles.py -v
+          python3 -B -O -m unittest discover -s tools -p test_reconstruct_report_profiles.py -v
+      - name: Reconstruct pinned archive data
+        run: python3 -B tools/reconstruct_report_profiles.py input/erdos302_boundary_certificates_publication.zip

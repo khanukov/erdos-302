@@ -1,0 +1,22 @@
+name: Conditional archive seed reconstruction
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reconstruct:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Unit tests in normal and optimized modes
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s independent_bank -p 'test_seed_reconstruction.py' -v
+          python3 -B -O -m unittest discover -s independent_bank -p 'test_seed_reconstruction.py' -v
+      - name: Replay witnesses and compare all profile tables
+        run: |
+          set -euo pipefail
+          python3 -B -O independent_bank/seed_reconstruction.py
