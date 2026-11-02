@@ -10,7 +10,7 @@ theorem factorCount_nonzero :
   rw [← cellCount_eq_sum_multiplicity ∅ ∅ 6 1 2 (by decide) (by decide)
     (by simp) (by simp)]
   norm_num [ArchiveSummation.cellCount, Finset.range_add_one, Finset.filter_insert,
-    Finset.filter_empty, Nat.Coprime]
+    Finset.filter_singleton, Finset.filter_empty, Nat.Coprime]
 
 theorem factorCount_nonempty_sets :
     (∑ q ∈ indices ({2} : Finset ℕ) {3} 6, multiplicity {3} 6 1 2 q) = 1 := by
