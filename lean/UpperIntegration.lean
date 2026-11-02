@@ -1,3 +1,4 @@
+import FactorCountCandidate
 import EndpointPremisesCandidateTests
 import DensityPrefixCandidateTests
 import HGainCandidateTest
@@ -146,3 +147,7 @@ import GainPrefixTest
 #print axioms DemandRenewalChain.update_graph_demand
 #print axioms DemandRenewalChain.tail_graph_demand
 #print axioms DemandRenewalChain.levels_graph_demand
+
+#print axioms SuffixBijectionCandidate.split_exists_unique
+#print axioms SuffixBijectionCandidate.product_prefix_rough
+#print axioms SuffixBijectionCandidate.cellCount_eq_sum_multiplicity

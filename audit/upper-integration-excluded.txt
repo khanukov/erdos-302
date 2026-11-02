@@ -6,7 +6,6 @@ BridgeScaled
 CaseRulesTest
 DagTests
 FactorCountAxioms
-FactorCountCandidate
 FactorCountCandidateTests
 FreshExistentialLowerCheck
 LiteralFactorMatchingCandidate
@@ -25,7 +24,6 @@ PackTests
 PilotAudit
 SmoothExistenceTest
 SmoothPartitionTest
-SuffixBijectionCandidate
 SuffixBijectionCandidateTests
 SummationTest
 Tests

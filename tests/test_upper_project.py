@@ -260,6 +260,31 @@ class UpperProjectTests(unittest.TestCase):
             for premise in premises:
                 self.assertRegex(match.group(1), r'\(' + premise + r'\s*:')
 
+    def test_factor_count_integrated_with_separate_diagnostics(self):
+        import tomllib
+        roots = next(lib['roots'] for lib in tomllib.loads(
+            (ROOT / 'lakefile.toml').read_text())['lean_lib'] if lib['name'] == 'UpperIntegration')
+        excluded = (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines()
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text().splitlines()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        diagnostic = (ROOT / '.github/workflows/factor-count-candidate.yml').read_text()
+        for module in ('SuffixBijectionCandidate', 'FactorCountCandidate'):
+            self.assertEqual(roots.count(module), 1)
+            self.assertNotIn(module, excluded)
+            self.assertIn('lean/' + module + '.lean', workflow)
+        self.assertIn('import FactorCountCandidate', source)
+        self.assertNotIn('FactorCountCandidateTests', roots)
+        self.assertIn('FactorCountCandidateTests', excluded)
+        self.assertNotIn('import FactorCountCandidateTests', source)
+        self.assertIn('lean FactorCountCandidateTests.lean', diagnostic)
+        audit = next(line.split() for line in workflow.splitlines()
+                     if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py '))
+        for name in ('SuffixBijectionCandidate.split_exists_unique',
+                     'SuffixBijectionCandidate.product_prefix_rough',
+                     'SuffixBijectionCandidate.cellCount_eq_sum_multiplicity'):
+            self.assertIn('#print axioms ' + name, source)
+            self.assertIn(name, audit)
+
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
         for s in ['pull_request:', 'push:', 'main', 'lake build UpperIntegration']:
