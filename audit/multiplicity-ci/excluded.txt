@@ -125,3 +125,5 @@ MixedCaseTrimCandidate
 MixedCaseTrimCandidateTest
 MixedDagLocality
 MixedDagLocalityTests
+ArchiveCorrectionBridgeCandidate
+CorrectionOccurrenceGeneric

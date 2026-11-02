@@ -1,0 +1,73 @@
+name: Archive correction bridge candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      LEAN_NUM_THREADS: '1'
+      LEAN_STACK_SIZE_KB: '262144'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Structural checks and independent finite test
+        run: |
+          set -euo pipefail
+          python3 -B tests/test_upper_project.py
+          python3 -B -O tests/test_upper_project.py
+          python3 -B audit/multiplicity-ci/check_inventory.py "$GITHUB_WORKSPACE"
+          python3 -B tests/test_literal_factor_matching.py
+          python3 -B -O tests/test_literal_factor_matching.py
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+      - name: Prepare isolated Lake project
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/literal-matching-project"
+          mkdir -p "$p/audit/ledger-candidate"
+          cp lakefile.toml lake-manifest.json lean-toolchain "$p/"
+          cp -a lean "$p/lean"
+          cp -a audit/ledger-candidate/lean "$p/audit/ledger-candidate/lean"
+          printf '\n[[lean_lib]]\nname = "ArchiveCorrectionPilot"\nsrcDir = "lean"\nroots = ["LiteralFactorMatchingCandidate", "ArchiveCorrectionBridgeCandidate", "RenewalConcreteOccurrence", "RenewalPointwiseAllocation", "OccurrenceIndex", "CorrectionOccurrenceGeneric"]\n' >> "$p/lakefile.toml"
+          echo "PILOT_PROJECT=$p" >> "$GITHUB_ENV"
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Mathlib and cache
+        run: |
+          set -euo pipefail
+          cd "$PILOT_PROJECT"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          timeout 30m lake exe cache get
+      - name: Build exact target and gate axioms
+        run: |
+          set -euo pipefail
+          cd "$PILOT_PROJECT"
+          if grep -nE '\b(sorry|admit|native_decide)\b' lean/ArchiveCorrectionBridgeCandidate.lean lean/CorrectionOccurrenceGeneric.lean; then exit 1; fi
+          ulimit -v 24000000
+          timeout 120m lake build +ArchiveCorrectionBridgeCandidate +CorrectionOccurrenceGeneric 2>&1 | tee "$RUNNER_TEMP/build.log"
+          timeout 30m lake env lean lean/ArchiveCorrectionBridgeCandidate.lean 2>&1 | tee "$RUNNER_TEMP/axioms.log"
+          timeout 10m lake env lean lean/CorrectionOccurrenceGeneric.lean 2>&1 | tee "$RUNNER_TEMP/generic-axioms.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/generic-axioms.log" CorrectionOccurrenceGeneric.occurrence_correction_sum
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/axioms.log" ArchiveCorrectionBridgeCandidate.correction_at_occurrence ArchiveCorrectionBridgeCandidate.correction_zero ArchiveCorrectionBridgeCandidate.literal_allocation ArchiveCorrectionBridgeCandidate.literal_hcover_of_recurrence
+      - name: Retain diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: archive-correction-bridge-logs
+          path: |
+            ${{ runner.temp }}/build.log
+            ${{ runner.temp }}/axioms.log
+          if-no-files-found: warn
