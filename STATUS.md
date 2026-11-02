@@ -1,8 +1,12 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 04:41 UTC. The last successful selected integration commit is [`70eac6d436bce75ddaba08f382c29b0b32bb588c`](https://github.com/khanukov/erdos-302/commit/70eac6d436bce75ddaba08f382c29b0b32bb588c). CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 05:03 UTC. The last successful selected integration commit is [`d1547a512199fc956ced97beb8e6aaf117dea1f4`](https://github.com/khanukov/erdos-302/commit/d1547a512199fc956ced97beb8e6aaf117dea1f4). CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* [41390028171](https://github.com/khanukov/erdos-302/actions/runs/41390028171) passed the selected integration on `d1547a5`, including the nonzero concrete bank-node-0 seed and 12 allowed-axiom reports. Byte-to-literal correspondence is checked externally in Python, not in Lean; this is one node, not the whole bank.
+* [41391420681](https://github.com/khanukov/erdos-302/actions/runs/41391420681) passed the separate literal-ledger / analytic bridge on `6863835`, including its four axiom gates. `conditional_indexed_endpoint` still assumes `hgain`, `herror`, `hcover` and the stated interval/prime/density conditions; it is not an unconditional endpoint. See [bridge status](audit/ledger-candidate/SUMBRIDGE-STATUS.md).
+* The reflective rebuild [41389933403](https://github.com/khanukov/erdos-302/actions/runs/41389933403) failed at module 64/235 on an `isDefEq` heartbeat timeout; neither the remaining chain nor bridge was checked.
 
 * Selected integration [41388466622](https://github.com/khanukov/erdos-302/actions/runs/41388466622) passed at `70eac6d`, including the conditional bank-profile and prefix-cell bridges and 11 axiom gates. Their hypotheses are not thereby eliminated. On the same SHA, reflective [41388466123](https://github.com/khanukov/erdos-302/actions/runs/41388466123) failed at module 34/235 while creating a thread; diagnostics showed the Lean process near its 10 GiB virtual-address cap but did not establish cause. Full chain and profile bridge remain unverified.
 
