@@ -1,0 +1,110 @@
+name: Four external leaves, fresh reflective chain (candidate)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    env:
+      LEAN_NUM_THREADS: '1'
+      # Experimental mitigation: cap each Lean runtime thread stack, not proof resources.
+      LEAN_STACK_SIZE_KB: '262144'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: KitaKen1/erdos-302-upper-bound
+          ref: 9447ceb28138949b2fb32442cec506a6f53104f9
+          path: upstream
+          persist-credentials: false
+      - name: Verify inputs and stage exact upstream source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream rev-parse HEAD)" = 9447ceb28138949b2fb32442cec506a6f53104f9
+          test "$(cat lean-toolchain)" = 'leanprover/lean4:v4.33.0-rc1'
+          test -z "$(find upstream/lean -name '*.olean' -print -quit)"
+          mkdir -p "$RUNNER_TEMP/logs"
+          sha256sum lake-manifest.json > "$RUNNER_TEMP/manifest.sha256"
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s audit/full-reflective -p 'test_*.py' -v
+          python3 audit/full-reflective/stage.py upstream/lean "$RUNNER_TEMP/staged" .github/kitamura/build_chain.py
+          PYTHONDONTWRITEBYTECODE=1 python3 independent_bank/four_external_data.py
+          PYTHONDONTWRITEBYTECODE=1 python3 independent_bank/generate_four_bridge.py
+          PYTHONDONTWRITEBYTECODE=1 python3 independent_bank/four_tree_check.py upstream/lean/Erdos302ReflectiveChainData00FC.lean
+          cp "$RUNNER_TEMP/staged/closure.txt" "$RUNNER_TEMP/logs/closure.txt"
+          (cd "$RUNNER_TEMP/staged" && sha256sum $(cat closure.txt | tr '.' '/' | sed 's/$/.lean/')) > "$RUNNER_TEMP/logs/upstream-source-sha256.txt"
+          python3 audit/full-reflective/compat.py "$RUNNER_TEMP/staged" | tee "$RUNNER_TEMP/logs/compatibility-transform.txt"
+          (cd "$RUNNER_TEMP/staged" && sha256sum $(cat closure.txt | tr '.' '/' | sed 's/$/.lean/')) > "$RUNNER_TEMP/logs/source-sha256.txt"
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Mathlib cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          # Cache get can succeed with missing entries, including Mathlib.olean.
+          # Build the umbrella module and any uncached imports from the pinned sources;
+          # unlike building the whole library this requests only its olean facet.
+          lake build '@mathlib/+Mathlib:olean'
+          test -f .lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean
+          printf 'import Mathlib\n' > "$RUNNER_TEMP/check-mathlib-import.lean"
+          lake env lean "$RUNNER_TEMP/check-mathlib-import.lean"
+          sha256sum -c "$RUNNER_TEMP/manifest.sha256"
+          python3 audit/full-reflective/verify_dependencies.py "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/logs/dependency-revisions.txt"
+      - name: Fresh chain and candidate bridge, same environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          # One Lean worker, 24 GiB virtual address space per process, job deadline 355 min.
+          # This is not a job-wide aggregate memory limit.
+          ulimit -v 25165824
+          python3 .github/kitamura/resource_monitor.py > "$RUNNER_TEMP/logs/resources.jsonl" &
+          monitor=$!
+          trap 'kill "$monitor" 2>/dev/null || :; wait "$monitor" 2>/dev/null || :' EXIT
+          lake env bash -euo pipefail -c '
+            cd "$RUNNER_TEMP/staged"
+            python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" full "$RUNNER_TEMP/logs" 2>&1 | tee "$RUNNER_TEMP/logs/build.log"
+            for f in lean/Erdos302Lower/Defs.lean lean/UpperBridge.lean lean/UpperBank.lean lean/Extended.lean audit/full-reflective/ReciprocalBridge.lean audit/reciprocal-bridge/ActiveSupport.lean audit/reciprocal-bridge/FourExternalCandidate.lean; do
+              case "$f" in lean/Erdos302Lower/Defs.lean) dest=Erdos302Lower/Defs.lean;; *) dest="${f##*/}";; esac
+              test ! -e "$dest"
+              mkdir -p "$(dirname "$dest")"
+              cp "$GITHUB_WORKSPACE/$f" "$dest"
+            done
+            python3 "$GITHUB_WORKSPACE/audit/reciprocal-bridge/build_four.py" "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" "$RUNNER_TEMP/logs/fresh-oleans" 2>&1 | tee "$RUNNER_TEMP/logs/four-build.log"
+            export LEAN_PATH="$RUNNER_TEMP/logs/fresh-oleans:$LEAN_PATH"
+            printf "import FourExternalCandidate\n" > FourAudit.lean
+            for n in from_chain eval_1097 bound_1097 eval_1107 bound_1107 eval_1112 bound_1112 eval_1114 bound_1114; do
+              printf "#check FourExternal.%s\n#print axioms FourExternal.%s\n" "$n" "$n" >> FourAudit.lean
+            done
+            cp FourAudit.lean "$RUNNER_TEMP/logs/FourAudit.lean"
+            lean -j 1 FourAudit.lean 2>&1 | tee "$RUNNER_TEMP/logs/four-axioms.log"
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/logs/four-axioms.log" FourExternal.from_chain FourExternal.eval_1097 FourExternal.bound_1097 FourExternal.eval_1107 FourExternal.bound_1107 FourExternal.eval_1112 FourExternal.bound_1112 FourExternal.eval_1114 FourExternal.bound_1114
+          '
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: four-external-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/logs/*.txt
+            ${{ runner.temp }}/logs/*.log
+            ${{ runner.temp }}/logs/*.jsonl
+            ${{ runner.temp }}/logs/*.lean
+          if-no-files-found: warn
+          retention-days: 14
