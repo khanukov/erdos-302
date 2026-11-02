@@ -27,6 +27,7 @@ ArchiveTrim8Test
 BankProfile
 BankProfileTests
 BankRowPack
+BankRowPackArchive1090
 BankRowPackTests
 BlockAccountingTests
 BoundaryCertificatesStd
