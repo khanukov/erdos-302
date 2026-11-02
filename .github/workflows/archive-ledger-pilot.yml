@@ -44,14 +44,14 @@ jobs:
       - name: Small Lean tests
         run: |
           set -euo pipefail
-          ulimit -v 6000000
+          ulimit -v 24000000
           timeout 5m lake build LedgerTests
       - name: Full ledger attempt and axiom audit
         if: inputs.full_candidate
         shell: bash
         run: |
           set -euo pipefail
-          ulimit -v 6000000
+          ulimit -v 24000000
           set +e
           timeout 15m lake build ArchiveLedger > "$RUNNER_TEMP/ledger-build.log" 2>&1
           status=$?
