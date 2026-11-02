@@ -22,7 +22,7 @@ def generate_proof():
         header = f'theorem check{i} : MixedDag.Check extraCheck nodes {i} := by'
         if i in (4, 7):
             lines.extend([header, f'  change CaseCheck nodes {i} _ _',
-                          '  unfold CaseCheck RefCheck image row nodes',
+                          '  unfold CaseCheck RefCheck row image nodes',
                           '  simp only [BankCase.check] <;> decide', ''])
         elif i in (5, 8):
             lines.extend([header, f'  change TrimCheck nodes {i} _',

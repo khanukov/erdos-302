@@ -6,6 +6,12 @@ import next_shards
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 class NextShardsTest(unittest.TestCase):
+    def test_case_proofs_unfold_row_before_image(self):
+        generated = next_shards.generate()
+        for i in (4, 7, 14):
+            shard = next(n for n, (start, end) in enumerate(next_shards.RANGES) if start <= i < end)
+            self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes', generated[f'ActualPrefix32Checks{shard}.lean'])
+
     def test_generated_artifacts_match_pinned_archive(self):
         generated = next_shards.generate()
         self.assertEqual(set(generated), {'ActualPrefix32Data.lean', 'ActualPrefix32Checks0.lean', 'ActualPrefix32Checks1.lean', 'ActualPrefix32Checks2.lean', 'ActualPrefix32Sound.lean'})

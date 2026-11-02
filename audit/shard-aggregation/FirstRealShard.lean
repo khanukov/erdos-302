@@ -14,7 +14,7 @@ theorem check3 : MixedDag.Check extraCheck nodes 3 := by decide
 
 theorem check4 : MixedDag.Check extraCheck nodes 4 := by
   change CaseCheck nodes 4 _ _
-  unfold CaseCheck RefCheck image row nodes
+  unfold CaseCheck RefCheck row image nodes
   simp only [BankCase.check] <;> decide
 
 theorem check5 : MixedDag.Check extraCheck nodes 5 := by
@@ -26,7 +26,7 @@ theorem check6 : MixedDag.Check extraCheck nodes 6 := by decide
 
 theorem check7 : MixedDag.Check extraCheck nodes 7 := by
   change CaseCheck nodes 7 _ _
-  unfold CaseCheck RefCheck image row nodes
+  unfold CaseCheck RefCheck row image nodes
   simp only [BankCase.check] <;> decide
 
 theorem check8 : MixedDag.Check extraCheck nodes 8 := by

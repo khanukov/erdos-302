@@ -38,7 +38,7 @@ def generate():
             kind = doc['nodes'][i]['kind']
             if kind == 'case_placeholder':
                 proof = ('by\n  change CaseCheck nodes ' + str(i) + ' _ _\n'
-                         '  unfold CaseCheck RefCheck image row nodes\n'
+                         '  unfold CaseCheck RefCheck row image nodes\n'
                          '  simp only [BankCase.check] <;> decide')
             elif kind == 'trim_placeholder':
                 proof = (f'by\n  change TrimCheck nodes {i} _\n'

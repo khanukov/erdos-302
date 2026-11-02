@@ -11,6 +11,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[1] / 'audit/shard-aggregation'
 
 
 class Prefix256Test(unittest.TestCase):
+    def test_all_case_proofs_unfold_row_before_image(self):
+        doc = mixed_prefix_export.export(archive_prefix.load_bank())
+        for i, node in enumerate(doc['nodes'][:256]):
+            if node['kind'] == 'case_placeholder':
+                text = self.files[f'ActualPrefix256Checks{i // 16}.lean']
+                self.assertIn(f'change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes', text)
+        self.assertEqual(doc['nodes'][14]['kind'], 'case_placeholder')
+
     @classmethod
     def setUpClass(cls):
         cls.files = shards.generate()
