@@ -193,6 +193,43 @@ class UpperProjectTests(unittest.TestCase):
             f ≤ (ArchiveLedger.targetC : ℝ) * (N : ℝ) + 55064831540
         '''.split()))
 
+    def test_occurrence_multiplicity_integrated_and_gated(self):
+        import tomllib
+        roots = next(lib['roots'] for lib in tomllib.loads(
+            (ROOT / 'lakefile.toml').read_text())['lean_lib'] if lib['name'] == 'UpperIntegration')
+        excluded = (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines()
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text().splitlines()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        for module in ('RenewalMultiplicityCandidate', 'RenewalMultiplicityCandidateTests'):
+            self.assertIn(module, roots)
+            self.assertNotIn(module, excluded)
+        self.assertIn('import RenewalMultiplicityCandidateTests', source)
+        audit = next(line.split() for line in workflow.splitlines()
+                     if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py '))
+        for suffix in ('expansion_eq', 'occurrence_cover', 'occurrence_hcover'):
+            name = 'RenewalMultiplicityCandidate.' + suffix
+            self.assertIn('#print axioms ' + name, source)
+            self.assertIn(name, audit)
+        import re
+        candidate = (ROOT / 'lean/RenewalMultiplicityCandidate.lean').read_text()
+        for theorem in ('occurrence_cover', 'occurrence_hcover'):
+            match = re.search(r'theorem ' + theorem + r'\b(.*?)\s*:= by', candidate, re.S)
+            self.assertIsNotNone(match)
+            signature = ' '.join(match.group(1).split())
+            for premise in ('(hA : A ⊆ Icc 1 N)',
+                            '(hfree : ∀ x y z, SmoothRenewal.Triple x y z → x ∈ A → y ∈ A → z ∈ A → False)',
+                            '(hrough : ∀ q ∈ s, SmoothPartition.Rough Q q)',
+                            '(hd : ∀ q ∈ s, RenewalNext.Demand SmoothRenewal.Edge (SmoothRenewal.vertices Q (N / q)) (r q))',
+                            '(matching : ∀ i ∈ cells, count i = ∑ q ∈ s, mult i q)',
+                            '(allocation : ∀ q ∈ s, (∑ i ∈ cells, height i * mult i q) ≤ r q)'):
+                self.assertIn(premise, signature)
+        for command in ('python3 -B tests/test_multiplicity_ci.py',
+                        'python3 -B -O tests/test_multiplicity_ci.py',
+                        'python3 -B -m unittest discover -s tests -p test_renewal_occurrences.py',
+                        'python3 -B -O -m unittest discover -s tests -p test_renewal_occurrences.py',
+                        'lean/RenewalMultiplicityCandidate*.lean'):
+            self.assertIn(command, workflow)
+
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
         for s in ['pull_request:', 'push:', 'main', 'lake build UpperIntegration']:

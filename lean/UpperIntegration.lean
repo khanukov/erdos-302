@@ -25,6 +25,7 @@ import RoughDiscrepancyTests
 import SumBridgeTest
 import SmoothCoverTest
 import RoughCoprimeTest
+import RenewalMultiplicityCandidateTests
 import RenewalUnrollTest
 import LocalBlockDemandTests
 import PrimePowerReindexTest
@@ -136,3 +137,7 @@ import GainPrefixTest
 #print axioms EndpointPremisesCandidate.indexed_density_bounds
 #print axioms EndpointPremisesCandidate.indexed_budget
 #print axioms EndpointPremisesCandidate.endpoint_of_cover
+
+#print axioms RenewalMultiplicityCandidate.expansion_eq
+#print axioms RenewalMultiplicityCandidate.occurrence_cover
+#print axioms RenewalMultiplicityCandidate.occurrence_hcover
