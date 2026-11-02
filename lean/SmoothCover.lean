@@ -26,7 +26,7 @@ theorem blocks_cover (Q : Finset ℕ) (N : ℕ) :
     have hxN : x ≤ N := by nlinarith [ha.1, hx, hn_bounds.2]
     have haIndex : a ∈ roughIndices Q N := by
       apply Finset.mem_filter.mpr
-      exact ⟨Finset.mem_Icc.mpr ⟨by omega, haN⟩, ha⟩
+      exact ⟨Finset.mem_Icc.mpr ⟨ha.1, haN⟩, ha⟩
     have hxVertex : x ∈ SmoothRenewal.vertices Q N := by
       apply Finset.mem_filter.mpr
       exact ⟨Finset.mem_Icc.mpr ⟨by omega, hxN⟩, hs⟩

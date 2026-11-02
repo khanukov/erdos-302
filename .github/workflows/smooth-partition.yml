@@ -26,14 +26,14 @@ jobs:
           p="$RUNNER_TEMP/smooth-partition-project"
           mkdir -p "$p/.lake/packages/mathlib"
           cp audit/mathlib-bridge-ci/project/* "$p/"
-          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest}.lean "$p/"
+          cp lean/{Summation,SummationTest,BlockAccounting,BlockAccountingTests,Renewal,SmoothRenewal,SmoothPartition,SmoothPartitionTest,SmoothExistence,SmoothExistenceTest,SmoothCover,SmoothCoverTest,RoughCoprime,RoughCoprimeTest}.lean "$p/"
           git -C "$p/.lake/packages/mathlib" init
           git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
           git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
           git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
           test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           cd "$p"
-          lake exe cache get Mathlib.Data.Real.Basic Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Nat.Factorization.Induction Mathlib.Data.Nat.Prime.Basic Mathlib.Order.Interval.Finset.Nat Mathlib.Tactic
+          lake exe cache get Mathlib.Data.Real.Basic Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Nat.Factorization.Induction Mathlib.Data.Nat.Prime.Basic Mathlib.Data.Nat.GCD.BigOperators Mathlib.Order.Interval.Finset.Nat Mathlib.Tactic
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
           check="$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py"
           lean -o Summation.olean Summation.lean 2>&1 | tee "$RUNNER_TEMP/Summation.log"
@@ -59,3 +59,7 @@ jobs:
           python3 "$check" "$RUNNER_TEMP/SmoothCover.log" SmoothPartition.blocks_cover SmoothPartition.indexed_blocks_disjoint
           lean SmoothCoverTest.lean 2>&1 | tee "$RUNNER_TEMP/SmoothCoverTest.log"
           python3 "$check" "$RUNNER_TEMP/SmoothCoverTest.log" SmoothPartition.blocks_cover SmoothPartition.indexed_blocks_disjoint
+          lean -o RoughCoprime.olean RoughCoprime.lean 2>&1 | tee "$RUNNER_TEMP/RoughCoprime.log"
+          python3 "$check" "$RUNNER_TEMP/RoughCoprime.log" SmoothPartition.rough_iff_coprime_product SmoothPartition.roughIndices_eq_coprime SmoothPartition.coprime_blocks_cover SmoothPartition.coprime_indexed_blocks_disjoint
+          lean RoughCoprimeTest.lean 2>&1 | tee "$RUNNER_TEMP/RoughCoprimeTest.log"
+          python3 "$check" "$RUNNER_TEMP/RoughCoprimeTest.log" SmoothPartition.rough_iff_coprime_product SmoothPartition.coprime_blocks_cover
