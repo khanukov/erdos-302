@@ -8,6 +8,10 @@ on:
         options: [pilot, full]
         default: pilot
         required: true
+      bounded:
+        description: 'Opt in to two concurrent single-threaded Lean processes (higher memory use)'
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -56,11 +60,15 @@ jobs:
       - name: Build fresh upstream closure and audit axioms
         env:
           SCOPE: ${{ inputs.scope }}
+          BOUNDED: ${{ inputs.bounded }}
         run: |
           set -euo pipefail
+          python3 -m unittest discover -s .github/kitamura -p test_scheduler.py -v
           mkdir -p kitamura-logs
           cd upstream/lean
-          lake env python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" "$SCOPE" "$GITHUB_WORKSPACE/kitamura-logs" 2>&1 | tee "$GITHUB_WORKSPACE/kitamura-logs/build.log"
+          options=()
+          if [[ "$BOUNDED" == true ]]; then options+=(--bounded); fi
+          lake env python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" "$SCOPE" "$GITHUB_WORKSPACE/kitamura-logs" "${options[@]}" 2>&1 | tee "$GITHUB_WORKSPACE/kitamura-logs/build.log"
       - name: Upload logs even on failure
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

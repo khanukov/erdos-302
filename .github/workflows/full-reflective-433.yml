@@ -1,6 +1,11 @@
 name: Reflective full chain and profile bridge 4.33 (candidate)
 on:
   workflow_dispatch:
+    inputs:
+      bounded:
+        description: 'Opt in to two Lean processes; each may use up to 24 GiB virtual memory'
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -31,6 +36,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/logs"
           sha256sum lake-manifest.json > "$RUNNER_TEMP/manifest.sha256"
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s audit/full-reflective -p 'test_*.py' -v
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s .github/kitamura -p test_scheduler.py -v
           python3 audit/full-reflective/stage.py upstream/lean "$RUNNER_TEMP/staged" .github/kitamura/build_chain.py
           cp "$RUNNER_TEMP/staged/closure.txt" "$RUNNER_TEMP/logs/closure.txt"
           (cd "$RUNNER_TEMP/staged" && sha256sum $(cat closure.txt | tr '.' '/' | sed 's/$/.lean/')) > "$RUNNER_TEMP/logs/upstream-source-sha256.txt"
@@ -66,6 +72,8 @@ jobs:
           python3 audit/full-reflective/verify_dependencies.py "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/logs/dependency-revisions.txt"
       - name: Fresh chain and candidate bridge, same environment
         shell: bash
+        env:
+          BOUNDED: ${{ inputs.bounded }}
         run: |
           set -euo pipefail
           # One Lean worker, 24 GiB virtual address space per process, job deadline 355 min.
@@ -76,7 +84,9 @@ jobs:
           trap 'kill "$monitor" 2>/dev/null || :; wait "$monitor" 2>/dev/null || :' EXIT
           lake env bash -euo pipefail -c '
             cd "$RUNNER_TEMP/staged"
-            python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" full "$RUNNER_TEMP/logs" 2>&1 | tee "$RUNNER_TEMP/logs/build.log"
+            options=()
+            if [[ "$BOUNDED" == true ]]; then options+=(--bounded); fi
+            python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" full "$RUNNER_TEMP/logs" "${options[@]}" 2>&1 | tee "$RUNNER_TEMP/logs/build.log"
             python3 -c '"'"'import pathlib, shutil, os; src=pathlib.Path(os.environ["GITHUB_WORKSPACE"])/"lean"; dst=pathlib.Path.cwd(); files=list(src.rglob("*.lean")); collisions=[str(p.relative_to(src)) for p in files if (dst/p.relative_to(src)).exists()]; assert not collisions, collisions; [(dst/p.relative_to(src)).parent.mkdir(parents=True, exist_ok=True) or shutil.copyfile(p,dst/p.relative_to(src)) for p in files]'"'"'
             cp "$GITHUB_WORKSPACE/audit/full-reflective/ReciprocalBridge.lean" .
             cp "$GITHUB_WORKSPACE/audit/full-reflective/ProfileBridge.lean" .

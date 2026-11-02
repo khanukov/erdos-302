@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Dependency-first source rebuild; run under `lake env` in upstream/lean."""
+import argparse
 import json
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
-import sys
+
 import time
 
 ROOT = Path.cwd()
@@ -115,7 +117,97 @@ def audited_full_closure():
     return order
 
 
-def run(scope, logdir, plan=False):
+def build_modules(order, out, logdir, env, workers):
+    """Rebuild the verified local DAG; never release a dependent early."""
+    if workers < 1:
+        raise ValueError('workers must be positive')
+    nodes = set(order)
+    if len(nodes) != len(order):
+        raise ValueError('duplicate module')
+    deps = {}
+    for module in order:
+        names = imports(ROOT / (module.replace('.', '/') + '.lean'))
+        local = {name for name in names if name.split('.')[0] not in EXTERNAL_ROOTS}
+        if not local <= nodes:
+            raise ValueError(f'missing closure dependencies for {module}: {local - nodes}')
+        deps[module] = local
+    pending = set(order)
+    done = set()
+    running = {}
+    interrupted = []
+    def request_stop(signum, _frame):
+        # Do not raise inside Popen: its child must first be registered for cleanup.
+        if not interrupted:
+            interrupted.append(signum)
+    previous = {sig: signal.signal(sig, request_stop) for sig in (signal.SIGTERM, signal.SIGINT)}
+    try:
+        while pending or running:
+            if interrupted:
+                raise SystemExit(128 + interrupted[0])
+            # Polling observes completions only at this instant: a child can fail
+            # immediately afterwards and before a new dispatch.
+            for module, (proc, dest, logfile, start) in list(running.items()):
+                code = proc.poll()
+                if code is None:
+                    continue
+                logfile.close()
+                del running[module]
+                print(f'EXIT {module} {code} seconds={time.monotonic()-start:.2f}', flush=True)
+                if code or not dest.is_file() or not dest.stat().st_size:
+                    raise RuntimeError('failed build: ' + module)
+                done.add(module)
+            for module in order:
+                if interrupted:
+                    raise SystemExit(128 + interrupted[0])
+                if len(running) >= workers:
+                    break
+                if module not in pending or not deps[module] <= done:
+                    continue
+                dest = out / (module.replace('.', '/') + '.olean')
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                logfile = (logdir / (module + '.log')).open('x')
+                start = time.monotonic()
+                print(f'BUILD {module} log={logfile.name}', flush=True)
+                try:
+                    proc = subprocess.Popen(['lean', '-j', '1', '-o', str(dest), module.replace('.', '/') + '.lean'],
+                                            env=env, stdout=logfile, stderr=subprocess.STDOUT,
+                                            start_new_session=True)
+                except BaseException:
+                    logfile.close()
+                    raise
+                running[module] = (proc, dest, logfile, start)
+                pending.remove(module)
+            if pending and not running:
+                raise RuntimeError('dependency cycle or unsatisfied dependencies')
+            if running:
+                time.sleep(0.05)
+    finally:
+        # Signal the whole session, give cooperative parents a chance to reap,
+        # then kill remaining group members even if the leader already exited.
+        for proc, _, _, _ in running.values():
+            try:
+                os.killpg(proc.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+        deadline = time.monotonic() + 0.5
+        for proc, _, _, _ in running.values():
+            try:
+                proc.wait(timeout=max(0, deadline - time.monotonic()))
+            except subprocess.TimeoutExpired:
+                pass
+        for proc, _, _, _ in running.values():
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        for proc, _, logfile, _ in running.values():
+            proc.wait()
+            logfile.close()
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
+
+
+def run(scope, logdir, plan=False, workers=None):
     target = TARGETS[scope]
     order = audited_full_closure() if scope == 'full' else closure(target)
     expected = {'pilot': 8, 'full': 235}[scope]
@@ -132,15 +224,18 @@ def run(scope, logdir, plan=False):
     out.mkdir()
     env = os.environ.copy()
     env['LEAN_PATH'] = str(out.resolve()) + os.pathsep + env.get('LEAN_PATH', '')
-    for num, module in enumerate(order, 1):
-        dest = out / (module.replace('.', '/') + '.olean')
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        start = time.monotonic()
-        print(f'BUILD {num}/{len(order)} {module}', flush=True)
-        result = subprocess.run(['lean', '-j', '1', '-o', str(dest), module.replace('.', '/') + '.lean'], env=env)
-        print(f'EXIT {result.returncode} seconds={time.monotonic()-start:.2f}', flush=True)
-        if result.returncode or not dest.is_file() or not dest.stat().st_size:
-            raise RuntimeError('failed build: ' + module)
+    if workers is not None:
+        build_modules(order, out, logdir, env, workers)
+    else:
+        for num, module in enumerate(order, 1):
+            dest = out / (module.replace('.', '/') + '.olean')
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            start = time.monotonic()
+            print(f'BUILD {num}/{len(order)} {module}', flush=True)
+            result = subprocess.run(['lean', '-j', '1', '-o', str(dest), module.replace('.', '/') + '.lean'], env=env)
+            print(f'EXIT {result.returncode} seconds={time.monotonic()-start:.2f}', flush=True)
+            if result.returncode or not dest.is_file() or not dest.stat().st_size:
+                raise RuntimeError('failed build: ' + module)
     names = (['Erdos302ReflectiveChain.check_19', 'Erdos302ReflectiveChain.I_19_end',
               'Erdos302Reflective.levelCheck_sound'] if scope == 'pilot' else
              [f'Erdos302ReflectiveChain.chain_{i}' for i in range(20)])
@@ -167,6 +262,13 @@ def run(scope, logdir, plan=False):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) not in (3, 4) or sys.argv[1] not in TARGETS or (len(sys.argv) == 4 and sys.argv[3] != '--plan'):
-        raise SystemExit('usage: build_chain.py pilot|full LOGDIR [--plan]')
-    run(sys.argv[1], Path(sys.argv[2]), len(sys.argv) == 4)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('scope', choices=TARGETS)
+    parser.add_argument('logdir', type=Path)
+    parser.add_argument('--plan', action='store_true')
+    parser.add_argument('--bounded', action='store_true', help='enable dependency-aware scheduler')
+    parser.add_argument('--workers', type=int, default=2, help='bounded scheduler limit (default: 2)')
+    args = parser.parse_args()
+    if args.workers < 1:
+        parser.error('--workers must be positive')
+    run(args.scope, args.logdir, args.plan, args.workers if args.bounded else None)
