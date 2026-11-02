@@ -7,6 +7,7 @@ open Finset RenewalNext SmoothRenewal
 
 theorem vertices_mono (Q : Finset ℕ) {m n : ℕ} (h : m ≤ n) :
     vertices Q m ⊆ vertices Q n := by
+  classical
   intro x hx
   have hx' := Finset.mem_filter.mp hx
   exact Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr

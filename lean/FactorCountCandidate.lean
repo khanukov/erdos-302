@@ -62,7 +62,8 @@ theorem cellCount_eq_sum_multiplicity (P S : Finset ℕ) (N a b : ℕ)
     · intro m hm
       have hm' : m < N + 1 ∧ N / b < m ∧ m ≤ N / a ∧
           Nat.Coprime m (∏ p ∈ P, p) := by simpa [C] using hm
-      have hmpos : 0 < m := by omega
+      have hmpos : 0 < m := by
+        exact lt_of_le_of_lt (Nat.zero_le (N / b)) hm'.2.1
       have hmle : m ≤ N := by omega
       have hr : SmoothPartition.Rough P m :=
         (SmoothPartition.rough_iff_coprime_product hp).mpr ⟨hmpos, hm'.2.2.2⟩
