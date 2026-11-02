@@ -28,5 +28,3 @@ DensityPrefixCandidate
 DensityPrefixCandidateTests
 HGainCandidate
 HGainCandidateTest
-ArchiveCase7
-ArchiveCase7Staged

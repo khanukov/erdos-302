@@ -5,6 +5,7 @@ import CaseTreeTest
 import ArchiveCase4Semantic
 import ArchiveCase4StagedTest
 import ArchiveTrim5Test
+import ArchiveCase7StagedTest
 import ArchiveNextSmallTest
 import DagForceTests
 import Pack1094Shard
@@ -89,3 +90,11 @@ import GainPrefixTest
 #print axioms ArchiveErrorMatchCandidate.occurrence_error
 #print axioms ArchiveErrorMatchCandidate.indexed_error
 #print axioms ArchiveLedgerSumBridge.indexed_endpoint_no_error
+
+#print axioms ArchiveCase7.check_valid
+#print axioms ArchiveCase7Staged.image0
+#print axioms ArchiveCase7Staged.image1
+#print axioms ArchiveCase7Staged.image2
+#print axioms ArchiveCase7Staged.image3
+#print axioms ArchiveCase7Staged.bound7
+#print axioms ArchiveCase7StagedTest.replay_bound

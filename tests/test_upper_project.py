@@ -98,6 +98,27 @@ class UpperProjectTests(unittest.TestCase):
         self.assertIn('python3 -B independent_bank/archive_prefix.py', workflow)
         self.assertIn('import ArchiveSmallPrefixTest', source)
 
+    def test_case7_integrated_and_audited(self):
+        import tomllib
+        config = tomllib.loads((ROOT / 'lakefile.toml').read_text())
+        roots = next(lib['roots'] for lib in config['lean_lib'] if lib['name'] == 'UpperIntegration')
+        for module in ('ArchiveCase7', 'ArchiveCase7Staged', 'ArchiveCase7StagedTest'):
+            self.assertIn(module, roots)
+            self.assertNotIn(module, (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines())
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        self.assertIn('import ArchiveCase7StagedTest', source)
+        for theorem in ('ArchiveCase7.check_valid', 'ArchiveCase7Staged.image0',
+                        'ArchiveCase7Staged.image1', 'ArchiveCase7Staged.image2',
+                        'ArchiveCase7Staged.image3', 'ArchiveCase7Staged.bound7',
+                        'ArchiveCase7StagedTest.replay_bound'):
+            self.assertIn('#print axioms ' + theorem, source)
+            self.assertIn(theorem, workflow.split('python3 audit/mathlib-bridge-ci/check_axioms.py ')[-1].split())
+        for command in ('python3 -B -m unittest discover -s independent_bank -p test_case7_translation.py',
+                        'python3 -B -O -m unittest discover -s independent_bank -p test_case7_translation.py',
+                        'python3 -B independent_bank/case7_translation.py'):
+            self.assertIn(command, workflow)
+
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
         for s in ['pull_request:', 'push:', 'main', 'lake build UpperIntegration']:
