@@ -37,6 +37,8 @@ class CompatibilityTests(unittest.TestCase):
         self.group30.write_bytes(GROUP30)
         self.group174 = self.root / 'Erdos302RLGroup0174FC.lean'
         self.group174.write_bytes(GROUP174)
+        self.group175 = self.root / 'Erdos302RLGroup0175FC.lean'
+        self.group175.write_bytes(gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0175FC.lean.gz').read_bytes()))
 
     def run_compat(self):
         return subprocess.run([sys.executable, str(SCRIPT), str(self.root)], capture_output=True, text=True)
@@ -148,6 +150,43 @@ class CompatibilityTests(unittest.TestCase):
         for path, expected in ((self.leaf, ORIGINAL), (self.group, GROUP),
                                (self.group29, GROUP29), (self.group30, GROUP30),
                                (self.group174, GROUP174)):
+            self.assertEqual(path.read_bytes(), expected)
+
+    def test_0175_exact_scoped_option(self):
+        original = gzip.decompress((HERE / 'fixtures/Erdos302RLGroup0175FC.lean.gz').read_bytes())
+        self.assertEqual(hashlib.sha256(original).hexdigest(), '42d9c86f305cfac698904c47d97b5ff298d318e66bd22d946b4a0dd54b0910fc')
+        theorem = b'theorem rl_T02_c162_G_valid :'
+        self.assertEqual(original.count(theorem), 1)
+        path = self.root / 'Erdos302RLGroup0175FC.lean'
+        path.write_bytes(original)
+        result = self.run_compat()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        expected = original.replace(theorem, OPTION + theorem)
+        self.assertEqual(path.read_bytes(), expected)
+        self.assertEqual(hashlib.sha256(expected).hexdigest(), 'a474c5916b900e6317474310a9e26d8ba4ea373a55b9245635318957bd1e73b1')
+        self.assertIn('rl_T02_c162_G_valid', result.stdout)
+        self.assertIn(hashlib.sha256(expected).hexdigest(), result.stdout)
+
+    def test_0175_modified_input_rejected_before_any_mutation(self):
+        modified = self.group175.read_bytes() + b'\n-- unexpected\n'
+        self.group175.write_bytes(modified)
+        before = {p: p.read_bytes() for p in (self.leaf, self.group, self.group29, self.group30, self.group174, self.group175)}
+        result = self.run_compat()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('unexpected upstream group 0175', result.stderr)
+        for path, expected in before.items():
+            self.assertEqual(path.read_bytes(), expected)
+
+    def test_0175_bad_output_hash_rejected_before_any_mutation(self):
+        before = {p: p.read_bytes() for p in (self.leaf, self.group, self.group29, self.group30, self.group174, self.group175)}
+        code = ("import importlib.util, pathlib, sys; "
+                "s=importlib.util.spec_from_file_location('compat', sys.argv[1]); "
+                "m=importlib.util.module_from_spec(s); s.loader.exec_module(m); "
+                "m.GROUP175_TRANSFORMED_SHA256='0'*64; m.main(pathlib.Path(sys.argv[2]))")
+        result = subprocess.run([sys.executable, '-c', code, str(SCRIPT), str(self.root)], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('unexpected transformed group 0175', result.stderr)
+        for path, expected in before.items():
             self.assertEqual(path.read_bytes(), expected)
 
     def test_reapplication_rejected_without_mutation(self):
