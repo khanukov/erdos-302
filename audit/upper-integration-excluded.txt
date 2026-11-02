@@ -42,3 +42,7 @@ SummationTest
 Tests
 MixedCaseTrimCandidate
 MixedCaseTrimCandidateTest
+
+# Locality candidate is checked separately by bank-row-pack-candidate.
+MixedDagLocality
+MixedDagLocalityTests

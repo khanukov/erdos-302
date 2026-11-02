@@ -123,3 +123,5 @@ UpperRenewal
 Weighted
 MixedCaseTrimCandidate
 MixedCaseTrimCandidateTest
+MixedDagLocality
+MixedDagLocalityTests

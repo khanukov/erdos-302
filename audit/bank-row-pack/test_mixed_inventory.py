@@ -14,6 +14,7 @@ MODULES = (
     'Dag', 'BankRowPack', 'BankRowPackTests', 'BankRowPackArchive1090',
     'MixedDag', 'MixedDagTests', 'CaseRules', 'CaseDual', 'CaseTree',
     'MixedCaseTrimCandidate', 'MixedCaseTrimCandidateTest',
+    'MixedDagLocality', 'MixedDagLocalityTests',
 )
 
 
@@ -30,7 +31,7 @@ class InventoryMutationTests(unittest.TestCase):
             command = [sys.executable, '-B', str(root / 'audit/bank-row-pack/check_mixed_inventory.py')]
             baseline = subprocess.run(command, capture_output=True, text=True)
             self.assertEqual(baseline.returncode, 0, baseline.stderr + baseline.stdout)
-            self.assertIn('17 modules plus pinned Defs', baseline.stdout)
+            self.assertIn(f'{len(MODULES)} modules plus pinned Defs', baseline.stdout)
             for module in MODULES:
                 path = root / 'lean' / (module + '.lean')
                 original = path.read_text()
@@ -43,6 +44,37 @@ class InventoryMutationTests(unittest.TestCase):
                             self.assertIn(f'{module}: forbidden proof token', result.stderr + result.stdout)
                 finally:
                     path.write_text(original)
+
+
+    def test_locality_inventory_mutations_are_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'audit/bank-row-pack').mkdir(parents=True)
+            (root / '.github/workflows').mkdir(parents=True)
+            shutil.copytree(ROOT / 'lean', root / 'lean')
+            shutil.copy(ROOT / 'audit/bank-row-pack/check_mixed_inventory.py', root / 'audit/bank-row-pack')
+            workflow = root / '.github/workflows/bank-row-pack-candidate.yml'
+            shutil.copy(ROOT / '.github/workflows/bank-row-pack-candidate.yml', workflow)
+            command = [sys.executable, '-B', str(root / 'audit/bank-row-pack/check_mixed_inventory.py')]
+            source = root / 'lean/MixedDagLocalityTests.lean'
+            original_source = source.read_text()
+            original_workflow = workflow.read_text()
+            mutations = (
+                (source, original_source.replace('import MixedDagLocality', 'import MixedDag', 1), 'imports'),
+                (workflow, original_workflow.replace(' MixedDagLocalityTests; do', '; do', 1), 'compilation list'),
+                (workflow, original_workflow.replace(',MixedDagLocalityTests}.lean', '}.lean', 1), 'copy list'),
+            )
+            for path, changed, message in mutations:
+                with self.subTest(message=message):
+                    original = path.read_text()
+                    self.assertNotEqual(original, changed)
+                    try:
+                        path.write_text(changed)
+                        result = subprocess.run(command, capture_output=True, text=True)
+                        self.assertNotEqual(result.returncode, 0)
+                        self.assertIn(message, result.stdout + result.stderr)
+                    finally:
+                        path.write_text(original)
 
 
 if __name__ == '__main__':

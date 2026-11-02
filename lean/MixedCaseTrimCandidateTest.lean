@@ -89,10 +89,10 @@ theorem outside_bound : Extended.Bound (outsideNodes 1).support (outsideNodes 1)
   apply case_sound outsideNodes 1 [ref0] outsideTree
   · unfold CaseCheck RefCheck row image outsideNodes ref0 outsideTree BankCase.Residual
     simp only [BankCase.check] <;> decide
-  · intro j hj
-    have : j = 0 := by omega
-    subst j
-    simpa [outsideNodes] using Extended.bank_node_4
+  · intro r hr
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at hr
+    subst r
+    simpa [outsideNodes, ref0] using Extended.bank_node_4
 
 -- Signed residuals must remain negative rather than truncate to zero.
 example : (row outsideNodes 1 ⟨0, 1, 1⟩).2 = (2 : ℤ) := by

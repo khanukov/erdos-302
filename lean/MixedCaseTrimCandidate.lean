@@ -51,10 +51,10 @@ instance (nodes : ℕ → MixedDag.Node Payload) (i : ℕ) (e : Payload) :
 
 theorem image_bound (nodes : ℕ → MixedDag.Node Payload) (i : ℕ) (r : Ref)
     (h : RefCheck nodes i r)
-    (prior : ∀ j < i, Extended.Bound (nodes j).support (nodes j).demand) :
+    (prior : Extended.Bound (nodes r.source).support (nodes r.source).demand) :
     Extended.Bound (image nodes r) (nodes r.source).demand := by
   rcases h with ⟨hj, hm, hd, hex⟩
-  exact ArchivePack.scaled_bound hm hd hex (prior r.source hj)
+  exact ArchivePack.scaled_bound hm hd hex prior
 
 /-- A cover of the target extends to an image cover by selecting all image
 vertices outside the target. The loss is charged as a signed cardinality. -/
@@ -86,7 +86,7 @@ theorem image_projection (U T C : Finset ℕ) (r : ℕ)
 theorem case_sound (nodes : ℕ → MixedDag.Node Payload) (i : ℕ)
     (refs : List Ref) (tree : BankCase.Tree ℕ)
     (valid : CaseCheck nodes i refs tree)
-    (prior : ∀ j < i, Extended.Bound (nodes j).support (nodes j).demand) :
+    (prior : ∀ r ∈ refs, Extended.Bound (nodes r.source).support (nodes r.source).demand) :
     Extended.Bound (nodes i).support (nodes i).demand := by
   rcases valid with ⟨hrefs, hcheck⟩
   intro S hS
@@ -95,7 +95,7 @@ theorem case_sound (nodes : ℕ → MixedDag.Node Payload) (i : ℕ)
   have hrows : ∀ c ∈ refs.map (row nodes i), BankCase.Row c.1 c.2 C := by
     intro c hc
     obtain ⟨r, hr, rfl⟩ := List.mem_map.mp hc
-    have hb := image_bound nodes i r (hrefs r hr) prior
+    have hb := image_bound nodes i r (hrefs r hr) (prior r hr)
     simpa [row] using image_projection (image nodes r) (nodes i).support C
       (nodes r.source).demand hC hb
   by_contra hn
@@ -109,7 +109,7 @@ theorem case_sound (nodes : ℕ → MixedDag.Node Payload) (i : ℕ)
 
 theorem trim_sound (nodes : ℕ → MixedDag.Node Payload) (i : ℕ) (r : Ref)
     (valid : TrimCheck nodes i r)
-    (prior : ∀ j < i, Extended.Bound (nodes j).support (nodes j).demand) :
+    (prior : Extended.Bound (nodes r.source).support (nodes r.source).demand) :
     Extended.Bound (nodes i).support (nodes i).demand := by
   rcases valid with ⟨hr, hsub, hkeep, hdemand⟩
   have hk : ∀ a b c, OrderedEdge (image nodes r) a b c →
@@ -126,8 +126,9 @@ theorem extra_sound : ∀ nodes i e, extraCheck nodes i e →
     Extended.Bound (nodes i).support (nodes i).demand := by
   intro nodes i e h prior
   cases e with
-  | caseRule refs tree => exact case_sound nodes i refs tree h prior
-  | trimRule ref => exact trim_sound nodes i ref h prior
+  | caseRule refs tree =>
+    exact case_sound nodes i refs tree h (fun r hr => prior r.source ((h.1 r hr).1))
+  | trimRule ref => exact trim_sound nodes i ref h (prior ref.source h.1.1)
 
 /-- Soundness of the combined checker, with no external semantic premise. -/
 theorem sound (nodes : ℕ → MixedDag.Node Payload) (count : ℕ)

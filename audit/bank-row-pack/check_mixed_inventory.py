@@ -15,6 +15,8 @@ expected = {
     'CaseDual': ['CaseRules'], 'CaseTree': ['CaseDual'],
     'MixedCaseTrimCandidate': ['MixedDag', 'CaseTree'],
     'MixedCaseTrimCandidateTest': ['MixedCaseTrimCandidate'],
+    'MixedDagLocality': ['MixedCaseTrimCandidate'],
+    'MixedDagLocalityTests': ['MixedDagLocality'],
 }
 seen = {'Erdos302Lower.Defs'}
 for name, imports in expected.items():
