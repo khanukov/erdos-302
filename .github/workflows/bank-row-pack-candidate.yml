@@ -19,6 +19,12 @@ jobs:
           persist-credentials: false
       - name: Structural and semantic sanity tests
         run: |
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+          python3 -B -O audit/mathlib-bridge-ci/test_check_axioms.py
+          python3 -B audit/bank-row-pack/check_mixed_inventory.py
+          python3 -B audit/bank-row-pack/test_mixed_inventory.py
+          python3 -B -O audit/bank-row-pack/test_mixed_inventory.py
+          python3 -B independent_bank/audit_case_trim_prefix.py
           python3 -B audit/bank-row-pack/test_candidate.py
           python3 -B -O audit/bank-row-pack/test_candidate.py
           python3 -B audit/bank-row-pack/archive1090.py --check
@@ -28,7 +34,7 @@ jobs:
           python3 -B -O tests/test_upper_project.py
           python3 -B tests/test_multiplicity_ci.py
           python3 -B -O tests/test_multiplicity_ci.py
-          if grep -nE "\b(sorry|admit|native_decide)\b" lean/BankRowPack*.lean lean/MixedDag*.lean; then exit 1; fi
+          if grep -nE "\b(sorry|admit|native_decide)\b" lean/BankRowPack*.lean lean/MixedDag*.lean lean/MixedCaseTrimCandidate*.lean; then exit 1; fi
       - name: Install pinned Lean
         shell: bash
         run: |
@@ -48,7 +54,7 @@ jobs:
           cp audit/mathlib-bridge-ci/project/* "$p/"
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
           cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
-          cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090,MixedDag,MixedDagTests}.lean "$p/"
+          cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090,MixedDag,MixedDagTests,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate,MixedCaseTrimCandidateTest}.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
           git -C .lake/packages/mathlib init
@@ -59,7 +65,7 @@ jobs:
           lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
           lake build Erdos302Lower.Defs
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
-          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag BankRowPack BankRowPackTests BankRowPackArchive1090 MixedDag MixedDagTests; do
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag BankRowPack BankRowPackTests BankRowPackArchive1090 MixedDag MixedDagTests CaseRules CaseDual CaseTree MixedCaseTrimCandidate MixedCaseTrimCandidateTest; do
             echo "Checking $f"
             lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
@@ -70,3 +76,9 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/BankRowPackArchive1090.log" BankRowPackArchive1090.prior BankRowPackArchive1090.checked BankRowPackArchive1090.bound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedDag.log" MixedDag.sound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedDagTests.log" MixedDag.sound
+
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseRules.log" BankCase.residual_sound BankCase.force_sound BankCase.budget_reject BankCase.split_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseDual.log" BankCase.dualCheck_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/CaseTree.log" BankCase.check_sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidate.log" MixedCaseTrimCandidate.image_bound MixedCaseTrimCandidate.case_sound MixedCaseTrimCandidate.trim_sound MixedCaseTrimCandidate.extra_sound MixedCaseTrimCandidate.sound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedCaseTrimCandidateTest.log" MixedCaseTrimCandidateTest.mixed_valid MixedCaseTrimCandidateTest.mixed_bound MixedCaseTrimCandidateTest.mixed_trim_valid MixedCaseTrimCandidateTest.mixed_trim_bound

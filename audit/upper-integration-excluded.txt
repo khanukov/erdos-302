@@ -40,3 +40,5 @@ SmoothPartitionTest
 SuffixBijectionCandidateTests
 SummationTest
 Tests
+MixedCaseTrimCandidate
+MixedCaseTrimCandidateTest
