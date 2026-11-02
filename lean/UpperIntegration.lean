@@ -18,6 +18,7 @@ import RoughCoprimeTest
 import RenewalUnrollTest
 import LocalBlockDemandTests
 import PrimePowerReindexTest
+import PrimePowerSum
 import ExactComparison
 
 /-! Integration is a collection of partial results, not an endpoint theorem. -/
@@ -26,3 +27,4 @@ import ExactComparison
 #print axioms ArchiveSumBridge.global_upper_archive
 #print axioms SmoothPartition.global_from_prefix_demands
 #print axioms PrimePowerReindex.bounded_decomposition
+#print axioms PrimePowerSum.sum_reindex

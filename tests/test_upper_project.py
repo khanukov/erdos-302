@@ -33,7 +33,7 @@ class UpperProjectTests(unittest.TestCase):
                 visit(dep)
         visit('UpperIntegration')
         self.assertEqual(roots, seen)
-        self.assertNotIn('PrimePowerSum', seen)
+        self.assertIn('PrimePowerSum', seen)
         self.assertNotIn('Pack1094Tests', seen)  # monolithic proof previously exited 143
 
     def test_automatic_ci_builds_integration(self):
