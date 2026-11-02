@@ -23,8 +23,5 @@ SmoothExistenceTest
 SmoothPartitionTest
 SummationTest
 Tests
-
-DensityPrefixCandidate
-DensityPrefixCandidateTests
-HGainCandidate
-HGainCandidateTest
+EndpointPremisesCandidate
+EndpointPremisesCandidateTests

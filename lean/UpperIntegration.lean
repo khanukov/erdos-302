@@ -1,3 +1,6 @@
+import DensityPrefixCandidateTests
+import HGainCandidateTest
+import ArchiveIndexedGainEndpointTest
 import ArchiveGainPrefixTest
 import UpperRenewal
 import Projection
@@ -98,3 +101,16 @@ import GainPrefixTest
 #print axioms ArchiveCase7Staged.image3
 #print axioms ArchiveCase7Staged.bound7
 #print axioms ArchiveCase7StagedTest.replay_bound
+
+#print axioms DensityPrefixCandidate.primes_nodup
+#print axioms DensityPrefixCandidate.all_prefixes_nodup
+#print axioms DensityPrefixCandidate.entry_prefixes
+#print axioms DensityPrefixCandidate.rational_prefixes
+#print axioms DensityPrefixCandidate.real_prefix
+#print axioms DensityPrefixCandidate.indexed_density
+#print axioms DensityPrefixCandidate.indexed_density_direct
+#print axioms HGainCandidate.entries_match
+#print axioms HGainCandidate.gain_list
+#print axioms HGainCandidate.gain_fin
+#print axioms HGainCandidate.indexed_hgain
+#print axioms ArchiveLedgerSumBridge.indexed_endpoint_no_error_no_gain

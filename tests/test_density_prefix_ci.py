@@ -10,7 +10,7 @@ class DensityCI(unittest.TestCase):
     def test_lake_roots_and_no_proof_escapes(self):
         exclusions = (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines()
         for name in ('DensityPrefixCandidate', 'DensityPrefixCandidateTests'):
-            self.assertIn(name, exclusions)
+            self.assertNotIn(name, exclusions)
             text = (ROOT / 'lean' / (name + '.lean')).read_text()
             self.assertNotRegex(text, r'\b(sorry|admit|native_decide|axiom|unsafe)\b')
 

@@ -21,6 +21,8 @@ jobs:
           python3 -B -O -m unittest discover -s audit/ledger-candidate/tests -v
           python3 -B tests/test_density_prefix_ci.py
           python3 -B -O tests/test_density_prefix_ci.py
+          python3 -B tests/test_endpoint_premises.py
+          python3 -B -O tests/test_endpoint_premises.py
           python3 audit/mathlib-bridge-ci/test_check_axioms.py
       - name: Install pinned Lean
         shell: bash
@@ -59,6 +61,12 @@ jobs:
           timeout 10m lake env lean lean/ArchiveGainPrefixTest.lean
           timeout 10m lake env lean lean/HGainCandidateTest.lean 2>&1 | tee "$RUNNER_TEMP/hgain-tests.log"
           python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/hgain-tests.log" HGainCandidate.indexed_hgain
+          if grep -nE '\b(sorry|admit|native_decide)\b' lean/EndpointPremisesCandidate*.lean; then exit 1; fi
+          timeout 60m lake build ArchiveIndexedEndpoint
+          timeout 30m lake env lean -o lean/EndpointPremisesCandidate.olean lean/EndpointPremisesCandidate.lean 2>&1 | tee "$RUNNER_TEMP/endpoint-premises.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/endpoint-premises.log" EndpointPremisesCandidate.literal_cell_bounds EndpointPremisesCandidate.literal_prefix_inputs EndpointPremisesCandidate.indexed_a_pos EndpointPremisesCandidate.indexed_a_lt_b EndpointPremisesCandidate.indexed_b_pos EndpointPremisesCandidate.indexed_quotient_order EndpointPremisesCandidate.indexed_prime EndpointPremisesCandidate.indexed_density_bounds EndpointPremisesCandidate.indexed_budget EndpointPremisesCandidate.endpoint_of_cover
+          timeout 10m lake env lean lean/EndpointPremisesCandidateTests.lean 2>&1 | tee "$RUNNER_TEMP/endpoint-premises-tests.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/endpoint-premises-tests.log" EndpointPremisesCandidate.endpoint_of_cover
       - name: Retain diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -70,4 +78,6 @@ jobs:
             ${{ runner.temp }}/gain-prefix.log
             ${{ runner.temp }}/hgain.log
             ${{ runner.temp }}/hgain-tests.log
+            ${{ runner.temp }}/endpoint-premises.log
+            ${{ runner.temp }}/endpoint-premises-tests.log
           if-no-files-found: warn

@@ -119,6 +119,17 @@ class UpperProjectTests(unittest.TestCase):
                         'python3 -B independent_bank/case7_translation.py'):
             self.assertIn(command, workflow)
 
+    def test_hgain_endpoint_is_integration_gated(self):
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        for module in ['DensityPrefixCandidateTests', 'HGainCandidateTest', 'ArchiveIndexedGainEndpointTest']:
+            self.assertIn('import ' + module, source)
+        for name in ['DensityPrefixCandidate.indexed_density_direct', 'HGainCandidate.indexed_hgain', 'ArchiveLedgerSumBridge.indexed_endpoint_no_error_no_gain']:
+            self.assertIn('#print axioms ' + name, source)
+            self.assertIn(name, workflow)
+        for pattern in ['lean/HGainCandidate*.lean', 'lean/DensityPrefixCandidate*.lean', 'lean/ArchiveIndexedGainEndpoint*.lean']:
+            self.assertIn(pattern, workflow)
+
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
         for s in ['pull_request:', 'push:', 'main', 'lake build UpperIntegration']:
