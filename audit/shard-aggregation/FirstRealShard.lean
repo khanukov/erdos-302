@@ -18,7 +18,8 @@ theorem check4 : MixedDag.Check extraCheck nodes 4 := by
   simp only [BankCase.check] <;> decide
 
 theorem check5 : MixedDag.Check extraCheck nodes 5 := by
-  unfold MixedDag.Check extraCheck TrimCheck RefCheck image nodes UpperBridge.OrderedEdge
+  change TrimCheck nodes 5 _
+  unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge
   decide
 
 theorem check6 : MixedDag.Check extraCheck nodes 6 := by decide
@@ -29,7 +30,8 @@ theorem check7 : MixedDag.Check extraCheck nodes 7 := by
   simp only [BankCase.check] <;> decide
 
 theorem check8 : MixedDag.Check extraCheck nodes 8 := by
-  unfold MixedDag.Check extraCheck TrimCheck RefCheck image nodes UpperBridge.OrderedEdge
+  change TrimCheck nodes 8 _
+  unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge
   decide
 
 theorem checked : ∀ i < 9, MixedDag.Check extraCheck nodes i := by

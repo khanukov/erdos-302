@@ -21,6 +21,12 @@ class FirstShardTests(unittest.TestCase):
         self.assertIn('  | 8 => ', data)
         self.assertNotIn('  | 9 => ', data)
 
+    def test_generated_proof_reduces_to_trim_before_deciding(self):
+        proof = first_shard.generate_proof()
+        for i in (5, 8):
+            self.assertIn(f'theorem check{i} : MixedDag.Check extraCheck nodes {i} := by\n  change TrimCheck nodes {i} _', proof)
+        self.assertEqual(proof, first_shard.PROOF_OUT.read_text(encoding='utf-8'))
+
     def test_missing_render_row_fails_closed(self):
         with patch.object(first_shard.mixed_lean_producer, 'render', return_value='  | 0 => invalid\n'):
             with self.assertRaises(ValueError):
