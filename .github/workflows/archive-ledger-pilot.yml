@@ -1,0 +1,73 @@
+name: Archive ledger bounded pilot
+on:
+  workflow_dispatch:
+    inputs:
+      full_candidate:
+        description: Attempt full literal arithmetic (may time out)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      LEAN_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check exact generation and arithmetic (Python evidence only)
+        run: |
+          python3 -B -m unittest discover -s audit/ledger-candidate/tests -v
+          python3 -B -O -m unittest discover -s audit/ledger-candidate/tests -v
+          if grep -nE '\b(sorry|admit|native_decide)\b' audit/ledger-candidate/lean/*.lean; then exit 1; fi
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Pinned Mathlib and dependency cache
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+      - name: Small Lean tests
+        run: |
+          set -euo pipefail
+          ulimit -v 6000000
+          timeout 5m lake build LedgerTests
+      - name: Full ledger attempt and axiom audit
+        if: inputs.full_candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 6000000
+          set +e
+          timeout 15m lake build ArchiveLedger > "$RUNNER_TEMP/ledger-build.log" 2>&1
+          status=$?
+          set -e
+          cat "$RUNNER_TEMP/ledger-build.log"
+          printf 'build_exit=%s\n' "$status" | tee "$RUNNER_TEMP/ledger-status.txt"
+          test "$status" -eq 0
+          timeout 2m lake env lean audit/ledger-candidate/lean/PilotAudit.lean 2>&1 | tee "$RUNNER_TEMP/ledger-axioms.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/ledger-axioms.log" ArchiveLedger.archive_check ArchiveLedger.archive_valid ArchiveLedger.archive_arithmetic
+      - name: Retain full-attempt diagnostics
+        if: always() && inputs.full_candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: archive-ledger-pilot-logs
+          path: |
+            ${{ runner.temp }}/ledger-build.log
+            ${{ runner.temp }}/ledger-status.txt
+            ${{ runner.temp }}/ledger-axioms.log
+          if-no-files-found: warn
