@@ -21,6 +21,7 @@ import PrimePowerReindexTest
 import PrimePowerSum
 import PrimePowerRenewalTest
 import BankProfileTests
+import ArchiveSmallPrefixTest
 import PrefixArchiveBridgeTests
 import ExactComparison
 import ArchiveLedgerSumBridge
@@ -39,6 +40,8 @@ import GainPrefixTest
 
 #print axioms BankProfile.checked_node_seed
 #print axioms BankProfileConcrete.full_prefix
+#print axioms ArchiveSmallPrefix.valid
+#print axioms ArchiveSmallPrefix.sound
 #print axioms PrefixArchiveBridge.cells_le_prefix
 #print axioms PrefixArchiveBridge.upper_from_prefix
 

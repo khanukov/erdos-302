@@ -76,6 +76,7 @@ class UpperProjectTests(unittest.TestCase):
         for name in ['GainFold.fold_gain_occurrences', 'GainFold.fold_gain_fin',
                      'GainFold.fold_project', 'GainPrefix.occurrences_eq_prefix_entries',
                      'GainPrefix.fold_eq_prefix_entries',
+                     'ArchiveSmallPrefix.valid', 'ArchiveSmallPrefix.sound',
                      'ArchiveLedger.archive_check', 'ArchiveLedger.archive_valid',
                      'ArchiveLedger.archive_arithmetic',
                      'ArchiveLedgerSumBridge.ledger_gain_complement',
@@ -86,6 +87,10 @@ class UpperProjectTests(unittest.TestCase):
             self.assertIn(name, audit_args)
         self.assertIn('unittest discover -s audit/ledger-candidate/tests', workflow)
         self.assertIn('python3 -B -O -m unittest discover -s audit/ledger-candidate/tests', workflow)
+        self.assertIn('python3 -B -m unittest discover -s independent_bank -p test_archive_prefix.py', workflow)
+        self.assertIn('python3 -B -O -m unittest discover -s independent_bank -p test_archive_prefix.py', workflow)
+        self.assertIn('python3 -B independent_bank/archive_prefix.py', workflow)
+        self.assertIn('import ArchiveSmallPrefixTest', source)
 
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
