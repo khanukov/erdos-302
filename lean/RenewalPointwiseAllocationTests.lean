@@ -26,7 +26,7 @@ example (u : ℕ → ℕ → ℕ)
   · intro j; decide
   · exact hbase
   · exact hu0
-  · intro j; decide
+  · intro j; simp [correction]
   · exact hrec
   · decide
   · decide
