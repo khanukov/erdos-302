@@ -1,3 +1,4 @@
+import ArchiveGainPrefixTest
 import UpperRenewal
 import Projection
 import CaseTreeTest
@@ -58,3 +59,8 @@ import GainPrefixTest
 #print axioms GainFold.fold_project
 #print axioms GainPrefix.occurrences_eq_prefix_entries
 #print axioms GainPrefix.fold_eq_prefix_entries
+
+#print axioms ArchiveGainPrefix.distribute
+#print axioms ArchiveGainPrefix.step_project
+#print axioms ArchiveGainPrefix.project_fold
+#print axioms ArchiveGainPrefix.gain_eq_prefix
