@@ -1,8 +1,10 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 06:27 UTC. The last successful selected integration commit is [`f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef`](https://github.com/khanukov/erdos-302/commit/f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef). Later candidate integrations failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 06:34 UTC. The last successful selected integration commit is [`f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef`](https://github.com/khanukov/erdos-302/commit/f6de4e2b6dfd8b620f34fbe8c9da4d5aa3a617ef). Later candidate integrations failed, as documented below. CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* Density workflow [41400356419](https://github.com/khanukov/erdos-302/actions/runs/41400356419) at `8a5d048` **failed overall on three test examples**, but `DensityPrefixCandidate.lean` compiled first and its seven-theorem axiom gate passed. In particular `indexed_density_direct` establishes, for each indexed generated ledger occurrence, equality between its rational prefix fold cast to real and analytic finite-set density. This is not the aggregate `hgain` identity or archive provenance.
 
 * [41398181495](https://github.com/khanukov/erdos-302/actions/runs/41398181495) passed selected integration at `f6de4e2` with 35 allowed-axiom reports, including `ArchiveGainPrefix.gain_eq_prefix` and the semantic archive node-4 proof `ArchiveCase4Staged.bound4`/`sound`. Node 4 follows from checked node 0, 2, 3 bounds through scaling and the case checker; it is **not** a full five-node DAG replay. Python checks the archive-byte transcription externally. The `hgain`, `herror` and `hcover` endpoint assumptions remain.
 * At `be0bb2e`, [41398338831](https://github.com/khanukov/erdos-302/actions/runs/41398338831) failed compiling the node-5 trim candidate; no sound node-5 conclusion is claimed. Density [41398182070](https://github.com/khanukov/erdos-302/actions/runs/41398182070) and error matching [41398246680](https://github.com/khanukov/erdos-302/actions/runs/41398246680) also failed.
