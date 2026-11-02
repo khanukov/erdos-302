@@ -130,6 +130,43 @@ class UpperProjectTests(unittest.TestCase):
         for pattern in ['lean/HGainCandidate*.lean', 'lean/DensityPrefixCandidate*.lean', 'lean/ArchiveIndexedGainEndpoint*.lean']:
             self.assertIn(pattern, workflow)
 
+    def test_endpoint_premises_integrated_without_weakening(self):
+        import re
+        import tomllib
+        roots = next(lib['roots'] for lib in tomllib.loads(
+            (ROOT / 'lakefile.toml').read_text())['lean_lib']
+            if lib['name'] == 'UpperIntegration')
+        exclusions = (ROOT / 'audit/upper-integration-excluded.txt').read_text().splitlines()
+        source = (ROOT / 'lean/UpperIntegration.lean').read_text()
+        workflow = (ROOT / '.github/workflows/upper-integration.yml').read_text()
+        for module in ('EndpointPremisesCandidate', 'EndpointPremisesCandidateTests'):
+            self.assertIn(module, roots)
+            self.assertNotIn(module, exclusions)
+        self.assertIn('import EndpointPremisesCandidateTests', source.splitlines())
+        audit = next(line.split() for line in workflow.splitlines()
+                     if line.strip().startswith('python3 audit/mathlib-bridge-ci/check_axioms.py '))
+        for suffix in ('literal_cell_bounds', 'literal_prefix_inputs', 'indexed_a_pos',
+                       'indexed_a_lt_b', 'indexed_b_pos', 'indexed_quotient_order',
+                       'indexed_prime', 'indexed_density_bounds', 'indexed_budget',
+                       'endpoint_of_cover'):
+            name = 'EndpointPremisesCandidate.' + suffix
+            self.assertIn('#print axioms ' + name, source.splitlines())
+            self.assertIn(name, audit)
+        self.assertIn('lean/EndpointPremisesCandidate*.lean', workflow)
+        for cmd in ('python3 -B tests/test_endpoint_premises.py',
+                    'python3 -B -O tests/test_endpoint_premises.py'):
+            self.assertIn(cmd, workflow)
+        theorem = (ROOT / 'lean/EndpointPremisesCandidate.lean').read_text()
+        declaration = re.search(r'theorem endpoint_of_cover\b(.*?)\s*:= by', theorem, re.S)
+        self.assertIsNotNone(declaration)
+        self.assertEqual(' '.join(declaration.group(1).split()), ' '.join('''
+            (N : ℕ) (f : ℝ)
+            (hcover : f + ArchiveSummation.weightedCount Finset.univ cellHeight
+              (fun i => (ArchiveSummation.cellCount N (cellA i) (cellB i)
+                (fun q => Nat.Coprime q (∏ p ∈ cellPrimes i, p)) : ℝ)) ≤ N) :
+            f ≤ (ArchiveLedger.targetC : ℝ) * (N : ℝ) + 55064831540
+        '''.split()))
+
     def test_automatic_ci_builds_integration(self):
         text = (ROOT / '.github/workflows/upper-integration.yml').read_text()
         for s in ['pull_request:', 'push:', 'main', 'lake build UpperIntegration']:

@@ -23,5 +23,3 @@ SmoothExistenceTest
 SmoothPartitionTest
 SummationTest
 Tests
-EndpointPremisesCandidate
-EndpointPremisesCandidateTests

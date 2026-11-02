@@ -1,3 +1,4 @@
+import EndpointPremisesCandidateTests
 import DensityPrefixCandidateTests
 import HGainCandidateTest
 import ArchiveIndexedGainEndpointTest
@@ -114,3 +115,14 @@ import GainPrefixTest
 #print axioms HGainCandidate.gain_fin
 #print axioms HGainCandidate.indexed_hgain
 #print axioms ArchiveLedgerSumBridge.indexed_endpoint_no_error_no_gain
+
+#print axioms EndpointPremisesCandidate.literal_cell_bounds
+#print axioms EndpointPremisesCandidate.literal_prefix_inputs
+#print axioms EndpointPremisesCandidate.indexed_a_pos
+#print axioms EndpointPremisesCandidate.indexed_a_lt_b
+#print axioms EndpointPremisesCandidate.indexed_b_pos
+#print axioms EndpointPremisesCandidate.indexed_quotient_order
+#print axioms EndpointPremisesCandidate.indexed_prime
+#print axioms EndpointPremisesCandidate.indexed_density_bounds
+#print axioms EndpointPremisesCandidate.indexed_budget
+#print axioms EndpointPremisesCandidate.endpoint_of_cover
