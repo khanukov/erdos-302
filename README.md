@@ -2,6 +2,8 @@
 
 **Preliminary research workspace; not a completed proof or a peer-reviewed publication.**
 
+See [STATUS.md](STATUS.md) for the dated evidence snapshot and [UPPER_INTEGRATION.md](UPPER_INTEGRATION.md) for the candidate persistent build.
+
 The `input/` archive is the supplied boundary-certificates draft, preserved byte-for-byte. SHA-256: `9396819eb36e25926d7ae8ee78b85c61cb898801f935fccfe72ebcad491bc196`. Its internal manifest establishes consistency of the bundle, not mathematical validity or independently authenticated provenance.
 
 The archive's baseline claims the profile-only global upper bound `limsup f(N)/N < 0.841230807050`, but **this repository does not yet contain a complete kernel-checked proof of that bound**. The new boundary certificates strengthen a local relaxation and do not themselves claim an additional global improvement. The baseline relies on an external profile input and a finite certificate bank whose full formal verification remains in progress. The archive does not claim a complete solution of Erdős 302.

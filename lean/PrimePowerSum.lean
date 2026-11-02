@@ -33,6 +33,7 @@ theorem exponent_lt_pow {p : ℕ} (hp : 2 ≤ p) (k : ℕ) : k < p ^ k := by
 theorem maps_to_target {p P N : ℕ} (hp : p.Prime)
     (hpP : Nat.Coprime p P) {x : ℕ × ℕ} (hx : x ∈ pairs p P N) :
     x.1 * p ^ x.2 ∈ targets P N := by
+  rcases x with ⟨q, k⟩
   simp only [pairs, mem_filter, mem_product, mem_Icc] at hx
   simp only [targets, mem_filter, mem_Icc]
   refine ⟨⟨?_, hx.2.2.2⟩, ?_⟩
@@ -43,9 +44,11 @@ theorem maps_to_target {p P N : ℕ} (hp : p.Prime)
 theorem pair_injective {p P N : ℕ} (hp : p.Prime)
     {x y : ℕ × ℕ} (hx : x ∈ pairs p P N) (hy : y ∈ pairs p P N)
     (h : x.1 * p ^ x.2 = y.1 * p ^ y.2) : x = y := by
+  rcases x with ⟨q, k⟩
+  rcases y with ⟨r, l⟩
   simp only [pairs, mem_filter, mem_product, mem_Icc] at hx hy
   obtain ⟨h1, h2⟩ := PrimePowerReindex.decomposition_unique hp
-    (by omega : 0 < x.1) (by omega : 0 < y.1) hx.2.1 hy.2.1 h
+    (by omega : 0 < q) (by omega : 0 < r) hx.2.1 hy.2.1 h
   exact Prod.ext h1 h2
 
 /-- Every target has a bounded pair, including an exponent bounded by N. -/
@@ -60,7 +63,8 @@ theorem target_has_pair {p P N t : ℕ} (hp : p.Prime)
   have hkN : x.2 ≤ N := by
     have hk := exponent_lt_pow hp.two_le x.2
     nlinarith
-  refine ⟨x, ?_, heq⟩
+  rcases x with ⟨q, k⟩
+  refine ⟨(q, k), ?_, heq⟩
   simp only [pairs, mem_filter, mem_product, mem_Icc]
   exact ⟨⟨⟨by omega, hqN⟩, ⟨Nat.zero_le _, hkN⟩⟩, hn, hcop, hbound⟩
 

@@ -1,3 +1,7 @@
+# Historical report: fast small-node proof extraction
+
+This is a historical snapshot, not the current coverage summary. See [STATUS.md](../STATUS.md) and its exact-SHA CI references for newer results.
+
 # Fast small-node proof extraction: partial, no new verified nodes
 
 Classification against the SHA-256-matched original 1,900-node manifest is reproducible with `python3 classify.py`. Of the 1,628 unverified nodes: r=1, |U|=3: 886; r=2, |U|=5: 60 and |U|=6: 282; r=3, |U|=7: 32, |U|=8: 146, |U|=9: 222. The source is parsed as data only.

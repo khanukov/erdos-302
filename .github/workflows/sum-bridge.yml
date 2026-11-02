@@ -59,6 +59,6 @@ jobs:
           lean -o Summation.olean Summation.lean 2>&1 | tee "$RUNNER_TEMP/Summation.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Summation.log" ArchiveSummation.global_upper ArchiveSummation.count_cell_eq
           lean -o SumBridge.olean SumBridge.lean 2>&1 | tee "$RUNNER_TEMP/SumBridge.log"
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SumBridge.log" ArchiveSumBridge.real_endpoint_loss_le_one ArchiveSumBridge.cell_lower_exact ArchiveSumBridge.cell_lower_archive ArchiveSumBridge.global_upper_exact ArchiveSumBridge.global_upper_archive
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SumBridge.log" ArchiveSumBridge.boundaryOK_of_pos ArchiveSumBridge.real_endpoint_loss_le_one ArchiveSumBridge.cell_lower_exact ArchiveSumBridge.cell_lower_archive ArchiveSumBridge.global_upper_exact ArchiveSumBridge.global_upper_archive
           lean SumBridgeTest.lean 2>&1 | tee "$RUNNER_TEMP/SumBridgeTest.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SumBridgeTest.log" ArchiveSumBridge.global_upper_exact ArchiveSumBridge.global_upper_archive

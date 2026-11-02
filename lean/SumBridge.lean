@@ -16,8 +16,27 @@ def boundaryOK (N a b : ℕ) : Prop :=
     (a : ℤ) * (b : ℤ) * (((N / a : ℕ) : ℤ) - ((N / b : ℕ) : ℤ))
       ≤ (a : ℤ) * (b : ℤ)
 
+/-- The endpoint budget holds for all positive denominators, in either order. -/
+theorem boundaryOK_of_pos (N a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
+    boundaryOK N a b := by
+  have hda : ((N % a : ℕ) : ℤ) + (a : ℤ) * ((N / a : ℕ) : ℤ) = N := by
+    exact_mod_cast Nat.mod_add_div N a
+  have hdb : ((N % b : ℕ) : ℤ) + (b : ℤ) * ((N / b : ℕ) : ℤ) = N := by
+    exact_mod_cast Nat.mod_add_div N b
+  have hra : ((N % a : ℕ) : ℤ) ≤ (a : ℤ) := by
+    exact_mod_cast Nat.le_of_lt (Nat.mod_lt N ha)
+  have hb0 : (0 : ℤ) ≤ b := by positivity
+  have ha0 : (0 : ℤ) ≤ a := by positivity
+  have hrb0 : (0 : ℤ) ≤ ((N % b : ℕ) : ℤ) := by positivity
+  have hbound := mul_le_mul_of_nonneg_left hra hb0
+  have hnonneg := mul_nonneg ha0 hrb0
+  have hda' := congrArg (fun x : ℤ => (b : ℤ) * x) hda
+  have hdb' := congrArg (fun x : ℤ => (a : ℤ) * x) hdb
+  unfold boundaryOK
+  nlinarith
+
 theorem real_endpoint_loss_le_one (N a b : ℕ)
-    (ha : 0 < a) (hb : 0 < b) (hboundary : boundaryOK N a b) :
+    (ha : 0 < a) (hb : 0 < b) :
     (N : ℝ) * (1 / (a : ℝ) - 1 / (b : ℝ)) -
       (((N / a : ℕ) : ℝ) - ((N / b : ℕ) : ℝ)) ≤ 1 := by
   have ha' : (0 : ℝ) < a := by exact_mod_cast ha
@@ -25,6 +44,7 @@ theorem real_endpoint_loss_le_one (N a b : ℕ)
   have hz : (N : ℝ) * ((b : ℝ) - (a : ℝ)) -
       (a : ℝ) * (b : ℝ) * (((N / a : ℕ) : ℝ) - ((N / b : ℕ) : ℝ)) ≤
         (a : ℝ) * (b : ℝ) := by
+    have hboundary := boundaryOK_of_pos N a b ha hb
     unfold boundaryOK at hboundary
     exact_mod_cast hboundary
   have hab : 0 < (a : ℝ) * (b : ℝ) := mul_pos ha' hb'
@@ -57,12 +77,11 @@ theorem cell_lower_archive (N a b j : ℕ) (S : Finset ℕ)
     (ha : 0 < a) (hb : 0 < b) (hLU : N / b ≤ N / a)
     (hprime : ∀ p ∈ S, Nat.Prime p)
     (hrho : 0 ≤ density S ∧ density S ≤ 1)
-    (hboundary : boundaryOK N a b)
     (hbudget : (2 : ℝ) ^ S.card ≤ (2 : ℝ) ^ j) :
     (N : ℝ) * density S * (1 / (a : ℝ) - 1 / (b : ℝ)) - (2 : ℝ) ^ j ≤
       (ArchiveSummation.cellCount N a b
         (fun q => Nat.Coprime q (∏ p ∈ S, p)) : ℝ) := by
-  have he := real_endpoint_loss_le_one N a b ha hb hboundary
+  have he := real_endpoint_loss_le_one N a b ha hb
   have hm := mul_le_mul_of_nonneg_left he hrho.1
   have hc := cell_lower_exact N a b S ha hLU hprime
   nlinarith [hrho.2]
@@ -102,7 +121,6 @@ theorem global_upper_archive {ι : Type*} [DecidableEq ι]
     (hLU : ∀ i ∈ s, N / b i ≤ N / a i)
     (hprime : ∀ i ∈ s, ∀ p ∈ S i, Nat.Prime p)
     (hrho : ∀ i ∈ s, 0 ≤ density (S i) ∧ density (S i) ≤ 1)
-    (hboundary : ∀ i ∈ s, boundaryOK N (a i) (b i))
     (hbudget : ∀ i ∈ s, (2 : ℝ) ^ (S i).card ≤ (2 : ℝ) ^ (j i))
     (hcover : f + ArchiveSummation.weightedCount s h
       (fun i => (ArchiveSummation.cellCount N (a i) (b i)
@@ -114,9 +132,10 @@ theorem global_upper_archive {ι : Type*} [DecidableEq ι]
   · intro i hi
     exact cell_lower_archive N (a i) (b i) (j i) (S i)
       (ha i hi) (hb i hi) (hLU i hi) (hprime i hi) (hrho i hi)
-      (hboundary i hi) (hbudget i hi)
+      (hbudget i hi)
   · exact hcover
 
+#print axioms boundaryOK_of_pos
 #print axioms real_endpoint_loss_le_one
 #print axioms cell_lower_exact
 #print axioms cell_lower_archive

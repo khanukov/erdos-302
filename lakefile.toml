@@ -1,0 +1,13 @@
+name = "upper_integration"
+version = "0.1.0"
+defaultTargets = ["UpperIntegration"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/teorth/mathlib4.git"
+rev = "da1f94df976c7cd38117281c57d6ee3046c8d104"
+
+[[lean_lib]]
+name = "UpperIntegration"
+srcDir = "lean"
+roots = ["ArchiveCase4", "ArchiveCase4Semantic", "BlockAccounting", "CaseDual", "CaseRules", "CaseTree", "CaseTreeTest", "CellEquivalence", "CellEquivalenceTests", "Dag", "DagForce", "DagForceTests", "Erdos302Lower.Defs", "ExactComparison", "Extended", "LocalBlockDemand", "LocalBlockDemandTests", "Pack1094", "Pack1094Shard", "PackRule", "PackShard", "PackShardTests", "PrimePowerReindex", "PrimePowerReindexTest", "Projection", "Renewal", "RenewalUnroll", "RenewalUnrollTest", "RoughCoprime", "RoughCoprimeTest", "RoughCount", "RoughCountTest", "RoughDiscrepancy", "RoughDiscrepancyTests", "RoughFinal", "RoughFinalTests", "RoughIEPartial", "RoughIntersection", "RoughIntersectionTests", "RoughRounding", "RoughRoundingTests", "Scaling", "ScalingTest", "SmoothCover", "SmoothCoverTest", "SmoothExistence", "SmoothPartition", "SmoothRenewal", "SumBridge", "SumBridgeTest", "Summation", "UpperBank", "UpperBridge", "UpperIntegration", "UpperRenewal", "Weighted"]
