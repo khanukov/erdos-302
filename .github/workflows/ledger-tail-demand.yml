@@ -1,0 +1,56 @@
+name: Ledger tail demand candidate
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  ledger-tail-demand:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      LEAN_NUM_THREADS: "1"
+      LEAN_STACK_SIZE_KB: "262144"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile selected closure and check axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/ledger-tail-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          python3 -B audit/ledger-tail-ci/test_closure.py
+          python3 -B audit/ledger-tail-ci/closure.py "$p"
+          for f in "$p"/{Renewal,SmoothRenewal,DemandRenewalChain,LedgerChecker,LedgerTailDemand,LedgerTailDemandTests}.lean; do
+            if grep -nE '\b(sorry|admit|native_decide)\b' "$f"; then exit 1; fi
+          done
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Data.Nat.Prime.Basic Mathlib.Order.Interval.Finset.Nat Mathlib.Data.Rat.Defs Mathlib.Tactic
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          for m in Renewal SmoothRenewal DemandRenewalChain LedgerChecker LedgerTailDemand; do
+            lean -o "$m.olean" "$m.lean" 2>&1 | tee "$RUNNER_TEMP/$m.log"
+          done
+          lean LedgerTailDemandTests.lean
+          gate="$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py"
+          python3 "$gate" "$RUNNER_TEMP/Renewal.log" RenewalNext.demand_image RenewalNext.disjoint_scaled RenewalNext.update_demand RenewalNext.tail_sound RenewalNext.demand_disjoint RenewalNext.update_sound RenewalNext.correction_identity
+          python3 "$gate" "$RUNNER_TEMP/SmoothRenewal.log" SmoothRenewal.triple_scale_iff SmoothRenewal.vertices_partition SmoothRenewal.vertices_disjoint SmoothRenewal.demand_recurrence SmoothRenewal.cover_pullback SmoothRenewal.edge_image SmoothRenewal.demand_scaled
+          python3 "$gate" "$RUNNER_TEMP/DemandRenewalChain.log" DemandRenewalChain.update_graph_demand DemandRenewalChain.tail_graph_demand DemandRenewalChain.levels_graph_demand
+          python3 "$gate" "$RUNNER_TEMP/LedgerTailDemand.log" LedgerTailDemand.correction_zero_above LedgerTailDemand.levels_ledger_demand
