@@ -9,6 +9,7 @@ FactorCountAxioms
 FactorCountCandidate
 FactorCountCandidateTests
 FreshExistentialLowerCheck
+LiteralFactorMatchingCandidate
 LowerNext
 LowerNextLiminf
 Pack1094Tests

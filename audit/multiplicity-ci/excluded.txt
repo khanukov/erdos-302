@@ -61,6 +61,7 @@ HGainCandidate
 HGainCandidateTest
 LedgerChecker
 LedgerTests
+LiteralFactorMatchingCandidate
 LocalBlockDemandTests
 LowerNext
 LowerNextLiminf
