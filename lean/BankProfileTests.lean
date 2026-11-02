@@ -24,6 +24,9 @@ example : ¬ Extended.Bound ({2, 3} : Finset ℕ) 1 := by
 
 namespace BankProfileConcrete
 
+-- The filter predicates in theorem statements need decidability while elaborating.
+open scoped Classical
+
 -- A complete one-node DAG: no semantic bound is assumed.
 def nodes : ℕ → ArchiveDag.Node
   | 0 => ⟨{2, 3, 6}, 1, .edge 2 3 6⟩

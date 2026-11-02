@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 30
     env:
       LEAN_NUM_THREADS: "1"
+      # Experimental mitigation: cap each Lean runtime thread stack, not proof resources.
+      LEAN_STACK_SIZE_KB: "262144"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -52,6 +54,9 @@ jobs:
         run: |
           set -euo pipefail
           ulimit -v 24000000
+          python3 .github/kitamura/resource_monitor.py > "$RUNNER_TEMP/ledger-resources.jsonl" &
+          monitor=$!
+          trap 'kill "$monitor" 2>/dev/null || :; wait "$monitor" 2>/dev/null || :' EXIT
           set +e
           timeout 15m lake build ArchiveLedger > "$RUNNER_TEMP/ledger-build.log" 2>&1
           status=$?
@@ -69,5 +74,6 @@ jobs:
           path: |
             ${{ runner.temp }}/ledger-build.log
             ${{ runner.temp }}/ledger-status.txt
+            ${{ runner.temp }}/ledger-resources.jsonl
             ${{ runner.temp }}/ledger-axioms.log
           if-no-files-found: warn

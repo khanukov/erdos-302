@@ -9,6 +9,8 @@ jobs:
     timeout-minutes: 355
     env:
       LEAN_NUM_THREADS: '1'
+      # Experimental mitigation: cap each Lean runtime thread stack, not proof resources.
+      LEAN_STACK_SIZE_KB: '262144'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -62,6 +64,9 @@ jobs:
           # One Lean worker, 10 GiB virtual address space per process, job deadline 355 min.
           # This is not a job-wide aggregate memory limit.
           ulimit -v 10485760
+          python3 .github/kitamura/resource_monitor.py > "$RUNNER_TEMP/logs/resources.jsonl" &
+          monitor=$!
+          trap 'kill "$monitor" 2>/dev/null || :; wait "$monitor" 2>/dev/null || :' EXIT
           lake env bash -euo pipefail -c '
             cd "$RUNNER_TEMP/staged"
             python3 "$GITHUB_WORKSPACE/.github/kitamura/build_chain.py" full "$RUNNER_TEMP/logs" 2>&1 | tee "$RUNNER_TEMP/logs/build.log"
@@ -81,6 +86,7 @@ jobs:
           path: |
             ${{ runner.temp }}/logs/*.txt
             ${{ runner.temp }}/logs/*.log
+            ${{ runner.temp }}/logs/*.jsonl
             ${{ runner.temp }}/logs/Axioms.lean
           if-no-files-found: warn
           retention-days: 14
