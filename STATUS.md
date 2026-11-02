@@ -1,8 +1,11 @@
 # Status — component proofs, not a final theorem
 
-Evidence snapshot: 2026-11-02 04:09 UTC. The last successful selected integration commit is [`5a878c7e6fa8c9ac9f0f3ac0af049922148a681a`](https://github.com/khanukov/erdos-302/commit/5a878c7e6fa8c9ac9f0f3ac0af049922148a681a). Later candidate builds failed as described below; CI results are tied to their stated commits, not implicitly to the current HEAD.
+Evidence snapshot: 2026-11-02 04:24 UTC. The last successful selected integration commit is [`5a878c7e6fa8c9ac9f0f3ac0af049922148a681a`](https://github.com/khanukov/erdos-302/commit/5a878c7e6fa8c9ac9f0f3ac0af049922148a681a). Later integration candidate builds failed as described below; CI results are tied to their stated commits, not implicitly to the current HEAD.
 
 ## Current component and last known checks
+
+* The complete **literal** 4,705-cell ledger arithmetic passed Lean and three axiom gates in [41387337165](https://github.com/khanukov/erdos-302/actions/runs/41387337165) at `0d936ae`. `ArchiveLedger.archive_valid` checks the 20 primes, 4,705 cells, cell order and endpoints, and `archive_arithmetic` proves the exact rational coefficient and error 55,064,831,540 for those literals. Archive-to-literal transcription is corroborated by Python, not proved in Lean; cells' derivation from the bank/profiles and their application to a cover remain open. Mathlib cache objects were reused.
+* The later integration [41387337720](https://github.com/khanukov/erdos-302/actions/runs/41387337720) at `0d936ae` failed in `BankProfileTests`. The reflective rebuild [41387339321](https://github.com/khanukov/erdos-302/actions/runs/41387339321) failed at module 34/235 due to a missing Mathlib umbrella object; neither reached its final axiom gate.
 
 * On `1fd2ae2`, integration [41386480628](https://github.com/khanukov/erdos-302/actions/runs/41386480628) failed in `BankProfileTests`; the ledger [41386480346](https://github.com/khanukov/erdos-302/actions/runs/41386480346) passed small tests but its full build failed creating a thread; the reflective chain [41386482727](https://github.com/khanukov/erdos-302/actions/runs/41386482727) failed creating a thread at module 20/235. Neither thread failure's underlying cause is established; no final axiom gates were reached. These are not successful proof checks.
 
