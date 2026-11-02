@@ -19,6 +19,7 @@ import RenewalUnrollTest
 import LocalBlockDemandTests
 import PrimePowerReindexTest
 import PrimePowerSum
+import PrimePowerRenewalTest
 import ExactComparison
 
 /-! Integration is a collection of partial results, not an endpoint theorem. -/
@@ -28,3 +29,5 @@ import ExactComparison
 #print axioms SmoothPartition.global_from_prefix_demands
 #print axioms PrimePowerReindex.bounded_decomposition
 #print axioms PrimePowerSum.sum_reindex
+#print axioms PrimePowerRenewal.sum_unroll
+#print axioms PrimePowerRenewal.sum_update
