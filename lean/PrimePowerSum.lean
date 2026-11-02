@@ -34,7 +34,8 @@ theorem maps_to_target {p P N : ℕ} (hp : p.Prime)
     (hpP : Nat.Coprime p P) {x : ℕ × ℕ} (hx : x ∈ pairs p P N) :
     x.1 * p ^ x.2 ∈ targets P N := by
   rcases x with ⟨q, k⟩
-  simp only [pairs, mem_filter, mem_product, mem_Icc] at hx
+  simp only [pairs, mem_filter] at hx
+  have hq : 1 ≤ q := (mem_Icc.mp ((mem_product (s := Icc 1 N) (t := Icc 0 N)).mp hx.1).1).1
   simp only [targets, mem_filter, mem_Icc]
   refine ⟨⟨?_, hx.2.2.2⟩, ?_⟩
   · exact Nat.mul_pos (by omega) (pow_pos hp.pos _)
@@ -46,7 +47,9 @@ theorem pair_injective {p P N : ℕ} (hp : p.Prime)
     (h : x.1 * p ^ x.2 = y.1 * p ^ y.2) : x = y := by
   rcases x with ⟨q, k⟩
   rcases y with ⟨r, l⟩
-  simp only [pairs, mem_filter, mem_product, mem_Icc] at hx hy
+  simp only [pairs, mem_filter] at hx hy
+  have hq : 1 ≤ q := (mem_Icc.mp ((mem_product (s := Icc 1 N) (t := Icc 0 N)).mp hx.1).1).1
+  have hr : 1 ≤ r := (mem_Icc.mp ((mem_product (s := Icc 1 N) (t := Icc 0 N)).mp hy.1).1).1
   obtain ⟨h1, h2⟩ := PrimePowerReindex.decomposition_unique hp
     (by omega : 0 < q) (by omega : 0 < r) hx.2.1 hy.2.1 h
   exact Prod.ext h1 h2
@@ -65,8 +68,9 @@ theorem target_has_pair {p P N t : ℕ} (hp : p.Prime)
     nlinarith
   rcases x with ⟨q, k⟩
   refine ⟨(q, k), ?_, heq⟩
-  simp only [pairs, mem_filter, mem_product, mem_Icc]
-  exact ⟨⟨⟨by omega, hqN⟩, ⟨Nat.zero_le _, hkN⟩⟩, hn, hcop, hbound⟩
+  simp only [pairs, mem_filter]
+  exact ⟨(mem_product (s := Icc 1 N) (t := Icc 0 N)).mpr ⟨mem_Icc.mpr ⟨by omega, hqN⟩,
+    mem_Icc.mpr ⟨Nat.zero_le _, hkN⟩⟩, hn, hcop, hbound⟩
 
 /-- Exact reindexing for arbitrary additive weights, not an assumed equality. -/
 theorem sum_reindex {p P N : ℕ} (hp : p.Prime)
@@ -82,6 +86,12 @@ theorem sum_reindex {p P N : ℕ} (hp : p.Prime)
     exact ⟨x, hx, he.symm⟩
   · intro x hx
     rfl
+
+-- Exercise reindexing with a nonconstant weight and a concrete expected total.
+example : (∑ x ∈ pairs 2 3 8, x.1 * 2 ^ x.2) = 27 := by
+  calc
+    _ = ∑ t ∈ targets 3 8, t := sum_reindex (by decide) (by decide) (fun n : ℕ => n)
+    _ = 27 := by decide
 
 #print axioms sum_reindex
 end PrimePowerSum

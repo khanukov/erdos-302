@@ -18,6 +18,8 @@ jobs:
         run: |
           python3 tests/test_upper_project.py
           python3 -O tests/test_upper_project.py
+          python3 -B -m unittest discover -s independent_bank -p test_replay_inventory.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_replay_inventory.py
           python3 audit/mathlib-bridge-ci/test_check_axioms.py
       - name: Install pinned Lean
         shell: bash
