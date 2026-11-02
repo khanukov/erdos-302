@@ -1,0 +1,11 @@
+# First mixed prefix shard (candidate)
+
+This is an **uncompiled candidate**, not a checked shard. It transcribes nodes 0–8 of the interpreted exported bank: five `small`, two `case`, and two `trim` rules. Every reference in this prefix points to an earlier node; no synthetic predecessor replaces an archived node. The fallback node applies only to indices outside the nine-node prefix.
+
+`python3 -B independent_bank/mixed_artifact.py shard audit/shard-aggregation/FirstRealData.lean` reloads the SHA-256-pinned archive and compares the entire shard file byte-for-byte with regeneration. For the complete producer CLI artifact, use `python3 -B independent_bank/mixed_lean_producer.py > /path/to/output.lean` followed by `python3 -B independent_bank/mixed_artifact.py full /path/to/output.lean`. These separate checks cover imports, declarations, theorem assumptions, and all other bytes, not just the node arms examined by the semantic round-trip checker. The first-shard workflow runs both checks and their mutation tests before Lean. The full artifact checked there is freshly generated, not a committed or kernel-checked full-prefix proof.
+
+These are reproducibility checks using the same generator, not independent verification of its correctness, a Lean proof connecting archive bytes to literals, or a source-provenance claim. The existing producer round-trip tests and the additional inventory/mutation tests provide further non-kernel checks.
+
+`FirstRealShard.lean` states nine closed checker obligations and derives the node-8 bound from the mixed soundness theorem. The dedicated manually dispatched workflow `first-real-shard.yml` builds the pinned dependency closure, allows the Mathlib cache, enforces a 120-minute job deadline and 15-minute limit per new Lean invocation, and checks the exact axiom reports for all nine checks, the combined prefix, and the resulting bound against the standard allowlist. The limits are not aggregate memory limits. Successful generation or Python tests do not imply Lean compilation; a successful workflow at the exact commit is required before describing any of these obligations as kernel checked. The workflow has not been run for this candidate.
+
+This verifies at most the nine literal nodes and the resulting node-8 bound, not the full 1,091-node bank, archive correspondence, profile recurrence, or final theorem.

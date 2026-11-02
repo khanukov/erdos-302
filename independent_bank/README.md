@@ -13,3 +13,9 @@ PYTHONDONTWRITEBYTECODE=1 python3 -O -m unittest discover -s independent_bank -v
 ```
 
 The full checker, intended for hosted CI, is `python3 -O independent_bank/verify_bank.py`.
+
+## Mixed-prefix Lean candidate
+
+`python3 independent_bank/mixed_lean_producer.py > MixedPrefixGenerated.lean` loads and hashes the pinned compressed bank bytes before parsing them, then emits a candidate transcription. The CLI header identifies that digest; it does not prove author provenance or archive-to-Lean correspondence. In contrast, `render(doc)` accepts in-memory data and makes no digest claim.
+
+The generated `prefix_target` theorem **assumes** `prefixTarget`: it does not establish that the generated checker succeeds. The generated candidate has not thereby been compiled or kernel-verified, and no source certificate is established. Its default node applies outside the finite prefix. The Python round-trip tests independently check the entire ordered node-definition arms, rules and serialized expressions against interpreted data, including mutations; they are transcription evidence, not a formal proof of correspondence.
