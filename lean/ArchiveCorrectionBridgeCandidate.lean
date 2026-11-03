@@ -21,7 +21,7 @@ noncomputable def correction (j x : ℕ) : ℕ :=
 
 theorem correction_at_occurrence (o : Occurrence) :
     correction o.level o.arg = ∑ i ∈ (Finset.univ : Finset (Fin 4705)), height i * hit o i := by
-  simp only [correction, hit, Finset.sum_univ]
+  rfl
 
 theorem correction_zero (j : ℕ) : correction j 0 = 0 := by
   simp only [correction]
@@ -47,7 +47,7 @@ theorem literal_allocation (N q levels : ℕ) (p : ℕ → ℕ)
   have h := RenewalConcreteOccurrence.allocation (Finset.univ : Finset (Fin 4705))
     hit height p correction u levels (N / q) r hp hbase hu0 correction_zero hrec
     (by intro o ho; exact correction_at_occurrence o) hbound
-  simpa only [Finset.sum_univ, ← hmatch] using h
+  simpa only [← hmatch] using h
 
 /-- Integration with the literal cover; graph demand and the exact factor
 matching are still independent premises. -/

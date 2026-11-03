@@ -58,6 +58,7 @@ jobs:
           if grep -nE '\b(sorry|admit|native_decide)\b' lean/ArchiveCorrectionBridgeCandidate.lean lean/CorrectionOccurrenceGeneric.lean; then exit 1; fi
           ulimit -v 24000000
           timeout 120m lake build +ArchiveCorrectionBridgeCandidate +CorrectionOccurrenceGeneric 2>&1 | tee "$RUNNER_TEMP/build.log"
+          timeout 10m lake env lean "$GITHUB_WORKSPACE/tests/ArchiveCorrectionBridgeTests.lean"
           timeout 30m lake env lean lean/ArchiveCorrectionBridgeCandidate.lean 2>&1 | tee "$RUNNER_TEMP/axioms.log"
           timeout 10m lake env lean lean/CorrectionOccurrenceGeneric.lean 2>&1 | tee "$RUNNER_TEMP/generic-axioms.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/generic-axioms.log" CorrectionOccurrenceGeneric.occurrence_correction_sum
