@@ -26,10 +26,10 @@ class ClosureTests(unittest.TestCase):
         self.tmp.cleanup()
     def test_exact(self):
         modules, vertices = closure.stage(self.root, self.dest)
-        self.assertEqual(len(modules), 84)
+        self.assertEqual(len(modules), 91)
         self.assertEqual(len(vertices), 64)
     def test_missing_import(self):
-        path = self.root / 'lean/ActualSparse64/All.lean'
+        path = self.root / 'lean/ActualSparse64/Coverage.lean'
         text = path.read_text()
         path.write_text(text.replace('import ActualSparse64.Vertex118\n', '', 1))
         with self.assertRaises(ValueError): closure.stage(self.root, self.dest)

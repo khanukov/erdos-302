@@ -111,7 +111,34 @@ theorem boundary : ExtensionSeedCandidate.Boundary ExtensionFirstArchive.source
 #print axioms boundary
 end ActualSparse64
 '''
+    # Keep each expensive declaration in a fresh Lean process.  The original
+    # theorem statements and proof bodies remain byte-for-byte unchanged.
+    old = result[OUT / 'All.lean']
+    start = old.index('theorem outside_eq')
+    names = ('outside_eq', 'target_subset', 'delete_subset', 'all_shards',
+             'checked', 'source_eq', 'target_eq', 'delete_eq', 'boundary')
+    chunks = {}
+    for i, name in enumerate(names):
+        a = old.index('theorem ' + name, start)
+        b = old.index('theorem ' + names[i + 1], a) if i + 1 < len(names) else old.index('#print axioms outside_eq', a)
+        chunks[name] = old[a:b]
+    header = '\nnamespace ActualSparse64\nset_option maxRecDepth 100000\nset_option maxHeartbeats 40000000\n\n'
+    def stage(name, imports, declarations, gates=()):
+        result[OUT / (name + '.lean')] = (''.join('import ' + x + '\n' for x in imports) + header
+            + ''.join(chunks[x] for x in declarations)
+            + ''.join('#print axioms ' + x + '\n' for x in gates) + 'end ActualSparse64\n')
+    stage('Outside', ['ActualSparse64.Data'], ['outside_eq'], ['outside_eq'])
+    stage('Subsets', ['ActualSparse64.Data'], ['target_subset', 'delete_subset'])
+    stage('Coverage', [f'ActualSparse64.Vertex{x}' for x in v] + ['SparseBoundaryMathlib'], ['all_shards'], ['all_shards'])
+    stage('Checked', ['ActualSparse64.Outside', 'ActualSparse64.Subsets', 'ActualSparse64.Coverage'], ['checked'])
+    for name, decl in [('SourceEq', 'source_eq'), ('TargetEq', 'target_eq'), ('DeleteEq', 'delete_eq')]:
+        stage(name, ['ActualSparse64.Data', 'ExtensionBoundaryData'], [decl], [decl])
+    stage('All', ['ActualSparse64.Checked', 'ActualSparse64.SourceEq', 'ActualSparse64.TargetEq',
+                  'ActualSparse64.DeleteEq', 'SparseBoundaryMathlib'], ['boundary'], ['boundary'])
     return result
+
+def generated_inventory():
+    return set(OUT.glob('*.lean')) - {OUT / 'Data.lean', OUT / 'FastSample.lean'}
 
 def main():
     p = argparse.ArgumentParser()
@@ -119,7 +146,7 @@ def main():
     args = p.parse_args()
     files = generate()
     expected = set(files)
-    actual = set(OUT.glob('Vertex*.lean')) | ({OUT / 'All.lean'} if (OUT / 'All.lean').exists() else set())
+    actual = generated_inventory()
     if args.check:
         if actual != expected or any(not path.is_file() or path.read_text() != value for path, value in files.items()):
             raise SystemExit('generated file inventory or content mismatch')

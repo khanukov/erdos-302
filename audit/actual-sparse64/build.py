@@ -43,8 +43,11 @@ for name in modules:
     if name.startswith('ActualSparse64.Vertex'):
         n = name.removeprefix('ActualSparse64.Vertex')
         gate(log, f'ActualSparse64.pair{n}_full', f'ActualSparse64.shard{n}_full')
-    if name == 'ActualSparse64.All':
-        gate(log, *(f'ActualSparse64.{n}' for n in ('outside_eq', 'all_shards', 'source_eq', 'target_eq', 'delete_eq', 'boundary')))
+    stage_gates = {'ActualSparse64.Outside': 'outside_eq', 'ActualSparse64.Coverage': 'all_shards',
+                   'ActualSparse64.SourceEq': 'source_eq', 'ActualSparse64.TargetEq': 'target_eq',
+                   'ActualSparse64.DeleteEq': 'delete_eq', 'ActualSparse64.All': 'boundary'}
+    if name in stage_gates:
+        gate(log, 'ActualSparse64.' + stage_gates[name])
 log = run('Contract', contract=True)
 gate(log, 'ActualSparse64.boundary')
 print(f'PASS: {len(modules)} modules, {len(vertices)} vertex checks, aggregate and type contract', flush=True)

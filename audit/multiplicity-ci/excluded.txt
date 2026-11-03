@@ -229,3 +229,10 @@ ActualSparse64.Vertex852
 ActualSparse64.Vertex885
 ActualSparse64.Vertex915
 ActualSparse64.All
+ActualSparse64.Checked
+ActualSparse64.DeleteEq
+ActualSparse64.Subsets
+ActualSparse64.SourceEq
+ActualSparse64.Outside
+ActualSparse64.Coverage
+ActualSparse64.TargetEq

@@ -5,6 +5,15 @@ import unittest
 HERE = pathlib.Path(__file__).resolve().parent
 
 class GenerateTests(unittest.TestCase):
+    def test_aggregate_is_split_into_isolated_stages(self):
+        spec = importlib.util.spec_from_file_location('generate', HERE / 'generate.py')
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        files = mod.generate()
+        for name in ('Outside', 'Subsets', 'Coverage', 'Checked', 'SourceEq', 'TargetEq', 'DeleteEq', 'All'):
+            self.assertIn(mod.OUT / (name + '.lean'), files)
+        self.assertNotIn('by decide', files[mod.OUT / 'All.lean'])
+
     def test_generated_inventory_and_data(self):
         spec = importlib.util.spec_from_file_location('generate', HERE / 'generate.py')
         mod = importlib.util.module_from_spec(spec)

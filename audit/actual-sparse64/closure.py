@@ -16,7 +16,7 @@ spec.loader.exec_module(gen)
 
 def inventory():
     generated = gen.generate()
-    actual = set(gen.OUT.glob('Vertex*.lean')) | ({gen.OUT / 'All.lean'} if (gen.OUT / 'All.lean').exists() else set())
+    actual = gen.generated_inventory()
     if actual != set(generated) or any(p.read_bytes() != s.encode() for p, s in generated.items()):
         raise ValueError('generated inventory or bytes mismatch')
     vertices = sorted(p.stem for p in generated if p.name.startswith('Vertex'))
@@ -28,13 +28,15 @@ def inventory():
                     'SparseBoundaryFast': ['SparseBoundaryShards'],
                     'ActualSparse64.Data': ['SparseBoundaryShards'],
                     'ActualSparse64.FastSample': ['SparseBoundaryFast', 'ActualSparse64.Data']})
+    # Diagnose independent computations before spending time on vertex proofs.
+    for stage in ('Outside', 'Subsets', 'SourceEq', 'TargetEq', 'DeleteEq'):
+        text = generated[gen.OUT / (stage + '.lean')]
+        modules['ActualSparse64.' + stage] = [line.split()[1] for line in text.splitlines() if line.startswith('import ')]
     for vertex in vertices:
         modules['ActualSparse64.' + vertex] = ['ActualSparse64.FastSample']
-    # The generated import order is the literal V order, not lexical order.
-    all_imports = [line.split()[1] for line in generated[gen.OUT / 'All.lean'].splitlines() if line.startswith('import ')]
-    if set(all_imports) != {'ActualSparse64.' + x for x in vertices} | {'SparseBoundaryMathlib', 'ExtensionBoundaryData'} or len(all_imports) != 66:
-        raise ValueError('aggregate imports mismatch')
-    modules['ActualSparse64.All'] = all_imports
+    for stage in ('Coverage', 'Checked', 'All'):
+        text = generated[gen.OUT / (stage + '.lean')]
+        modules['ActualSparse64.' + stage] = [line.split()[1] for line in text.splitlines() if line.startswith('import ')]
     return modules, vertices
 
 def stage(root, dest):
