@@ -58,7 +58,22 @@ jobs:
           lake build Erdos302Lower.Defs
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
           export LEAN_NUM_THREADS=1 LEAN_STACK_SIZE_KB=262144
-          ulimit -v 10485760
+          # Controlled rerun: cap each process at 24 GiB of virtual address space,
+          # not 24 GiB of physical memory. The original thread failure's cause is unknown.
+          ulimit -v 25165824
+          snapshot_resources() {
+            echo 'Resource limits (KiB unless noted):'
+            ulimit -a
+            echo 'Process limits:'
+            cat /proc/self/limits
+            echo 'Memory:'
+            cat /proc/meminfo
+            for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events /sys/fs/cgroup/pids.max /sys/fs/cgroup/pids.current; do
+              if [ -r "$f" ]; then printf '\n%s\n' "$f"; cat "$f"; fi
+            done
+          }
+          snapshot_resources > "$RUNNER_TEMP/logs/resources-before.txt" || true
+          trap 'snapshot_resources > "$RUNNER_TEMP/logs/resources-after.txt" || true' EXIT
           python3 "$GITHUB_WORKSPACE/audit/actual-sparse64/build.py" "$p" "$RUNNER_TEMP/logs"
       - name: Retain module logs and resource measurements
         if: always()
