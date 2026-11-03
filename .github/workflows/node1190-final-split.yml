@@ -1,0 +1,104 @@
+name: Node 1190 final split candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shards:
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [refs, capacity, objective, assembly]
+        batch: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Verify extraction in normal and optimized Python
+        run: |
+          python3 -B -m unittest discover -s independent_bank -p test_node1190_min.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_node1190_min.py
+          python3 -B -m unittest discover -s independent_bank -p test_node1190_final_split.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_node1190_final_split.py
+          python3 -B independent_bank/node1190_final_split.py --check
+          python3 -B -O independent_bank/node1190_final_split.py --check
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile bounded independent small checks and gate axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/node1209-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
+          cp lean/{MixedDag,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate}.lean "$p/"
+          cp audit/node1190-min/DenseData.lean "$p/"
+          cp audit/node1190-final-split/*.lean "$p/"
+          cp audit/node1190-fold/Node1190ComponentFold.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          lake build Erdos302Lower.Defs
+          ulimit -v 33554432
+          export LEAN_STACK_SIZE_KB=262144
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p" LEAN_NUM_THREADS=1
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag; do
+            timeout 15m lean -o "$f.olean" "$f.lean"
+          done
+          for f in MixedDag CaseRules CaseDual CaseTree MixedCaseTrimCandidate; do
+            timeout 15m lean -o "$f.olean" "$f.lean"
+          done
+          timeout 30m lean -o DenseData.olean DenseData.lean
+          timeout 30m lean -o Node1190DualData.olean Node1190DualData.lean
+          timeout 30m lean -o Node1190LeafBridge.olean Node1190LeafBridge.lean 2>&1 | tee "$RUNNER_TEMP/Node1190LeafBridge.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Node1190LeafBridge.log" Node1190Dual.leaf_from_components
+          timeout 30m lean -o Node1190ComponentFold.olean Node1190ComponentFold.lean 2>&1 | tee "$RUNNER_TEMP/Node1190ComponentFold.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Node1190ComponentFold.log" Node1190ComponentFold.list_all_of_positions Node1190ComponentFold.mapped_getD_mem Node1190ComponentFold.finset_all_of_list Node1190ComponentFold.leaf_from_positions
+          group='${{ matrix.group }}'; batch='${{ matrix.batch }}'
+          if [[ "$group" == assembly && "$batch" != 0 ]]; then exit 0; fi
+          for path in Node1190Refs*.lean Node1190Capacity*.lean Node1190Objective.lean Node1190Assembly.lean; do
+            case "$group:$path" in
+              refs:Node1190Refs*|capacity:Node1190Capacity*|objective:Node1190Objective*|assembly:Node1190*) ;;
+              *) continue ;;
+            esac
+            if [[ "$group" == assembly ]]; then :
+            elif [[ "$group" == objective ]]; then [[ "$batch" == 0 ]] || continue
+            else
+              num="${path%.lean}"; num="${num: -3}"
+              (( 10#$num % 10 == batch )) || continue
+            fi
+            f="${path%.lean}"
+            timeout 45m lean -o "$f.olean" "$path" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+            declarations=$(python3 -c 'import re,sys; print(" ".join("Node1190Dual."+x for x in re.findall(r"^#print axioms (\w+)",open(sys.argv[1]).read(),re.M)))' "$path")
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/$f.log" $declarations
+          done
+      - name: Upload small prerequisite diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: node1190-${{ matrix.group }}-${{ matrix.batch }}-logs
+          path: ${{ runner.temp }}/*.log
+          if-no-files-found: warn
