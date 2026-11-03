@@ -252,3 +252,4 @@ JointIndependenceCandidateTests
 FirstExtensionBridge
 Node1209SourceCandidate
 JointSixCandidate
+Node1209PackPilot
