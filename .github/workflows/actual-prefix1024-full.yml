@@ -91,6 +91,8 @@ jobs:
           test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           lake exe cache get || echo 'Mathlib cache unavailable; building from source may time out'
           lake build Erdos302Lower.Defs
+          test "$(git -C .lake/packages/erdos301 rev-parse HEAD)" = 789c6f045dbc81da3811031247d186a7128dafce
+          test "$(git -C .lake/packages/erdos327 rev-parse HEAD)" = a7201442f71af90a8e7b930f993c8eec69f685cf
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
           python3 "$GITHUB_WORKSPACE/independent_bank/full1024_ci.py" --check-search-path "$p"
           for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag BankRowPack BankRowPackTests BankRowPackArchive1090 MixedDag MixedDagTests CaseRules CaseDual CaseTree MixedCaseTrimCandidate MixedCaseTrimCandidateTest; do

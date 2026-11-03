@@ -138,11 +138,65 @@ if module == 'ActualPrefix1024Checks0':
                     ci.run(project, logs, lean=str(fake))
                 self.assertFalse((logs / 'full1024-evidence.json').exists())
 
+    def test_actual_upstream_dependency_is_pinned_and_manifested(self):
+        import hashlib, json
+        name = 'Erdos301.Analytic.ConflictGlobal'
+        source = self.project / '.lake/packages/erdos301/lean/Erdos301/Analytic/ConflictGlobal.lean'
+        source.parent.mkdir(parents=True)
+        source.write_text('import Mathlib\n')
+        obj = self.project / '.lake/packages/erdos301/lean/.lake/build/lib/lean/Erdos301/Analytic/ConflictGlobal.olean'
+        obj.parent.mkdir(parents=True)
+        obj.write_bytes(b'upstream-object')
+        (self.project / 'ActualPrefix1024Checks0.lean').write_text('import ' + name + '\n')
+        pin = {name: hashlib.sha256(source.read_bytes()).hexdigest()}
+        with patch.object(ci, 'UPSTREAM_SOURCES', pin, create=True), patch.dict(os.environ, {'LEAN_PATH': str(obj.parents[2])}), self.fake_run():
+            ci.run(self.project, self.logs)
+        record = json.loads((self.logs / 'full1024-evidence.json').read_text())['shards'][0]['input_manifest']
+        self.assertEqual(record[str(source.relative_to(self.project))], pin[name])
+        self.assertEqual(record[str(obj.relative_to(self.project))], hashlib.sha256(obj.read_bytes()).hexdigest())
+
+    def test_pinned_upstream_rejects_changed_source_or_missing_object(self):
+        import hashlib
+        name = 'Erdos301.Analytic.ConflictGlobal'
+        source = self.project / '.lake/packages/erdos301/lean/Erdos301/Analytic/ConflictGlobal.lean'
+        source.parent.mkdir(parents=True)
+        source.write_text('import Mathlib\n')
+        obj = self.project / '.lake/packages/erdos301/lean/.lake/build/lib/lean/Erdos301/Analytic/ConflictGlobal.olean'
+        obj.parent.mkdir(parents=True)
+        (self.project / 'ActualPrefix1024Checks0.lean').write_text('import ' + name + '\n')
+        pin = {name: hashlib.sha256(source.read_bytes()).hexdigest()}
+        with patch.object(ci, 'UPSTREAM_SOURCES', pin), patch.dict(os.environ, {'LEAN_PATH': str(obj.parents[2])}), self.fake_run():
+            with self.assertRaisesRegex(ValueError, 'missing local dependency output'):
+                ci.run(self.project, self.logs)
+            obj.write_bytes(b'object')
+            source.write_text('changed')
+            with self.assertRaisesRegex(ValueError, 'mismatched pinned upstream source'):
+                ci.run(self.project, self.logs)
+        self.assertEqual(self.called, [])
+
     def test_unknown_import_is_rejected(self):
         (self.project / 'ActualPrefix1024Checks0.lean').write_text('import Added\n')
         with self.fake_run(), self.assertRaisesRegex(ValueError, 'unknown import'):
             ci.run(self.project, self.logs)
         self.assertEqual(self.called, [])
+
+    def test_unknown_upstream_shadow_rejected_even_with_local_source(self):
+        local = self.project / 'Erdos301/Analytic/Unknown.lean'
+        local.parent.mkdir(parents=True)
+        local.write_text('-- untrusted')
+        local.with_suffix('.olean').write_bytes(b'shadow')
+        (self.project / 'ActualPrefix1024Checks0.lean').write_text('import Erdos301.Analytic.Unknown\n')
+        with self.fake_run(), self.assertRaisesRegex(ValueError, 'unknown upstream'):
+            ci.run(self.project, self.logs)
+        self.assertEqual(self.called, [])
+
+    def test_pinned_upstream_shadow_rejected(self):
+        shadow = Path(self.temp.name) / 'shadow/Erdos301/Analytic/ConflictGlobal.olean'
+        shadow.parent.mkdir(parents=True)
+        shadow.write_bytes(b'bad')
+        with patch.dict(os.environ, {'LEAN_PATH': str(shadow.parents[2])}):
+            with self.assertRaisesRegex(ValueError, 'shadow'):
+                ci.check_search_path(self.project)
 
     def test_failed_shard_never_assembles(self):
         self.bad = 'ActualPrefix1024Checks7'

@@ -5,6 +5,9 @@ The caller builds the common project dependencies in a clean directory first.
 Only the 64 independent check modules are compiled concurrently; the aggregate
 is compiled after every shard and axiom gate has succeeded. Imported olean files
 and Mathlib cache remain trusted; this is not a fresh-environment replay.
+The explicit 101-module Erdos301/Erdos327 closure is source-hash pinned;
+its objects are trusted Lake outputs or cache objects, pinned by path and
+same-run digest, not proven to have been built from those sources.
 The runner, compiler, external packages and isolation from concurrent writers
 are trusted. Repeated inventories detect persistent changes, not transient
 change-and-restore races; they do not make compiler inputs immutable.
@@ -25,6 +28,14 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('axioms', ROOT / 'audit/mathlib-bridge-ci/check_axioms.py')
 axioms = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(axioms)
+UPSTREAM_SOURCES = json.loads((ROOT / 'independent_bank/full1024_upstream_sources.json').read_text())
+
+
+def upstream_paths(project, name):
+    package = {'Erdos301': 'erdos301', 'Erdos327': 'erdos327'}[name.split('.')[0]]
+    base = Path('.lake/packages') / package / 'lean'
+    module = Path(name.replace('.', '/'))
+    return base / module.with_suffix('.lean'), base / '.lake/build/lib/lean' / module.with_suffix('.olean')
 
 
 def check_search_path(project):
@@ -40,6 +51,13 @@ def check_search_path(project):
     # module is compiled directly into the project root by this workflow.
     staged_root = project / '.lake/build/lib/lean'
     allowed = {staged_root / 'Erdos302Lower/Defs.olean'}
+    for name in UPSTREAM_SOURCES:
+        source, obj = upstream_paths(project, name)
+        local = Path(name.replace('.', '/'))
+        if (project / local.with_suffix('.lean')).exists() or (project / local.with_suffix('.olean')).exists():
+            raise ValueError(f'Lean search path shadow: {name} in project')
+        modules.add(local.with_suffix('.olean'))
+        allowed.add(project / obj)
     for entry in os.environ.get('LEAN_PATH', '').split(os.pathsep):
         root = Path(entry or '.').resolve()
         if root == project:
@@ -87,6 +105,10 @@ def _run(project, logs, lean='lean', timeout=900):
                 for name in files:
                     if name.endswith(('.lean', '.olean')):
                         paths.add(str((Path(directory) / name).relative_to(project)))
+        for name in UPSTREAM_SOURCES:
+            for path in upstream_paths(project, name):
+                if (project / path).exists():
+                    paths.add(str(path))
         return paths
 
     frozen = {name: hashlib.sha256((project / name).read_bytes()).hexdigest()
@@ -115,14 +137,26 @@ def _run(project, logs, lean='lean', timeout=900):
             if name in seen:
                 return
             seen.add(name)
+            if name.split('.')[0] in {'Erdos301', 'Erdos327'} and name not in UPSTREAM_SOURCES:
+                raise ValueError(f'unknown upstream import: {name}')
             source_name = name.replace('.', '/') + '.lean'
+            upstream_object = None
+            if name in UPSTREAM_SOURCES:
+                source, upstream_object = upstream_paths(project, name)
+                source_name = str(source)
+                object_root = (project / upstream_object).parents[len(name.split('.')) - 1]
+                search_roots = {Path(entry or '.').resolve() for entry in os.environ.get('LEAN_PATH', '').split(os.pathsep)}
+                if object_root.resolve() not in search_roots:
+                    raise ValueError(f'missing pinned upstream object search path: {name}')
+                if frozen.get(source_name) != UPSTREAM_SOURCES[name]:
+                    raise ValueError(f'missing or mismatched pinned upstream source: {name}')
             if source_name not in frozen:
                 if name.split('.')[0] not in {'Mathlib', 'Lean', 'Std'}:
                     raise ValueError(f'unknown import without local source: {name}')
                 return  # pinned external dependency, trusted as documented
             if name != module:
                 manifest[source_name] = frozen[source_name]
-                olean = name.replace('.', '/') + '.olean'
+                olean = str(upstream_object) if upstream_object else name.replace('.', '/') + '.olean'
                 if olean not in frozen and name == 'Erdos302Lower.Defs':
                     olean = '.lake/build/lib/lean/Erdos302Lower/Defs.olean'
                 if olean not in frozen:
