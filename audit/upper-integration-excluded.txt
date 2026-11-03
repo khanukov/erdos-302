@@ -74,3 +74,4 @@ ExtensionBoundaryShard18
 ExtensionBoundaryShard19
 ExtensionFirstArchive
 ExtensionSeedCandidate
+ArchiveRecurrencePilot
