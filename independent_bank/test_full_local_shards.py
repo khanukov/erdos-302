@@ -58,6 +58,29 @@ class LocalShardTests(unittest.TestCase):
                 expected = f"  | {i} => ⟨{mixed_full_producer.fs(n['support'])}, {n['demand']}, .small⟩"
                 self.assertEqual(actual[i], expected)
 
+    def test_scoped_depth_preserves_exact_generated_bytes(self):
+        # Only the nodes declaration gets the finite resource option. Every
+        # existing arm, default, namespace, and import must remain byte-identical.
+        marker = 'set_option maxRecDepth 100000 in\ndef nodes : ℕ → MixedDag.Node FullLocalShards.Payload\n'
+        original_lines = self.rendered.split('def nodes : ℕ → MixedDag.Node Payload\n', 1)[1].split('\n  | _ => ⟨∅, 0, .small⟩\n', 1)[0].splitlines()
+        for shard in self.manifest['shards']:
+            text = self.files[shard['file']]
+            self.assertEqual(text.count(marker), 1)
+            serial = int(shard['file'][len('FullLocal'):-len('.lean')])
+            lo, hi = shard['start'], shard['end']
+            refs = sorted({r['source'] for n in self.doc['nodes'][lo:hi]
+                           for r in n.get('references', [])} - set(range(lo, hi)))
+            arms = {i: original_lines[i] for i in range(lo, hi)}
+            for i in refs:
+                n = self.doc['nodes'][i]
+                arms[i] = f"  | {i} => ⟨{mixed_full_producer.fs(n['support'])}, {n['demand']}, .small⟩"
+            expected = (f'import FullLocalCommon\n\nnamespace FullLocalShards.S{serial}\n'
+                        '/- Candidate data only; predecessor rule fields are synthetic. -/\n'
+                        'def nodes : ℕ → MixedDag.Node FullLocalShards.Payload\n' +
+                        '\n'.join(arms[i] for i in sorted(arms)) +
+                        f'\n  | _ => ⟨∅, 0, .small⟩\nend FullLocalShards.S{serial}\n')
+            self.assertEqual(text.replace('set_option maxRecDepth 100000 in\n', '', 1).encode(), expected.encode())
+
     def test_disk_inventory_fails_closed(self):
         files = {'FullLocalCommon.lean': 'common', 'FullLocal0000.lean': 'shard'}
         manifest = {'shards': [{'file': 'FullLocal0000.lean'}]}
