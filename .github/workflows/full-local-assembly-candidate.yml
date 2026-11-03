@@ -60,15 +60,21 @@ jobs:
           python3 -m unittest discover -s independent_bank -p test_full_local_shards.py -v
           python3 independent_bank/full_local_shards.py "$RUNNER_TEMP/local-shards" --target-bytes 262144
           python3 independent_bank/full_local_shards.py "$RUNNER_TEMP/local-shards" --target-bytes 262144 --verify-existing
+          python3 -m unittest discover -s independent_bank -p test_first_local_correspondence.py -v
+          python3 independent_bank/first_local_correspondence.py "$RUNNER_TEMP/local-shards/FullLocal0000.lean"
           cp "$RUNNER_TEMP/local-shards/FullLocalCommon.lean" "$RUNNER_TEMP/local-shards/FullLocal0000.lean" "$p/"
+          cp audit/shard-aggregation/{FirstRealData,FirstRealShard}.lean "$p/"
+          cp lean/FullLocalFirstNineTransfer.lean "$p/"
           cd "$p"
           # Per-process virtual-address cap, not an aggregate job-memory cap.
           ulimit -v 25165824
           export LEAN_STACK_SIZE_KB=262144
-          for f in FullLocalCommon FullLocal0000 FullLocalFirstShardTest; do
+          for f in FullLocalCommon FullLocal0000 FullLocalFirstShardTest FirstRealData FirstRealShard FullLocalFirstNineTransfer; do
             timeout 900 lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/FirstRealShard.log" FirstRealShard.check0 FirstRealShard.check1 FirstRealShard.check2 FirstRealShard.check3 FirstRealShard.check4 FirstRealShard.check5 FirstRealShard.check6 FirstRealShard.check7 FirstRealShard.check8 FirstRealShard.checked FirstRealShard.bound8
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/FullLocalFirstShardTest.log" FullLocalFirstShardTest.node0_valid FullLocalFirstShardTest.node0_bound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/FullLocalFirstNineTransfer.log" FullLocalFirstNineTransfer.fields FullLocalFirstNineTransfer.rules FullLocalFirstNineTransfer.reads_bounded FullLocalFirstNineTransfer.lower_checked FullLocalFirstNineTransfer.local_checked FullLocalFirstNineTransfer.changed_dependency_rejected FullLocalFirstNineTransfer.changed_dependency_is_read FullLocalFirstNineTransfer.changed_check_false
 
   resource_diagnostic:
     runs-on: ubuntu-24.04

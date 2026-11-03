@@ -17,6 +17,7 @@ FactorCountCandidateTests
 FreshExistentialLowerCheck
 FullLocalAssemblyCandidate
 FullLocalFirstShardTest
+FullLocalFirstNineTransfer
 LedgerTailDemand
 LedgerTailDemandTests
 LiteralFactorMatchingCandidate
