@@ -332,3 +332,5 @@ node1209-pack-all.Node1209Rows061
 node1209-pack-all.Node1209Rows062
 node1209-pack-all.Node1209Rows063
 node1209-pack-all.Node1209RowsAll
+node1209-bridge.Node1209CapacityBridge
+node1209-bridge.Node1209BridgeTests

@@ -29,6 +29,9 @@ jobs:
           python3 -B -O independent_bank/node1209_pack_pilot.py --check
           python3 -B -m unittest discover -s independent_bank -p test_node1209_pack_pilot.py
           python3 -B -O -m unittest discover -s independent_bank -p test_node1209_pack_pilot.py
+          python3 -B audit/multiplicity-ci/check_inventory.py .
+          python3 -B audit/joint-independence-ci/check_inventory.py .
+          python3 -B -c 'from pathlib import Path; p=Path("lean/node1209-bridge"); actual={x.name for x in p.glob("*.lean")}; expected={"Node1209CapacityBridge.lean", "Node1209BridgeTests.lean"}; assert actual == expected, (actual, expected)'
           if grep -nE '\b(sorry|admit|native_decide)\b' lean/node1209-pack-all/*.lean; then exit 1; fi
       - name: Install pinned Lean
         shell: bash
