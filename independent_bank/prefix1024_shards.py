@@ -27,6 +27,7 @@ def generate():
         'import MixedCaseTrimCandidate\n\n'
         '/- Generated actual nodes 0..1023; archive correspondence is not a Lean theorem. -/\n'
         'namespace ActualPrefix1024Data\nopen MixedCaseTrimCandidate\n'
+        'set_option maxHeartbeats 4000000 in\n'
         'def nodes : ℕ → MixedDag.Node Payload\n' +
         ''.join(f'  | {i} => {row}\n' for i, row in rows[:1024]) +
         '  | _ => ⟨∅, 0, .small⟩\nend ActualPrefix1024Data\n')

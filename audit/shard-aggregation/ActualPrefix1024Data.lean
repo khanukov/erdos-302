@@ -3,6 +3,7 @@ import MixedCaseTrimCandidate
 /- Generated actual nodes 0..1023; archive correspondence is not a Lean theorem. -/
 namespace ActualPrefix1024Data
 open MixedCaseTrimCandidate
+set_option maxHeartbeats 4000000 in
 def nodes : ℕ → MixedDag.Node Payload
   | 0 => ⟨{2, 3, 6}, 1, .small⟩
   | 1 => ⟨{2, 3, 4, 6, 12}, 2, .small⟩

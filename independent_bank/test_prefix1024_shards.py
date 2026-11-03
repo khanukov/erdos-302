@@ -75,6 +75,12 @@ class Prefix1024Test(unittest.TestCase):
             for ref in node.get('references', []) + node.get('rows', []):
                 self.assertLess(ref['source'], node['id'])
 
+    def test_data_heartbeat_is_finite_and_scoped_to_nodes(self):
+        data = self.files['ActualPrefix1024Data.lean']
+        self.assertEqual(data.count('set_option maxHeartbeats'), 1)
+        self.assertIn('set_option maxHeartbeats 4000000 in\n'
+                      'def nodes : ℕ → MixedDag.Node Payload\n', data)
+
     def test_aggregate_heartbeat_is_finite_and_scoped_to_checked(self):
         sound = self.files['ActualPrefix1024Sound.lean']
         self.assertIn('set_option maxHeartbeats 4000000 in\n'
