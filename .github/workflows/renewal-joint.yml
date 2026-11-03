@@ -36,7 +36,10 @@ jobs:
           python3 -B -m unittest discover -s audit/ledger-candidate/tests -p test_ledger.py
           python3 -B audit/renewal-joint-ci/closure.py "$p"
           python3 -B audit/renewal-joint-ci/check_bounded_operands.py
-          for f in "$p"/{Renewal,SmoothRenewal,DemandRenewalChain,LedgerChecker,ArchiveLedger,ArchiveRenewalJointCandidate,ArchiveRenewalJointTests}.lean; do
+          python3 -B audit/renewal-joint-ci/test_generated_bounded.py
+          python3 -B audit/renewal-joint-ci/generated_bounded.py "$p/GeneratedBounded.lean"
+          cp "$p/GeneratedBounded.lean" "$RUNNER_TEMP/GeneratedBounded.lean"
+          for f in "$p"/{Renewal,SmoothRenewal,DemandRenewalChain,LedgerChecker,ArchiveLedger,ArchiveRenewalJointCandidate,ArchiveRenewalJointTests,GeneratedBounded}.lean; do
             if grep -nE '\b(sorry|admit|native_decide)\b' "$f"; then exit 1; fi
           done
           python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
@@ -52,17 +55,21 @@ jobs:
             lean -o "$m.olean" "$m.lean" 2>&1 | tee "$RUNNER_TEMP/$m.log"
           done
           lean ArchiveRenewalJointTests.lean 2>&1 | tee "$RUNNER_TEMP/ArchiveRenewalJointTests.log"
+          lean GeneratedBounded.lean 2>&1 | tee "$RUNNER_TEMP/GeneratedBounded.log"
           gate="$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py"
           python3 "$gate" "$RUNNER_TEMP/Renewal.log" RenewalNext.demand_image RenewalNext.disjoint_scaled RenewalNext.update_demand RenewalNext.tail_sound RenewalNext.demand_disjoint RenewalNext.update_sound RenewalNext.correction_identity
           python3 "$gate" "$RUNNER_TEMP/SmoothRenewal.log" SmoothRenewal.triple_scale_iff SmoothRenewal.vertices_partition SmoothRenewal.vertices_disjoint SmoothRenewal.demand_recurrence SmoothRenewal.cover_pullback SmoothRenewal.edge_image SmoothRenewal.demand_scaled
           python3 "$gate" "$RUNNER_TEMP/DemandRenewalChain.log" DemandRenewalChain.update_graph_demand DemandRenewalChain.tail_graph_demand DemandRenewalChain.levels_graph_demand
           python3 "$gate" "$RUNNER_TEMP/ArchiveLedger.log" ArchiveLedger.archive_check ArchiveLedger.archive_valid ArchiveLedger.archive_arithmetic
           python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointTests.log" RealBounded.rows RealBounded.update_eq RealBounded.finite_check RealBounded.complete_cell RealBounded.right_endpoint
+          python3 "$gate" "$RUNNER_TEMP/GeneratedBounded.log" GeneratedBounded.rows GeneratedBounded.update_eq GeneratedBounded.finite_check
           python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointCandidate.log" ArchiveRenewalJointCandidate.profile_demand_and_literal_recurrence ArchiveRenewalJointCandidate.profile_max_update
       - name: Retain diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: renewal-joint-logs
-          path: ${{ runner.temp }}/*.log
+          path: |
+            ${{ runner.temp }}/*.log
+            ${{ runner.temp }}/GeneratedBounded.lean
           if-no-files-found: warn
