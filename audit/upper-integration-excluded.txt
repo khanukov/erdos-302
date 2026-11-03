@@ -80,5 +80,3 @@ SparseBoundaryMathlib
 SparseTriple
 SparseTripleTest
 SparseTripleNode1209Sample
-SparseBoundary
-SparseBoundaryMathlib
