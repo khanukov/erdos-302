@@ -82,12 +82,21 @@ def files(bank):
         raise ValueError('shard coverage')
     for a, b in ranges:
         name = f'Shard{a:03}_{b:03}'
+        if doc['nodes'][a]['raw_node']['t'] == 'case':
+            proof = (
+                '  intro i hlo hhi\n  interval_cases i\n'
+                f'  change MixedCaseTrimCandidate.CaseCheck Node1209Dense.nodes {a} _ _\n'
+                '  unfold MixedCaseTrimCandidate.CaseCheck MixedCaseTrimCandidate.RefCheck '
+                'MixedCaseTrimCandidate.row MixedCaseTrimCandidate.image Node1209Dense.nodes\n'
+                '  constructor\n  · decide\n  · repeat\' rw [BankCase.check]\n    decide\n')
+        else:
+            proof = '  intro i hlo hhi\n  interval_cases i <;> decide\n'
         out[name + '.lean'] = (
             'import DenseData\n\nnamespace Node1190Min\n'
             'set_option maxRecDepth 100000\nset_option maxHeartbeats 100000000\n'
             f'theorem {name} : ∀ i, {a} ≤ i → i < {b} → '
             'MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := by\n'
-            '  intro i hlo hhi\n  interval_cases i <;> decide\n'
+            + proof +
             f'#print axioms {name}\nend Node1190Min\n')
     imports = ''.join(f'import Shard{a:03}_{b:03}\n' for a,b in ranges)
     valid = ['theorem valid : ∀ i < 337, MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := by\n',

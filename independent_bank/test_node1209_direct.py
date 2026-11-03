@@ -14,6 +14,20 @@ class DirectTests(unittest.TestCase):
     def test_regeneration(self):
         self.assertEqual(direct.OUT.read_bytes(), direct.generate(self.doc).encode())
 
+    def test_subset_uses_shared_literal_fold(self):
+        text = direct.generate(self.doc)
+        self.assertIn('theorem fold_insert_subset', text)
+        self.assertIn('private def sharedPrefix : List ℕ', text)
+        self.assertIn('fold_insert_subset sharedPrefix', text)
+        self.assertNotIn('support ⊆ Node1209SourceCandidate.node.support := by\n  decide', text)
+        literal = text.split('private def sharedPrefix : List ℕ := [', 1)[1].split(']', 1)[0]
+        prefix = [int(value) for value in literal.split(', ')]
+        child, root = (node['support'] for node in self.doc['nodes'][374:376])
+        self.assertEqual(prefix, child[:-1])
+        self.assertEqual(root, prefix + [child[-1], 1892, 1900])
+        self.assertIn(f'({{{child[-1]}}} : Finset ℕ)', text)
+        self.assertIn(f'({{{child[-1]}, 1892, 1900}} : Finset ℕ)', text)
+
     def test_support_and_demand_mutations_rejected(self):
         for field, value in [('original', 1191), ('demand', 257), ('support', [])]:
             doc = copy.deepcopy(self.doc)

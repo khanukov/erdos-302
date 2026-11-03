@@ -55,6 +55,32 @@ class ClosureTests(unittest.TestCase):
             self.assertIn(f' := {name}\n', files['ExactContract.lean'])
         self.assertEqual(covered, list(range(337)))
 
+    def test_case_shards_use_recursive_checker_equations(self):
+        files = m.files(self.bank)
+        cases = [i for i, n in enumerate(self.doc['nodes']) if n['raw_node']['t'] == 'case']
+        self.assertTrue(cases)
+        for i in cases:
+            text = files[f'Shard{i:03}_{i+1:03}.lean']
+            self.assertIn(f'change MixedCaseTrimCandidate.CaseCheck Node1209Dense.nodes {i} _ _', text)
+            self.assertIn('unfold MixedCaseTrimCandidate.CaseCheck MixedCaseTrimCandidate.RefCheck', text)
+            self.assertIn("repeat' rw [BankCase.check]", text)
+            self.assertIn('    decide', text)
+
+    def test_case_proof_mutations_rejected(self):
+        read = type(m.OUT).read_bytes
+        for i, node in enumerate(self.doc['nodes']):
+            if node['raw_node']['t'] != 'case':
+                continue
+            original = m.OUT / f'Shard{i:03}_{i+1:03}.lean'
+            for before, after in [(b"repeat' rw [BankCase.check]", b'decide'),
+                                  (b'MixedCaseTrimCandidate.row', b'MixedCaseTrimCandidate.image')]:
+                def mutated(path):
+                    data = read(path)
+                    return data.replace(before, after, 1) if path == original else data
+                with self.subTest(node=i, mutation=before), mock.patch.object(type(original), 'read_bytes', mutated):
+                    with self.assertRaises(ValueError):
+                        m.check(self.bank)
+
     def test_shard_mutation_rejected(self):
         original = m.OUT / 'Shard336_337.lean'
         read = type(original).read_bytes

@@ -14,8 +14,10 @@ changes to shared vertices as well as individual changes. It also checks that
 node 1190 has 899 vertices, node 1209 has 901, both demands are 258, and the
 additional vertices are 1892 and 1900. This is a Python provenance/replay check, not a kernel proof
 linking archive bytes to Lean. The source and dense literals are regenerated
-separately in the workflow. The Lean subset proof uses a single `decide`; its
-resource use and even successful elaboration have not been verified. If it
-exhausts resources, split and normalize the literal subset proof before claiming
-success. The manually dispatched workflow compiles the closure and candidate,
-checks an exact-type contract, and gates reported axioms; it has not been run.
+separately in the workflow. The candidate replaces the failed monolithic subset
+`decide` with a generic fold monotonicity lemma: both literal supports are
+identified by `rfl` with a common 898-insertion fold over a singleton and a
+three-element tail, respectively. The tail inclusion is proved directly. The
+fold identities, elaboration, kernel checking, and resource use remain unverified;
+this is not a Lean success claim. The manually dispatched workflow compiles the
+closure and candidate, checks an exact-type contract, and gates reported axioms.

@@ -24,6 +24,10 @@ def generate(doc):
     if (child['original'], root['original'], child['demand'], root['demand'],
         len(a), len(b), sorted(b - a), len(root['references'])) != (1190, 1209, 258, 258, 899, 901, [1892, 1900], 510) or not a <= b:
         raise ValueError('unexpected direct bridge data')
+    if root['support'] != child['support'] + [1892, 1900]:
+        raise ValueError('direct supports lack shared literal prefix')
+    shared_prefix = ', '.join(map(str, child['support'][:-1]))
+    tail = child['support'][-1]
     return '''import DenseData
 import Node1209SourceCandidate
 
@@ -33,9 +37,34 @@ namespace Node1209DirectCandidate
 set_option maxRecDepth 100000
 set_option maxHeartbeats 100000000
 
+-- The two support literals have the same first 898 insertions.  Lift a
+-- single small tail inclusion through that common spine, rather than deciding
+-- 899 membership tests in the 901-element literal.
+theorem fold_insert_subset {α : Type} [DecidableEq α]
+    (xs : List α) {s t : Finset α} (h : s ⊆ t) :
+    xs.foldr insert s ⊆ xs.foldr insert t := by
+  induction xs with
+  | nil => exact h
+  | cons x xs ih =>
+    intro y hy
+    change y ∈ insert x (xs.foldr insert s) at hy
+    change y ∈ insert x (xs.foldr insert t)
+    rcases Finset.mem_insert.mp hy with hxy | hy
+    · exact Finset.mem_insert.mpr (Or.inl hxy)
+    · exact Finset.mem_insert.mpr (Or.inr (ih hy))
+
+private def sharedPrefix : List ℕ := [__PREFIX__]
+
 theorem source_subset :
     (Node1209Dense.nodes 374).support ⊆ Node1209SourceCandidate.node.support := by
-  decide
+  have hs : (Node1209Dense.nodes 374).support =
+      sharedPrefix.foldr insert ({__TAIL__} : Finset ℕ) := by rfl
+  have ht : Node1209SourceCandidate.node.support =
+      sharedPrefix.foldr insert ({__TAIL__, 1892, 1900} : Finset ℕ) := by rfl
+  rw [hs, ht]
+  apply fold_insert_subset sharedPrefix
+  intro x hx
+  exact Finset.mem_insert.mpr (Or.inl (Finset.mem_singleton.mp hx))
 
 theorem source_bound
     (prefix : ∀ i < 375,
@@ -52,7 +81,7 @@ theorem source_bound
 #print axioms source_subset
 #print axioms source_bound
 end Node1209DirectCandidate
-'''
+'''.replace('__PREFIX__', shared_prefix).replace('__TAIL__', str(tail))
 
 def main():
     p = argparse.ArgumentParser()
