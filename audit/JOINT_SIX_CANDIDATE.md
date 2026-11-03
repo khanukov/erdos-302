@@ -20,14 +20,14 @@ performed. This workflow cannot run on an unpushed commit.
 
 ## Explicit gaps / risk
 
-* **No Lean build has been run for this candidate.** In particular, the
-  `literal_weight` `norm_num` script is a speculative first attempt: the
-  4705-index sum, nested ledger chunks and noncomputable/classical smoothness
-  are likely to defeat direct reduction or exhaust resources. CI may fail;
-  no kernel theorem or successful CI is claimed. If it fails, split the sum
-  into bounded index shards, prove zero outside the unique contributing index,
-  and prove the smoothness of t=1 separately; all shard conclusions must be
-  about the original `height` and `mult`, not a Python-generated assertion.
+* **No Lean build has been run for this candidate.** The former `norm_num`
+  attempt has been replaced by a bounded decidable smoothness predicate, a
+  positive-input equivalence proof, and a cheap `a > 6` gate. The proposed
+  sum now has 48 proposed interval shards of at most 100 entries, with a
+  proposed exact bridge to the original finite sum. Shard evaluation, bridge,
+  and smoothness equivalence are uncompiled and may fail or exhaust resources.
+  Hosted Lean validation is required; no successful CI is claimed. The Lean
+  regression file exercises positive, negative, zero and gate cases.
 * The q=1 theorem does not yet establish `support 6 = {1}` in Lean, nor apply
   `literal_hcover_of_joint_independence` to all q in support. The Python
   computation checks support but supplies no Lean bridge.

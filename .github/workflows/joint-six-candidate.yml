@@ -24,6 +24,8 @@ jobs:
             python3 -B $opt audit/joint-independence-ci/check_inventory.py "$GITHUB_WORKSPACE"
             python3 -B $opt audit/test_joint_independence_candidate.py
             python3 -B $opt audit/test_joint_six_candidate.py
+            python3 -B $opt audit/test_joint_six_computable.py
+            python3 -B $opt audit/test_six_shards.py
             python3 -B $opt audit/joint_concrete_check.py
             python3 -B $opt audit/mathlib-bridge-ci/test_check_axioms.py
           done
@@ -64,6 +66,7 @@ jobs:
           ulimit -v 24000000
           timeout 120m lake build +JointSixCandidate 2>&1 | tee "$RUNNER_TEMP/build.log"
           timeout 30m lake env lean lean/JointIndependenceCandidateTests.lean 2>&1 | tee "$RUNNER_TEMP/lean-tests.log"
+          timeout 30m lake env lean lean/JointSixComputableTests.lean 2>&1 | tee "$RUNNER_TEMP/computable-tests.log"
           timeout 30m lake env lean lean/JointSixCandidate.lean 2>&1 | tee "$RUNNER_TEMP/axioms.log"
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/axioms.log" JointSixCandidate.literal_weight JointSixCandidate.edge_in_vertices JointSixCandidate.concrete_edge JointSixCandidate.independent_bound JointSixCandidate.joint_six
       - name: Retain diagnostics
@@ -74,5 +77,6 @@ jobs:
           path: |
             ${{ runner.temp }}/build.log
             ${{ runner.temp }}/lean-tests.log
+            ${{ runner.temp }}/computable-tests.log
             ${{ runner.temp }}/axioms.log
           if-no-files-found: warn
