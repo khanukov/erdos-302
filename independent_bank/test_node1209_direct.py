@@ -1,6 +1,7 @@
 import copy
 import unittest
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import mock
 import node1209_closure as closure
 import node1209_direct as direct
@@ -26,10 +27,24 @@ class DirectTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             direct.generate(doc)
 
+    def test_coordinated_shared_support_mutation_rejected(self):
+        doc = copy.deepcopy(self.doc)
+        child, root = doc['nodes'][374:376]
+        removed = child['support'][0]
+        replacement = max(root['support']) + 1
+        for node in (child, root):
+            node['support'][node['support'].index(removed)] = replacement
+            node['support'].sort()
+        with self.assertRaises(ValueError):
+            direct.generate(doc)
+
     def test_artifact_mutation_rejected(self):
-        with mock.patch.object(Path, 'read_bytes', return_value=b'corrupt'), mock.patch('sys.argv', ['node1209_direct.py', '--check']):
-            with self.assertRaises(ValueError):
-                direct.main()
+        with TemporaryDirectory() as tmp:
+            artifact = Path(tmp) / 'DirectCandidate.lean'
+            artifact.write_bytes(b'corrupt')
+            with mock.patch.object(direct, 'OUT', artifact), mock.patch('sys.argv', ['node1209_direct.py', '--check']):
+                with self.assertRaisesRegex(ValueError, 'direct candidate bytes mismatch'):
+                    direct.main()
 
 if __name__ == '__main__':
     unittest.main()

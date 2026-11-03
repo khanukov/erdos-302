@@ -8,9 +8,11 @@ Its only mathematical antecedent is that every dense checker at indices
 nor does it require dense index 375's 510-row root pack check. The antecedent
 still includes the unchecked node-1190 case and all earlier checks.
 
-The generator replays the pinned archive and asserts that node 1190 has 899
-vertices, node 1209 has 901, both demands are 258, and the two added vertices
-are 1892 and 1900. This is a Python provenance/replay check, not a kernel proof
+The generator independently replays the SHA-256-pinned bank and compares both
+complete ordered support literals against that replay, rejecting coordinated
+changes to shared vertices as well as individual changes. It also checks that
+node 1190 has 899 vertices, node 1209 has 901, both demands are 258, and the
+additional vertices are 1892 and 1900. This is a Python provenance/replay check, not a kernel proof
 linking archive bytes to Lean. The source and dense literals are regenerated
 separately in the workflow. The Lean subset proof uses a single `decide`; its
 resource use and even successful elaboration have not been verified. If it

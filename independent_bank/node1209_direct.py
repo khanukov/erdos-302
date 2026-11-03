@@ -15,6 +15,11 @@ def generate(doc):
     if len(nodes) != 376:
         raise ValueError('node inventory')
     child, root = nodes[374:376]
+    # Re-extract from SHA-256 authenticated bank bytes, not from the supplied
+    # document: aggregate sizes and the set difference miss coordinated edits.
+    pinned = closure.extract()['nodes']
+    if any(nodes[i]['support'] != pinned[i]['support'] for i in (374, 375)):
+        raise ValueError('direct supports differ from pinned archive replay')
     a, b = set(child['support']), set(root['support'])
     if (child['original'], root['original'], child['demand'], root['demand'],
         len(a), len(b), sorted(b - a), len(root['references'])) != (1190, 1209, 258, 258, 899, 901, [1892, 1900], 510) or not a <= b:
