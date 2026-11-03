@@ -26,6 +26,10 @@ jobs:
           python3 -B independent_bank/node1190_min.py --check
           python3 -B -O independent_bank/node1190_min.py --check
           python3 -B independent_bank/node1209_scope.py --check
+          python3 -B -m unittest discover -s independent_bank -p test_node1190_final_split.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_node1190_final_split.py
+          python3 -B independent_bank/node1190_final_split.py --check
+          python3 -B -O independent_bank/node1190_final_split.py --check
           if grep -nE "\b(sorry|admit|native_decide)\b" audit/node1190-min/*.lean; then exit 1; fi
           python3 -B audit/actual-sparse64/closure.py "$RUNNER_TEMP/source"
       - name: Install pinned Lean
@@ -50,6 +54,8 @@ jobs:
           cp audit/actual-sparse64/Contract.lean "$p/Contract.lean"
           cp lean/{MixedDag,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate,Node1209SourceCandidate}.lean "$p/"
           cp audit/node1190-min/*.lean "$p/"
+          cp audit/node1190-final-split/*.lean "$p/"
+          cp audit/node1190-fold/Node1190ComponentFold.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
           git -C .lake/packages/mathlib init
@@ -67,6 +73,19 @@ jobs:
             timeout --kill-after=30s 45m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
           done
           timeout --kill-after=30s 45m lean -o DenseData.olean DenseData.lean 2>&1 | tee "$RUNNER_TEMP/logs/DenseData.log"
+          # Rebuild all singleton inputs against the same DenseData and prerequisite objects.
+          for f in Node1190DualData Node1190LeafBridge Node1190ComponentFold; do
+            echo "BUILD $f"
+            timeout --kill-after=30s 45m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/logs/Node1190LeafBridge.log" Node1190Dual.leaf_from_components
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/logs/Node1190ComponentFold.log" Node1190ComponentFold.list_all_of_positions Node1190ComponentFold.mapped_getD_mem Node1190ComponentFold.finset_all_of_list Node1190ComponentFold.leaf_from_positions
+          for src in Node1190Refs*.lean Node1190Capacity*.lean Node1190Objective.lean Node1190Assembly.lean; do
+            f="${src%.lean}"
+            echo "BUILD $f"
+            timeout --kill-after=30s 45m lean -o "$f.olean" "$src" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
+            python3 "$GITHUB_WORKSPACE/independent_bank/node1190_axiom_inventory.py" "$src" "$RUNNER_TEMP/logs/$f.log"
+          done
           for src in Shard*.lean; do
             f="${src%.lean}"
             echo "BUILD $f"

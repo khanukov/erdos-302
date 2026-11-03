@@ -82,7 +82,9 @@ def files(bank):
         raise ValueError('shard coverage')
     for a, b in ranges:
         name = f'Shard{a:03}_{b:03}'
-        if doc['nodes'][a]['raw_node']['t'] == 'case':
+        if (a, b) == (336, 337):
+            proof = '  exact Node1190Dual.Shard336_337\n'
+        elif doc['nodes'][a]['raw_node']['t'] == 'case':
             proof = (
                 '  intro i hlo hhi\n  interval_cases i\n'
                 f'  change MixedCaseTrimCandidate.CaseCheck Node1209Dense.nodes {a} _ _\n'
@@ -92,7 +94,8 @@ def files(bank):
         else:
             proof = '  intro i hlo hhi\n  interval_cases i <;> decide\n'
         out[name + '.lean'] = (
-            'import DenseData\n\nnamespace Node1190Min\n'
+            ('import Node1190Assembly\n\nnamespace Node1190Min\n' if (a, b) == (336, 337) else
+             'import DenseData\n\nnamespace Node1190Min\n') +
             'set_option maxRecDepth 100000\nset_option maxHeartbeats 100000000\n'
             f'theorem {name} : ∀ i, {a} ≤ i → i < {b} → '
             'MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := by\n'
@@ -119,7 +122,8 @@ def files(bank):
              '  rw [Node1209SourceCandidate.support_identity, Node1209SourceCandidate.demand_identity] at ht\n  exact ht\n',
              '#print axioms valid\n#print axioms source_subset\n#print axioms source_bound\nend Node1190Min\n']
     out['Candidate.lean'] = ''.join(lines)
-    contract = ['import Candidate\n\nnamespace Node1190Min\n']
+    contract = ['import Candidate\n\nnamespace Node1190Min\n',
+                'example : MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes 336 := Node1190Dual.singleton_check\n']
     for a,b in ranges:
         name = f'Shard{a:03}_{b:03}'
         contract.append(f'example : ∀ i, {a} ≤ i → i < {b} → MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := {name}\n')

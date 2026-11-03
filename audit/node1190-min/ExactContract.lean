@@ -1,6 +1,7 @@
 import Candidate
 
 namespace Node1190Min
+example : MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes 336 := Node1190Dual.singleton_check
 example : ∀ i, 0 ≤ i → i < 4 → MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := Shard000_004
 example : ∀ i, 4 ≤ i → i < 5 → MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := Shard004_005
 example : ∀ i, 5 ≤ i → i < 6 → MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := Shard005_006

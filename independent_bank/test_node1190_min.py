@@ -61,6 +61,10 @@ class ClosureTests(unittest.TestCase):
         self.assertTrue(cases)
         for i in cases:
             text = files[f'Shard{i:03}_{i+1:03}.lean']
+            if i == 336:
+                self.assertIn('import Node1190Assembly\n', text)
+                self.assertIn('exact Node1190Dual.Shard336_337', text)
+                continue
             self.assertIn(f'change MixedCaseTrimCandidate.CaseCheck Node1209Dense.nodes {i} _ _', text)
             self.assertIn('unfold MixedCaseTrimCandidate.CaseCheck MixedCaseTrimCandidate.RefCheck', text)
             self.assertIn("repeat' rw [BankCase.check]", text)
@@ -72,8 +76,11 @@ class ClosureTests(unittest.TestCase):
             if node['raw_node']['t'] != 'case':
                 continue
             original = m.OUT / f'Shard{i:03}_{i+1:03}.lean'
-            for before, after in [(b"repeat' rw [BankCase.check]", b'decide'),
-                                  (b'MixedCaseTrimCandidate.row', b'MixedCaseTrimCandidate.image')]:
+            mutations = ([(b'exact Node1190Dual.Shard336_337', b'exact Node1190Dual.singleton_check'),
+                          (b'import Node1190Assembly', b'import DenseData')] if i == 336 else
+                         [(b"repeat' rw [BankCase.check]", b'decide'),
+                          (b'MixedCaseTrimCandidate.row', b'MixedCaseTrimCandidate.image')])
+            for before, after in mutations:
                 def mutated(path):
                     data = read(path)
                     return data.replace(before, after, 1) if path == original else data
