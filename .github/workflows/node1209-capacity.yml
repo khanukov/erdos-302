@@ -20,6 +20,8 @@ jobs:
       - name: Check authenticated transcription and mutations
         run: |
           set -euo pipefail
+          python3 -B -m unittest discover -s audit -p test_node1209_capacity_limits.py
+          python3 -B -O -m unittest discover -s audit -p test_node1209_capacity_limits.py
           python3 -B independent_bank/node1209_pack_preflight.py
           python3 -B independent_bank/node1209_pack_all.py --check
           python3 -B -O independent_bank/node1209_pack_all.py --check

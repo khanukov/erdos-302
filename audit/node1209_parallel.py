@@ -9,6 +9,7 @@ import re
 import signal
 import subprocess
 import sys
+import threading
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +36,19 @@ def run_jobs(jobs, logdir, workers, timeout, memory_mb, source_guard=None):
     if len({j.name for j in jobs}) != len(jobs):
         raise ValueError('duplicate job')
     logdir.mkdir(parents=True, exist_ok=True)
+    lock = threading.Lock()
+    stopped = threading.Event()
+    active = set()
+    def kill_group(p):
+        try:
+            os.killpg(p.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    def stop():
+        with lock:
+            stopped.set()
+            for p in active:
+                kill_group(p)
     def run(job):
         started = time.monotonic()
         log = logdir / (job.name + '.log')
@@ -43,19 +57,22 @@ def run_jobs(jobs, logdir, workers, timeout, memory_mb, source_guard=None):
         if source_guard:
             source_guard()
         with log.open('wb') as out:
-            p = subprocess.Popen(['prlimit', '--as=' + str(memory_mb * 1024 * 1024), '--', *job.command], stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
+            with lock:
+                if stopped.is_set():
+                    raise RuntimeError('dispatch cancelled')
+                p = subprocess.Popen(['prlimit', '--as=' + str(memory_mb * 1024 * 1024), '--', *job.command], stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
+                active.add(p)
             try:
                 rc = p.wait(timeout=timeout)
             except subprocess.TimeoutExpired:
-                os.killpg(p.pid, signal.SIGKILL)
+                kill_group(p)
                 p.wait()
                 raise RuntimeError(job.name + ': timeout')
             finally:
                 # Also terminate descendants left by a compiler which exited early.
-                try:
-                    os.killpg(p.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
+                with lock:
+                    kill_group(p)
+                    active.discard(p)
         if rc:
             raise RuntimeError(f'{job.name}: compiler exited {rc}; see {log}')
         if job.output is not None and not Path(job.output).is_file():
@@ -68,16 +85,43 @@ def run_jobs(jobs, logdir, workers, timeout, memory_mb, source_guard=None):
             except ValueError as exc:
                 raise RuntimeError(f'{job.name}: {exc}') from exc
         print(f'{job.name}: {time.monotonic()-started:.1f}s', flush=True)
+    errors = []
+    def guarded_run(job):
+        try:
+            run(job)
+        except BaseException as exc:
+            with lock:
+                if not stopped.is_set():
+                    errors.append(exc)
+                    stopped.set()
+                    for p in active:
+                        kill_group(p)
+            raise
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = [pool.submit(run, job) for job in jobs]
-        errors = []
-        for f in concurrent.futures.as_completed(futures):
-            try:
-                f.result()
-            except Exception as exc:
-                errors.append(str(exc))
-        if errors:
-            raise RuntimeError('; '.join(errors))
+        pending = set()
+        iterator = iter(jobs)
+        try:
+            for _ in range(workers):
+                job = next(iterator, None)
+                if job is not None and not stopped.is_set():
+                    pending.add(pool.submit(guarded_run, job))
+            while pending:
+                done, pending = concurrent.futures.wait(pending, return_when=concurrent.futures.FIRST_COMPLETED)
+                for f in done:
+                    f.result()
+                for _ in done:
+                    if stopped.is_set():
+                        break
+                    job = next(iterator, None)
+                    if job is not None:
+                        pending.add(pool.submit(guarded_run, job))
+        except BaseException:
+            stop()
+            for f in pending:
+                f.cancel()
+            if errors:
+                raise errors[0]
+            raise
 
 
 def compile_job(name, names):

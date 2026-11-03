@@ -10,8 +10,10 @@ mkdir -p "$logdir"
 python3 -B "$root/independent_bank/node1209_capacity.py" --check
 python3 -B -m unittest discover -s "$root/independent_bank" -p test_node1209_capacity.py
 if grep -nE '\b(sorry|admit|native_decide)\b' "$root"/lean/node1209-capacity/*.lean "$root"/lean/node1209-bridge/*.lean; then exit 1; fi
-# Per-process address-space cap, not an aggregate job memory cap.
-ulimit -v 12582912
+# Per-process virtual address-space cap, not a physical or aggregate memory cap.
+# Raise only this limit for the Rows000 bad_alloc experiment.
+ulimit -v 33554432
+printf 'Lean RLIMIT_AS KiB: soft=%s hard=%s\n' "$(ulimit -Sv)" "$(ulimit -Hv)" | tee "$logdir/resource-limits.log"
 export LEAN_NUM_THREADS=1 LEAN_STACK_SIZE_KB=262144
 for ((b=0; b<64; b++)); do
   printf -v name 'Node1209Rows%03d' "$b"

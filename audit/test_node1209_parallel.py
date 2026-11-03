@@ -29,6 +29,48 @@ class ParallelTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 m.run_jobs([bad], p, 2, 5, 1024)
 
+    def test_failure_stops_dispatch_and_cancels_running_process(self):
+        m = load()
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)
+            marker = p/'next-started'
+            slow_marker = p/'escaped'
+            slow = m.Job('slow', [sys.executable, '-c',
+                'import pathlib,sys,time; pathlib.Path(sys.argv[1]).write_text("ready"); time.sleep(2); pathlib.Path(sys.argv[2]).write_text("escaped")',
+                str(p/'ready'), str(slow_marker)], [])
+            bad = m.Job('bad', [sys.executable, '-c',
+                'import pathlib,sys,time; p=pathlib.Path(sys.argv[1]);\nwhile not p.exists(): time.sleep(.01)\nsys.exit(3)', str(p/'ready')], [])
+            later = m.Job('later', [sys.executable, '-c',
+                'import pathlib,sys; pathlib.Path(sys.argv[1]).write_text("started")', str(marker)], [])
+            started = time.monotonic()
+            with self.assertRaisesRegex(RuntimeError, 'bad: compiler exited 3'):
+                m.run_jobs([slow, bad, later], p/'logs', 2, 5, 1024)
+            self.assertLess(time.monotonic() - started, 1.5)
+            time.sleep(2.1)
+            self.assertFalse(marker.exists())
+            self.assertFalse(slow_marker.exists())
+
+    def test_control_failures_stop_single_worker_dispatch(self):
+        m = load()
+        for control in ('source', 'object', 'missing-object'):
+            with self.subTest(control=control), tempfile.TemporaryDirectory() as d:
+                p = Path(d)
+                marker = p/'next-started'
+                output = p/'output.olean'
+                if control == 'object':
+                    output.write_text('preexisting')
+                def guard():
+                    if control == 'source':
+                        raise RuntimeError('source changed')
+                job = m.Job('first', [sys.executable, '-c', 'pass'], [], output if control != 'source' else None)
+                later = m.Job('later', [sys.executable, '-c',
+                    'import pathlib,sys; pathlib.Path(sys.argv[1]).touch()', str(marker)], [])
+                with self.assertRaises(RuntimeError):
+                    m.run_jobs([job, later], p/'logs', 1, 5, 1024, source_guard=guard)
+                self.assertFalse(marker.exists())
+                if control == 'object':
+                    self.assertEqual(output.read_text(), 'preexisting')
+
     def test_timeout_kills_process_group(self):
         m = load()
         with tempfile.TemporaryDirectory() as d:
