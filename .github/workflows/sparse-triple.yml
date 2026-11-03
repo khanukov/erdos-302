@@ -29,3 +29,7 @@ jobs:
           export LEAN_PATH="$RUNNER_TEMP/sparse"
           lean lean/SparseTripleTest.lean
           lean lean/SparseTripleNode1209Sample.lean
+          lean lean/SparseBoundary.lean | tee "$RUNNER_TEMP/sparse-boundary.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/sparse-boundary.log" SparseBoundary.candidates_iff_outside SparseBoundary.boundary_iff SparseBoundary.check_iff
+          python3 -m unittest discover -s audit/extension-ci -p test_sparse_boundary.py
+          python3 audit/extension-ci/sparse_boundary.py
