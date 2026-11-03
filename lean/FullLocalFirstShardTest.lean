@@ -5,10 +5,11 @@ namespace FullLocalFirstShardTest
 
 set_option maxRecDepth 100000 in
 theorem node0_valid : MixedDag.Check FullLocalShards.extraCheck FullLocalShards.S0.nodes 0 := by
-  unfold MixedDag.Check FullLocalShards.S0.nodes ArchiveDag.SmallCheck UpperBridge.OrderedEdge
+  -- Reduce the concrete node first, retaining SmallCheck's computational instance.
+  change ArchiveDag.SmallCheck ({2, 3, 6} : Finset ℕ) 1
   decide
 
-set_option maxRecDepth 100000 in
+set_option maxRecDepth 1000000 in
 theorem node0_bound : Extended.Bound (FullLocalShards.S0.nodes 0).support
     (FullLocalShards.S0.nodes 0).demand := by
   apply MixedDagLocality.sound_one FullLocalAssemblyCandidate.extraCheck
