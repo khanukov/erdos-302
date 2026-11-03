@@ -247,3 +247,5 @@ OccurrenceAligned
 OccurrenceAlignedTests
 OccurrencePrimeBridgeCandidate
 OccurrencePrimeBridgeCandidateTests
+JointIndependenceCandidate
+JointIndependenceCandidateTests
