@@ -125,7 +125,8 @@ jobs:
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/MixedPrefixShards.log" MixedPrefixShards.checked MixedPrefixShards.sound
           export LEAN_NUM_THREADS=1
           python3 "$GITHUB_WORKSPACE/independent_bank/full1024_ci.py" --check-search-path "$p"
-          timeout 15m lean -o ActualPrefix1024Data.olean ActualPrefix1024Data.lean 2>&1 | tee "$RUNNER_TEMP/ActualPrefix1024Data.log"
+          # The scheduler compiles Data after freezing its inputs and rejects a
+          # pre-existing Data object, then compiles the shards and aggregate.
           # This candidate gate trusts runner isolation, Lean and pinned external
           # dependencies. Inventory rescans detect persistent local mutations, not
           # transient change-and-restore races; inputs are not made immutable.

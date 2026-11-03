@@ -35,7 +35,9 @@ if module == bad: sys.exit(1)
 output.write_bytes(b'olean')
 if module == 'ActualPrefix1024Checks0' and os.environ.get('MUTATE'):
     pathlib.Path(os.environ['MUTATE']).write_bytes(b'mutated')
-if module == 'ActualPrefix1024Sound':
+if module == 'ActualPrefix1024Data':
+    names = []
+elif module == 'ActualPrefix1024Sound':
     names = [f'ActualPrefix1024.segment{i}' for i in range(64)] + ['ActualPrefix1024.checked', 'ActualPrefix1024.sound']
 else:
     i = int(module.removeprefix('ActualPrefix1024Checks'))
@@ -273,10 +275,29 @@ time.sleep(30)
     def test_workflow_integrity(self):
         workflow = (Path(__file__).resolve().parents[1] / '.github/workflows/actual-prefix1024-full.yml').read_text()
         for expected in ['timeout-minutes: 360', 'git rev-parse HEAD', 'prefix1024_shards.py --check',
-                         'full1024_ci.py', 'timeout 15m lean -o ActualPrefix1024Data.olean',
+                         'full1024_ci.py', 'scheduler compiles Data',
                          'if: always()', 'retention-days: 30', 'LEAN_NUM_THREADS=1']:
             self.assertIn(expected, workflow)
         self.assertNotIn('ActualPrefix1024Representative', workflow)
+
+    def test_data_is_compiled_and_manifested_before_shards(self):
+        import hashlib, json
+        (self.project / 'ActualPrefix1024Data.lean').write_text('-- data')
+        (self.project / 'ActualPrefix1024Checks0.lean').write_text('import ActualPrefix1024Data\n')
+        with self.fake_run():
+            ci.run(self.project, self.logs)
+        self.assertEqual(self.called[0], 'ActualPrefix1024Data')
+        data = json.loads((self.logs / 'full1024-evidence.json').read_text())
+        digest = hashlib.sha256(b'olean').hexdigest()
+        self.assertEqual(data['data']['olean_sha256'], digest)
+        self.assertEqual(data['shards'][0]['input_manifest']['ActualPrefix1024Data.olean'], digest)
+
+    def test_data_preexisting_output_rejected_before_any_compiler(self):
+        (self.project / 'ActualPrefix1024Data.lean').write_text('-- data')
+        (self.project / 'ActualPrefix1024Data.olean').write_bytes(b'stale')
+        with self.fake_run(), self.assertRaisesRegex(ValueError, 'pre-existing output'):
+            ci.run(self.project, self.logs)
+        self.assertEqual(self.called, [])
 
     def test_preexisting_output_rejected(self):
         (self.project / 'ActualPrefix1024Checks0.olean').write_bytes(b'stale')
@@ -315,6 +336,49 @@ time.sleep(30)
         with patch.dict(os.environ, {'LEAN_PATH': str(staged.parents[1])}):
             with self.assertRaisesRegex(ValueError, 'shadow'):
                 ci.check_search_path(self.project)
+
+    def test_nested_project_search_root_rejected(self):
+        nested = self.project / 'nested'; nested.mkdir()
+        (nested / 'Mathlib').mkdir()
+        (nested / 'Mathlib/Fake.olean').write_bytes(b'shadow')
+        (nested / 'Mathlib/Fake.lean').write_text('-- local')
+        with patch.dict(os.environ, {'LEAN_PATH': str(nested)}):
+            with self.assertRaisesRegex(ValueError, 'unexpected local search root'):
+                ci.check_search_path(self.project)
+
+    def test_project_object_without_source_rejected(self):
+        obj = self.project / 'Mathlib/Fake.olean'
+        obj.parent.mkdir(); obj.write_bytes(b'shadow')
+        with patch.dict(os.environ, {'LEAN_PATH': str(self.project)}):
+            with self.assertRaisesRegex(ValueError, 'shadow'):
+                ci.check_search_path(self.project)
+
+    def test_staged_object_without_local_source_rejected(self):
+        staged = self.project / '.lake/build/lib/lean/Mathlib/Fake.olean'
+        staged.parent.mkdir(parents=True); staged.write_bytes(b'shadow')
+        with patch.dict(os.environ, {'LEAN_PATH': str(staged.parents[1])}):
+            with self.assertRaisesRegex(ValueError, 'shadow'):
+                ci.check_search_path(self.project)
+
+    def test_duplicate_local_nested_module_rejected(self):
+        local = self.project / 'Nested/Dep.lean'
+        local.parent.mkdir(); local.write_text('dep')
+        local.with_suffix('.olean').write_bytes(b'root')
+        staged = self.project / '.lake/build/lib/lean/Nested/Dep.olean'
+        staged.parent.mkdir(parents=True); staged.write_bytes(b'stale')
+        with patch.dict(os.environ, {'LEAN_PATH': str(staged.parents[1])}):
+            with self.assertRaisesRegex(ValueError, 'shadow'):
+                ci.check_search_path(self.project)
+
+    def test_persistent_search_root_addition_rejected(self):
+        root = Path(self.temp.name) / 'search'; root.mkdir()
+        (self.project / 'Dependency.lean').write_text('dep')
+        script = self.fake.read_text().replace("bad = os.environ.get('BAD', '')", "bad = os.environ.get('BAD', '')\nif module == 'ActualPrefix1024Checks0': pathlib.Path(os.environ['SHADOW']).write_bytes(b'shadow')")
+        self.fake.write_text(script)
+        with patch.dict(os.environ, {'LEAN_PATH': str(root), 'SHADOW': str(root / 'Dependency.olean')}), self.fake_run():
+            with self.assertRaisesRegex(ValueError, 'shadow|search path'):
+                ci.run(self.project, self.logs)
+        self.assertFalse((self.logs / 'full1024-evidence.json').exists())
 
     def test_child_signal_mask_unblocked(self):
         fake = Path(self.temp.name) / 'mask-lean'

@@ -2,8 +2,9 @@
 """Same-run bounded compilation and axiom gates for the complete 1024 prefix.
 
 The caller builds the common project dependencies in a clean directory first.
-Only the 64 independent check modules are compiled concurrently; the aggregate
-is compiled after every shard and axiom gate has succeeded. Imported olean files
+Data is compiled first when present; only the 64 check modules are compiled
+concurrently, and the aggregate follows every successful shard and axiom gate.
+Imported olean files
 and Mathlib cache remain trusted; this is not a fresh-environment replay.
 The explicit 101-module Erdos301/Erdos327 closure is source-hash pinned;
 its objects are trusted Lake outputs or cache objects, pinned by path and
@@ -45,12 +46,19 @@ def check_search_path(project):
     for directory, dirs, files in os.walk(project):
         dirs[:] = [d for d in dirs if not d.startswith('.')]
         for name in files:
-            if name.endswith('.lean'):
+            if name.endswith('.olean') and not (Path(directory) / name).with_suffix('.lean').is_file():
+                raise ValueError(f'Lean search path shadow: object without local source: {Path(directory) / name}')
+            if name.endswith(('.lean', '.olean')):
                 modules.add((Path(directory) / name).relative_to(project).with_suffix('.olean'))
     # Only the pinned lower dependency is built by Lake; every other local
     # module is compiled directly into the project root by this workflow.
     staged_root = project / '.lake/build/lib/lean'
     allowed = {staged_root / 'Erdos302Lower/Defs.olean'}
+    for obj in staged_root.rglob('*.olean'):
+        if obj not in allowed:
+            raise ValueError(f'Lean search path shadow: unexpected staged object {obj}')
+    if (project / 'Erdos302Lower/Defs.olean').exists() and (staged_root / 'Erdos302Lower/Defs.olean').exists():
+        raise ValueError('Lean search path shadow: duplicate Erdos302Lower.Defs')
     for name in UPSTREAM_SOURCES:
         source, obj = upstream_paths(project, name)
         local = Path(name.replace('.', '/'))
@@ -60,6 +68,8 @@ def check_search_path(project):
         allowed.add(project / obj)
     for entry in os.environ.get('LEAN_PATH', '').split(os.pathsep):
         root = Path(entry or '.').resolve()
+        if root.is_relative_to(project) and root not in {project, staged_root} and not root.is_relative_to(project / '.lake/packages'):
+            raise ValueError(f'Lean search path shadow: unexpected local search root {root}')
         if root == project:
             continue
         for module in modules:
@@ -92,7 +102,11 @@ def _run(project, logs, lean='lean', timeout=900):
     logs.mkdir(parents=True, exist_ok=True)
     evidence_path = logs / 'full1024-evidence.json'
     evidence_path.unlink(missing_ok=True)
+    search_path = os.environ.get('LEAN_PATH', '')
     check_search_path(project)
+    for module in ['ActualPrefix1024Data'] + [f'ActualPrefix1024Checks{i}' for i in range(64)] + ['ActualPrefix1024Sound']:
+        if (project / (module + '.olean')).exists():
+            raise ValueError(f'pre-existing output: {module}')
     active = {}
     # Freeze every local source and prebuilt local olean before launching any
     # compiler. Mathlib and the Lean toolchain remain trusted external inputs.
@@ -111,10 +125,17 @@ def _run(project, logs, lean='lean', timeout=900):
                     paths.add(str(path))
         return paths
 
-    frozen = {name: hashlib.sha256((project / name).read_bytes()).hexdigest()
-              for name in inventory()}
+    snapshots = {}
+    frozen = {}
+    for name in inventory():
+        raw = (project / name).read_bytes()
+        frozen[name] = hashlib.sha256(raw).hexdigest()
+        if name.endswith('.lean'):
+            snapshots[name] = raw
 
     def verify_inputs(manifest):
+        if os.environ.get('LEAN_PATH', '') != search_path:
+            raise ValueError('Lean search path changed')
         # Only outputs of running compilers may appear before validation.
         pending = {str(item[3].relative_to(project)) for item in active.values()}
         names = inventory()
@@ -122,6 +143,7 @@ def _run(project, logs, lean='lean', timeout=900):
         missing = frozen.keys() - names
         if added or missing:
             raise ValueError(f'input inventory changed: added={sorted(added)} missing={sorted(missing)}')
+        check_search_path(project)
         for name, expected in manifest.items():
             try:
                 actual = hashlib.sha256((project / name).read_bytes()).hexdigest()
@@ -162,7 +184,7 @@ def _run(project, logs, lean='lean', timeout=900):
                 if olean not in frozen:
                     raise ValueError(f'missing local dependency output: {name}')
                 manifest[olean] = frozen[olean]
-            text = (project / source_name).read_text()
+            text = snapshots[source_name].decode('utf-8')
             for line in text.splitlines():
                 m = re.match(r'^\s*(?:public\s+)?import\s+([\w.]+)\s*$', line)
                 if m:
@@ -268,6 +290,10 @@ def _run(project, logs, lean='lean', timeout=900):
 
     try:
         records = []
+        data = None
+        if (project / 'ActualPrefix1024Data.lean').is_file():
+            start('ActualPrefix1024Data', [])
+            data, = collect_one_batch()
         next_shard = 0
         while next_shard < 64 or active:
             while next_shard < 64 and len(active) < 2:
@@ -293,7 +319,7 @@ def _run(project, logs, lean='lean', timeout=900):
     evidence = {'github_sha': os.environ.get('GITHUB_SHA'), 'run_id': os.environ.get('GITHUB_RUN_ID'),
                 'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
                 'checks': sum(r['axiom_reports'] for r in records),
-                'segments': 64, 'shards': records, 'aggregate': final}
+                'segments': 64, 'data': data, 'shards': records, 'aggregate': final}
     fd, tmp = tempfile.mkstemp(prefix='.full1024-evidence-', dir=logs)
     try:
         with os.fdopen(fd, 'w') as out:
