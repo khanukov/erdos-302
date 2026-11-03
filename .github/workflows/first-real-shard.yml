@@ -1,6 +1,8 @@
 name: First real mixed prefix shard
 on:
   workflow_dispatch:
+  pull_request:
+  push:
 permissions:
   contents: read
 jobs:
@@ -51,6 +53,8 @@ jobs:
           python3 -B -O tests/test_upper_project.py
           python3 -B tests/test_multiplicity_ci.py
           python3 -B -O tests/test_multiplicity_ci.py
+          python3 -B tests/test_graph_demand_ci.py
+          python3 -B -O tests/test_graph_demand_ci.py
           if grep -nE "\b(sorry|admit|native_decide)\b" lean/BankRowPack*.lean lean/MixedDag*.lean lean/MixedCaseTrimCandidate*.lean; then exit 1; fi
       - name: Install pinned Lean
         shell: bash
@@ -71,6 +75,7 @@ jobs:
           cp audit/mathlib-bridge-ci/project/* "$p/"
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
           cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
+          cp lean/{UpperRenewal,Projection,BankProfile,ArchiveSeedNode0,BankProfileTests}.lean "$p/"
           cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090,MixedDag,MixedDagTests,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate,MixedCaseTrimCandidateTest}.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
@@ -124,3 +129,15 @@ jobs:
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix32Checks$shard.log" "${declarations[@]}"
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix32Sound.log" ActualPrefix32.checked ActualPrefix32.sound
+          # Candidate joins this exact bank build to the literal ledger.
+          cp "$GITHUB_WORKSPACE"/audit/ledger-candidate/lean/{LedgerChecker,ArchiveLedger}.lean "$p/"
+          export LEAN_STACK_SIZE_KB=262144
+          for f in LedgerChecker ArchiveLedger SeedMaxFirstCellCandidate; do
+            timeout 60m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SeedMaxFirstCellCandidate.log" SeedMaxFirstCellCandidate.node0_bound SeedMaxFirstCellCandidate.first_seed SeedMaxFirstCellCandidate.seed_only_suffices SeedMaxFirstCellCandidate.seed_only_correction SeedMaxFirstCellCandidate.recurrence_on_shard SeedMaxFirstCellCandidate.witnessed_correction SeedMaxFirstCellCandidate.derived_matches_literal SeedMaxFirstCellCandidate.positive_literal
+          for f in UpperRenewal Projection BankProfile ArchiveSeedNode0 BankProfileTests GraphDemandSeedSoundCandidate GraphDemandSeedSoundContract; do
+            timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/GraphDemandSeedSoundCandidate.log" GraphDemandSeedSoundCandidate.seedMax_bound GraphDemandSeedSoundCandidate.first_cell_positive GraphDemandSeedSoundCandidate.first_cell_bound GraphDemandSeedSoundCandidate.archived_first_cell_bound
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/GraphDemandSeedSoundContract.log" GraphDemandSeedSoundContract.general_contract GraphDemandSeedSoundContract.positive_contract GraphDemandSeedSoundContract.archived_contract
