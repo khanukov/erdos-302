@@ -6,6 +6,10 @@ namespace InactiveRetention
 def Edge (U : Finset ℕ) (a b c : ℕ) : Prop :=
   a ∈ U ∧ b ∈ U ∧ c ∈ U ∧ b < c ∧ b * c = a * (b + c)
 
+instance (U : Finset ℕ) (a b c : ℕ) : Decidable (Edge U a b c) := by
+  unfold Edge
+  infer_instance
+
 def Retained (U V : Finset ℕ) : Prop :=
   ∀ a b c, Edge U a b c → a ∈ V ∧ b ∈ V ∧ c ∈ V
 

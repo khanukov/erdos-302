@@ -83,11 +83,14 @@ theorem first_cell_positive :
     · rintro (rfl | rfl | rfl) <;> simp [h2, h3, h6]
   have hu : outside ({2, 3, 6} : Finset ℕ) {2, 3} = ∅ := by
     ext x
-    simp only [outside, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, Finset.mem_empty, iff_false]
-    rintro ⟨(rfl | rfl | rfl), hn, _⟩
-    · exact hn h2
-    · exact hn h3
-    · exact hn h6
+    simp only [outside, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton]
+    constructor
+    · rintro ⟨(rfl | rfl | rfl), hn, _⟩
+      · exact (hn h2).elim
+      · exact (hn h3).elim
+      · exact (hn h6).elim
+    · intro hx
+      simpa using hx
   have hp : ({2, 3, 6} : Finset ℕ).filter (fun x => x ≤ 6) = {2, 3, 6} := by decide
   simp [seedMax, nodeSeed, ArchiveSeedNode0.nodes, h6, hs, hu, smoothPrefix, hp]
 

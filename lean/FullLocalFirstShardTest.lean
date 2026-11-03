@@ -16,7 +16,10 @@ theorem node0_bound : Extended.Bound (FullLocalShards.S0.nodes 0).support
     FullLocalAssemblyCandidate.extraReads FullLocalAssemblyCandidate.extra_sound
     FullLocalShards.S0.nodes 0 node0_valid
   intro j hj
-  simp [FullLocalShards.S0.nodes, MixedDagLocality.Reads] at hj
+  -- The concrete rule is .small, which reads no predecessors.  Reduce only
+  -- this occurrence rather than simplifying the entire generated match.
+  change False at hj
+  exact False.elim hj
 
 #print axioms node0_valid
 #print axioms node0_bound
