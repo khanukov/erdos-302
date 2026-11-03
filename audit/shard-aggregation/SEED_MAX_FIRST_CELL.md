@@ -26,7 +26,7 @@ Dependencies and limits:
   The separate Python replay confirmed the requested bounded recurrence and
   ledger agreement using the first 32 parsed archive witnesses.
 * The candidate and its combined imports have NOT been compiled or axiom-gated.
-  The amended dispatch-only first-real-shard workflow is a CI candidate, not a
+  The amended first-real-shard workflow is a CI candidate, not a
   CI result. It rebuilds the mixed prefix and ledger in the same pinned
   environment and gates all new named declarations. It can reuse Mathlib cache.
   Resource usage and elaboration success remain unverified.
