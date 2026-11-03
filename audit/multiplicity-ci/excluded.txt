@@ -154,3 +154,6 @@ ExtensionBoundaryShard19
 ExtensionFirstArchive
 ExtensionSeedCandidate
 ArchiveRecurrencePilot
+SparseTriple
+SparseTripleTest
+SparseTripleNode1209Sample

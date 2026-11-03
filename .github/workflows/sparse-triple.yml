@@ -1,0 +1,31 @@
+name: Sparse triple enumeration
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  kernel-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Kernel-check enumeration and bounded sample
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sparse"
+          lean -o "$RUNNER_TEMP/sparse/SparseTriple.olean" lean/SparseTriple.lean | tee "$RUNNER_TEMP/sparse.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/sparse.log" SparseTriple.candidates_iff SparseTriple.enumerated_iff
+          export LEAN_PATH="$RUNNER_TEMP/sparse"
+          lean lean/SparseTripleTest.lean
+          lean lean/SparseTripleNode1209Sample.lean
