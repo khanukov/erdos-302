@@ -35,6 +35,7 @@ jobs:
           python3 -B audit/joint-independence-ci/check_inventory.py "$GITHUB_WORKSPACE"
           python3 -B -m unittest discover -s audit/ledger-candidate/tests -p test_ledger.py
           python3 -B audit/renewal-joint-ci/closure.py "$p"
+          python3 -B audit/renewal-joint-ci/check_bounded_operands.py
           for f in "$p"/{Renewal,SmoothRenewal,DemandRenewalChain,LedgerChecker,ArchiveLedger,ArchiveRenewalJointCandidate,ArchiveRenewalJointTests}.lean; do
             if grep -nE '\b(sorry|admit|native_decide)\b' "$f"; then exit 1; fi
           done
@@ -50,12 +51,13 @@ jobs:
           for m in Renewal SmoothRenewal DemandRenewalChain LedgerChecker ArchiveLedger ArchiveRenewalJointCandidate; do
             lean -o "$m.olean" "$m.lean" 2>&1 | tee "$RUNNER_TEMP/$m.log"
           done
-          lean ArchiveRenewalJointTests.lean
+          lean ArchiveRenewalJointTests.lean 2>&1 | tee "$RUNNER_TEMP/ArchiveRenewalJointTests.log"
           gate="$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py"
           python3 "$gate" "$RUNNER_TEMP/Renewal.log" RenewalNext.demand_image RenewalNext.disjoint_scaled RenewalNext.update_demand RenewalNext.tail_sound RenewalNext.demand_disjoint RenewalNext.update_sound RenewalNext.correction_identity
           python3 "$gate" "$RUNNER_TEMP/SmoothRenewal.log" SmoothRenewal.triple_scale_iff SmoothRenewal.vertices_partition SmoothRenewal.vertices_disjoint SmoothRenewal.demand_recurrence SmoothRenewal.cover_pullback SmoothRenewal.edge_image SmoothRenewal.demand_scaled
           python3 "$gate" "$RUNNER_TEMP/DemandRenewalChain.log" DemandRenewalChain.update_graph_demand DemandRenewalChain.tail_graph_demand DemandRenewalChain.levels_graph_demand
           python3 "$gate" "$RUNNER_TEMP/ArchiveLedger.log" ArchiveLedger.archive_check ArchiveLedger.archive_valid ArchiveLedger.archive_arithmetic
+          python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointTests.log" RealBounded.rows RealBounded.update_eq RealBounded.finite_check
           python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointCandidate.log" ArchiveRenewalJointCandidate.profile_demand_and_literal_recurrence ArchiveRenewalJointCandidate.profile_max_update
       - name: Retain diagnostics
         if: always()
