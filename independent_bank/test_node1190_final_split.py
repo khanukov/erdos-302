@@ -53,7 +53,7 @@ class ShardTests(unittest.TestCase):
         self.assertEqual(pairs, [(pos, i) for i, (pos, _) in enumerate(entries)])
         sources = [r['dense_source'] for r in self.doc['nodes'][336]['references']]
         self.assertLess(len(set(sources)), len(sources))
-        self.assertIn('exact ⟨hrefs_proved, hleaf⟩', assembly)
+        self.assertIn('exact ⟨hrefs_proved, leaf_proved⟩', assembly)
         self.assertIn('Node1190ComponentFold.mapped_getD_mem', assembly)
         changed = dict(self.files)
         changed['Node1190Assembly.lean'] = changed['Node1190Assembly.lean'].replace(
@@ -80,6 +80,26 @@ class ShardTests(unittest.TestCase):
         altered['Node1190Assembly.lean'] = altered['Node1190Assembly.lean'].replace(b'exact capacity000', b'exact capacity001', 1)
         with self.assertRaises(ValueError): shards.check_files(self.files, altered)
 
+    def test_weight_fold_and_leaf_assembly_mutations(self):
+        text = self.files['Node1190Assembly.lean'].decode()
+        batches = re.findall(r'theorem weight_positions(\d+) \(i : ℕ\) \(lo : (\d+) ≤ i\) \(hi : i < (\d+)\)', text)
+        self.assertEqual([(int(b), int(a), int(z)) for b, a, z in batches],
+                         [(i, a, z) for i, (a, z) in enumerate(shards.intervals(530, 10))])
+        for i in range(53):
+            self.assertIn(f'rcases weight_batch{i:03} with', text)
+            self.assertIn(f'exact weight_positions{i:03} i', text)
+        self.assertIn('exact all_weight_positions i (Finset.mem_range.mp hi)', text)
+        for component in ('rows_proved', 'weights_proved', 'capacity_proved', 'leaf_with_index_bridges'):
+            self.assertIn(component, text[text.index('theorem leaf_proved'):])
+        self.assertNotIn('(hleaf :', text)
+        for old, new in ((b'weight_batch000 with', b'weight_batch001 with'),
+                         (b'exact weights_proved', b'exact rows_proved'),
+                         (b'exact singleton_check\n', b'exact singleton_check hleaf\n')):
+            altered = dict(self.files)
+            altered['Node1190Assembly.lean'] = altered['Node1190Assembly.lean'].replace(old, new, 1)
+            self.assertNotEqual(altered, self.files)
+            with self.assertRaises(ValueError): shards.check_files(self.files, altered)
+
     def test_missing_or_changed_file_rejected(self):
         changed = dict(self.files)
         changed.pop('Node1190Refs000.lean')
@@ -101,3 +121,46 @@ class ShardTests(unittest.TestCase):
         doc = copy.deepcopy(self.doc)
         doc['nodes'][336]['raw_node']['tree'][0][2][0][0] = -1
         with self.assertRaises(ValueError): shards.generate(doc)
+
+class AxiomInventoryTests(unittest.TestCase):
+    def test_fixed_targets_reject_missing_and_mutated_reports(self):
+        import node1190_axiom_inventory as inv
+        names = inv.required("Node1190Refs000.lean")
+        self.assertEqual(names, [f"Node1190Dual.{kind}{i:03}" for i in range(10) for kind in ("ref", "row", "weight")])
+        log = "\n".join(f"'{name}' does not depend on any axioms" for name in names)
+        inv.check_log("Node1190Refs000.lean", log)
+        for bad in (log.replace(names[0], "Node1190Dual.fake", 1), log.replace("does not depend on any axioms", "depends on axioms: [evil]", 1)):
+            with self.assertRaises(ValueError): inv.check_log("Node1190Refs000.lean", bad)
+
+    def test_exact_fixed_inventory_and_invalid_files(self):
+        import node1190_axiom_inventory as inv
+        self.assertEqual(len(inv.required("Node1190Capacity089.lean")), 9)
+        self.assertEqual(inv.required("Node1190Assembly.lean")[-1], "Node1190Dual.Shard336_337")
+        for name in ("Node1190Refs053.lean", "Node1190Capacity090.lean", "Node1190RefsXXX.lean", "Other.lean"):
+            with self.subTest(name=name), self.assertRaises(ValueError): inv.required(name)
+
+    def test_inventory_covers_every_generated_report_and_missing_each_is_rejected(self):
+        import node1190_axiom_inventory as inv
+        root = Path(__file__).resolve().parents[1]
+        paths = sorted((root / "audit/node1190-final-split").glob("Node1190Refs*.lean"))
+        paths += sorted((root / "audit/node1190-final-split").glob("Node1190Capacity*.lean"))
+        paths += [root / "audit/node1190-final-split" / n for n in ("Node1190Objective.lean", "Node1190Assembly.lean")]
+        self.assertEqual(len(paths), 145)
+        counts = {"ref": 0, "row": 0, "weight": 0, "capacity": 0}
+        for path in paths:
+            names = inv.required(path.name)
+            directives = re.findall(r"^#print axioms (\w+)$", path.read_text(), re.M)
+            self.assertEqual(["Node1190Dual." + n for n in directives], names, path.name)
+            reports = [f"'{n}' does not depend on any axioms" for n in names]
+            inv.check_log(path.name, "\n".join(reports))
+            for i, name in enumerate(names):
+                for prefix in counts:
+                    if re.fullmatch(r"Node1190Dual\." + prefix + r"\d{3}", name): counts[prefix] += 1
+                with self.assertRaises(ValueError, msg=name):
+                    inv.check_log(path.name, "\n".join(reports[:i] + reports[i+1:]))
+        self.assertEqual(counts, {"ref": 530, "row": 530, "weight": 530, "capacity": 899})
+
+    def test_workflow_uses_independent_inventory(self):
+        workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/node1190-final-split.yml").read_text()
+        self.assertIn('node1190_axiom_inventory.py" "$path" "$RUNNER_TEMP/$f.log"', workflow)
+        self.assertNotIn('declarations=$(python3', workflow)

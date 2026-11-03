@@ -6137,25 +6137,412 @@ theorem support_coverage (v : ℕ) (hv : v ∈ (Node1209Dense.nodes 336).support
 #print axioms support_coverage
 #print axioms capacity_proved
 
-/- The aggregate hypotheses are explicit: folding the individual facts into
-   the Boolean checker is still missing. This is not an unconditional proof. -/
-theorem singleton_check
-    (hleaf : BankCase.check (refs.map (MixedCaseTrimCandidate.row Node1209Dense.nodes 336))
-      (Node1209Dense.nodes 336).support ∅ ∅ (Node1209Dense.nodes 336).demand
-      (.dual entries 1000000) = true) :
+theorem weight_positions000 (i : ℕ) (lo : 0 ≤ i) (hi : i < 10) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch000 with ⟨h0, h1, h2, h3, h4, h5, h6, h7, h8, h9⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions001 (i : ℕ) (lo : 10 ≤ i) (hi : i < 20) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch001 with ⟨h10, h11, h12, h13, h14, h15, h16, h17, h18, h19⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions002 (i : ℕ) (lo : 20 ≤ i) (hi : i < 30) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch002 with ⟨h20, h21, h22, h23, h24, h25, h26, h27, h28, h29⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions003 (i : ℕ) (lo : 30 ≤ i) (hi : i < 40) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch003 with ⟨h30, h31, h32, h33, h34, h35, h36, h37, h38, h39⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions004 (i : ℕ) (lo : 40 ≤ i) (hi : i < 50) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch004 with ⟨h40, h41, h42, h43, h44, h45, h46, h47, h48, h49⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions005 (i : ℕ) (lo : 50 ≤ i) (hi : i < 60) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch005 with ⟨h50, h51, h52, h53, h54, h55, h56, h57, h58, h59⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions006 (i : ℕ) (lo : 60 ≤ i) (hi : i < 70) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch006 with ⟨h60, h61, h62, h63, h64, h65, h66, h67, h68, h69⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions007 (i : ℕ) (lo : 70 ≤ i) (hi : i < 80) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch007 with ⟨h70, h71, h72, h73, h74, h75, h76, h77, h78, h79⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions008 (i : ℕ) (lo : 80 ≤ i) (hi : i < 90) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch008 with ⟨h80, h81, h82, h83, h84, h85, h86, h87, h88, h89⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions009 (i : ℕ) (lo : 90 ≤ i) (hi : i < 100) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch009 with ⟨h90, h91, h92, h93, h94, h95, h96, h97, h98, h99⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions010 (i : ℕ) (lo : 100 ≤ i) (hi : i < 110) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch010 with ⟨h100, h101, h102, h103, h104, h105, h106, h107, h108, h109⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions011 (i : ℕ) (lo : 110 ≤ i) (hi : i < 120) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch011 with ⟨h110, h111, h112, h113, h114, h115, h116, h117, h118, h119⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions012 (i : ℕ) (lo : 120 ≤ i) (hi : i < 130) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch012 with ⟨h120, h121, h122, h123, h124, h125, h126, h127, h128, h129⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions013 (i : ℕ) (lo : 130 ≤ i) (hi : i < 140) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch013 with ⟨h130, h131, h132, h133, h134, h135, h136, h137, h138, h139⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions014 (i : ℕ) (lo : 140 ≤ i) (hi : i < 150) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch014 with ⟨h140, h141, h142, h143, h144, h145, h146, h147, h148, h149⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions015 (i : ℕ) (lo : 150 ≤ i) (hi : i < 160) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch015 with ⟨h150, h151, h152, h153, h154, h155, h156, h157, h158, h159⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions016 (i : ℕ) (lo : 160 ≤ i) (hi : i < 170) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch016 with ⟨h160, h161, h162, h163, h164, h165, h166, h167, h168, h169⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions017 (i : ℕ) (lo : 170 ≤ i) (hi : i < 180) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch017 with ⟨h170, h171, h172, h173, h174, h175, h176, h177, h178, h179⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions018 (i : ℕ) (lo : 180 ≤ i) (hi : i < 190) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch018 with ⟨h180, h181, h182, h183, h184, h185, h186, h187, h188, h189⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions019 (i : ℕ) (lo : 190 ≤ i) (hi : i < 200) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch019 with ⟨h190, h191, h192, h193, h194, h195, h196, h197, h198, h199⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions020 (i : ℕ) (lo : 200 ≤ i) (hi : i < 210) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch020 with ⟨h200, h201, h202, h203, h204, h205, h206, h207, h208, h209⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions021 (i : ℕ) (lo : 210 ≤ i) (hi : i < 220) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch021 with ⟨h210, h211, h212, h213, h214, h215, h216, h217, h218, h219⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions022 (i : ℕ) (lo : 220 ≤ i) (hi : i < 230) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch022 with ⟨h220, h221, h222, h223, h224, h225, h226, h227, h228, h229⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions023 (i : ℕ) (lo : 230 ≤ i) (hi : i < 240) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch023 with ⟨h230, h231, h232, h233, h234, h235, h236, h237, h238, h239⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions024 (i : ℕ) (lo : 240 ≤ i) (hi : i < 250) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch024 with ⟨h240, h241, h242, h243, h244, h245, h246, h247, h248, h249⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions025 (i : ℕ) (lo : 250 ≤ i) (hi : i < 260) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch025 with ⟨h250, h251, h252, h253, h254, h255, h256, h257, h258, h259⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions026 (i : ℕ) (lo : 260 ≤ i) (hi : i < 270) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch026 with ⟨h260, h261, h262, h263, h264, h265, h266, h267, h268, h269⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions027 (i : ℕ) (lo : 270 ≤ i) (hi : i < 280) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch027 with ⟨h270, h271, h272, h273, h274, h275, h276, h277, h278, h279⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions028 (i : ℕ) (lo : 280 ≤ i) (hi : i < 290) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch028 with ⟨h280, h281, h282, h283, h284, h285, h286, h287, h288, h289⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions029 (i : ℕ) (lo : 290 ≤ i) (hi : i < 300) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch029 with ⟨h290, h291, h292, h293, h294, h295, h296, h297, h298, h299⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions030 (i : ℕ) (lo : 300 ≤ i) (hi : i < 310) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch030 with ⟨h300, h301, h302, h303, h304, h305, h306, h307, h308, h309⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions031 (i : ℕ) (lo : 310 ≤ i) (hi : i < 320) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch031 with ⟨h310, h311, h312, h313, h314, h315, h316, h317, h318, h319⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions032 (i : ℕ) (lo : 320 ≤ i) (hi : i < 330) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch032 with ⟨h320, h321, h322, h323, h324, h325, h326, h327, h328, h329⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions033 (i : ℕ) (lo : 330 ≤ i) (hi : i < 340) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch033 with ⟨h330, h331, h332, h333, h334, h335, h336, h337, h338, h339⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions034 (i : ℕ) (lo : 340 ≤ i) (hi : i < 350) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch034 with ⟨h340, h341, h342, h343, h344, h345, h346, h347, h348, h349⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions035 (i : ℕ) (lo : 350 ≤ i) (hi : i < 360) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch035 with ⟨h350, h351, h352, h353, h354, h355, h356, h357, h358, h359⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions036 (i : ℕ) (lo : 360 ≤ i) (hi : i < 370) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch036 with ⟨h360, h361, h362, h363, h364, h365, h366, h367, h368, h369⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions037 (i : ℕ) (lo : 370 ≤ i) (hi : i < 380) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch037 with ⟨h370, h371, h372, h373, h374, h375, h376, h377, h378, h379⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions038 (i : ℕ) (lo : 380 ≤ i) (hi : i < 390) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch038 with ⟨h380, h381, h382, h383, h384, h385, h386, h387, h388, h389⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions039 (i : ℕ) (lo : 390 ≤ i) (hi : i < 400) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch039 with ⟨h390, h391, h392, h393, h394, h395, h396, h397, h398, h399⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions040 (i : ℕ) (lo : 400 ≤ i) (hi : i < 410) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch040 with ⟨h400, h401, h402, h403, h404, h405, h406, h407, h408, h409⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions041 (i : ℕ) (lo : 410 ≤ i) (hi : i < 420) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch041 with ⟨h410, h411, h412, h413, h414, h415, h416, h417, h418, h419⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions042 (i : ℕ) (lo : 420 ≤ i) (hi : i < 430) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch042 with ⟨h420, h421, h422, h423, h424, h425, h426, h427, h428, h429⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions043 (i : ℕ) (lo : 430 ≤ i) (hi : i < 440) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch043 with ⟨h430, h431, h432, h433, h434, h435, h436, h437, h438, h439⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions044 (i : ℕ) (lo : 440 ≤ i) (hi : i < 450) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch044 with ⟨h440, h441, h442, h443, h444, h445, h446, h447, h448, h449⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions045 (i : ℕ) (lo : 450 ≤ i) (hi : i < 460) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch045 with ⟨h450, h451, h452, h453, h454, h455, h456, h457, h458, h459⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions046 (i : ℕ) (lo : 460 ≤ i) (hi : i < 470) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch046 with ⟨h460, h461, h462, h463, h464, h465, h466, h467, h468, h469⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions047 (i : ℕ) (lo : 470 ≤ i) (hi : i < 480) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch047 with ⟨h470, h471, h472, h473, h474, h475, h476, h477, h478, h479⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions048 (i : ℕ) (lo : 480 ≤ i) (hi : i < 490) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch048 with ⟨h480, h481, h482, h483, h484, h485, h486, h487, h488, h489⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions049 (i : ℕ) (lo : 490 ≤ i) (hi : i < 500) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch049 with ⟨h490, h491, h492, h493, h494, h495, h496, h497, h498, h499⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions050 (i : ℕ) (lo : 500 ≤ i) (hi : i < 510) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch050 with ⟨h500, h501, h502, h503, h504, h505, h506, h507, h508, h509⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions051 (i : ℕ) (lo : 510 ≤ i) (hi : i < 520) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch051 with ⟨h510, h511, h512, h513, h514, h515, h516, h517, h518, h519⟩
+  interval_cases i <;> assumption
+
+theorem weight_positions052 (i : ℕ) (lo : 520 ≤ i) (hi : i < 530) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch052 with ⟨h520, h521, h522, h523, h524, h525, h526, h527, h528, h529⟩
+  interval_cases i <;> assumption
+
+theorem all_weight_positions (i : ℕ) (hi : i < entries.length) :
+    0 < (entryAt i).2 := by
+  have bound : i < 530 := by simpa [lengths.2] using hi
+  by_cases h0 : i < 10
+  · exact weight_positions000 i (by omega) h0
+  by_cases h1 : i < 20
+  · exact weight_positions001 i (by omega) h1
+  by_cases h2 : i < 30
+  · exact weight_positions002 i (by omega) h2
+  by_cases h3 : i < 40
+  · exact weight_positions003 i (by omega) h3
+  by_cases h4 : i < 50
+  · exact weight_positions004 i (by omega) h4
+  by_cases h5 : i < 60
+  · exact weight_positions005 i (by omega) h5
+  by_cases h6 : i < 70
+  · exact weight_positions006 i (by omega) h6
+  by_cases h7 : i < 80
+  · exact weight_positions007 i (by omega) h7
+  by_cases h8 : i < 90
+  · exact weight_positions008 i (by omega) h8
+  by_cases h9 : i < 100
+  · exact weight_positions009 i (by omega) h9
+  by_cases h10 : i < 110
+  · exact weight_positions010 i (by omega) h10
+  by_cases h11 : i < 120
+  · exact weight_positions011 i (by omega) h11
+  by_cases h12 : i < 130
+  · exact weight_positions012 i (by omega) h12
+  by_cases h13 : i < 140
+  · exact weight_positions013 i (by omega) h13
+  by_cases h14 : i < 150
+  · exact weight_positions014 i (by omega) h14
+  by_cases h15 : i < 160
+  · exact weight_positions015 i (by omega) h15
+  by_cases h16 : i < 170
+  · exact weight_positions016 i (by omega) h16
+  by_cases h17 : i < 180
+  · exact weight_positions017 i (by omega) h17
+  by_cases h18 : i < 190
+  · exact weight_positions018 i (by omega) h18
+  by_cases h19 : i < 200
+  · exact weight_positions019 i (by omega) h19
+  by_cases h20 : i < 210
+  · exact weight_positions020 i (by omega) h20
+  by_cases h21 : i < 220
+  · exact weight_positions021 i (by omega) h21
+  by_cases h22 : i < 230
+  · exact weight_positions022 i (by omega) h22
+  by_cases h23 : i < 240
+  · exact weight_positions023 i (by omega) h23
+  by_cases h24 : i < 250
+  · exact weight_positions024 i (by omega) h24
+  by_cases h25 : i < 260
+  · exact weight_positions025 i (by omega) h25
+  by_cases h26 : i < 270
+  · exact weight_positions026 i (by omega) h26
+  by_cases h27 : i < 280
+  · exact weight_positions027 i (by omega) h27
+  by_cases h28 : i < 290
+  · exact weight_positions028 i (by omega) h28
+  by_cases h29 : i < 300
+  · exact weight_positions029 i (by omega) h29
+  by_cases h30 : i < 310
+  · exact weight_positions030 i (by omega) h30
+  by_cases h31 : i < 320
+  · exact weight_positions031 i (by omega) h31
+  by_cases h32 : i < 330
+  · exact weight_positions032 i (by omega) h32
+  by_cases h33 : i < 340
+  · exact weight_positions033 i (by omega) h33
+  by_cases h34 : i < 350
+  · exact weight_positions034 i (by omega) h34
+  by_cases h35 : i < 360
+  · exact weight_positions035 i (by omega) h35
+  by_cases h36 : i < 370
+  · exact weight_positions036 i (by omega) h36
+  by_cases h37 : i < 380
+  · exact weight_positions037 i (by omega) h37
+  by_cases h38 : i < 390
+  · exact weight_positions038 i (by omega) h38
+  by_cases h39 : i < 400
+  · exact weight_positions039 i (by omega) h39
+  by_cases h40 : i < 410
+  · exact weight_positions040 i (by omega) h40
+  by_cases h41 : i < 420
+  · exact weight_positions041 i (by omega) h41
+  by_cases h42 : i < 430
+  · exact weight_positions042 i (by omega) h42
+  by_cases h43 : i < 440
+  · exact weight_positions043 i (by omega) h43
+  by_cases h44 : i < 450
+  · exact weight_positions044 i (by omega) h44
+  by_cases h45 : i < 460
+  · exact weight_positions045 i (by omega) h45
+  by_cases h46 : i < 470
+  · exact weight_positions046 i (by omega) h46
+  by_cases h47 : i < 480
+  · exact weight_positions047 i (by omega) h47
+  by_cases h48 : i < 490
+  · exact weight_positions048 i (by omega) h48
+  by_cases h49 : i < 500
+  · exact weight_positions049 i (by omega) h49
+  by_cases h50 : i < 510
+  · exact weight_positions050 i (by omega) h50
+  by_cases h51 : i < 520
+  · exact weight_positions051 i (by omega) h51
+  exact weight_positions052 i (by omega) (by omega)
+
+theorem weights_proved : ∀ i ∈ Finset.range entries.length,
+    0 < (BankCase.dualEntry entries i).2 := by
+  intro i hi
+  exact all_weight_positions i (Finset.mem_range.mp hi)
+#print axioms all_weight_positions
+#print axioms weights_proved
+
+-- Candidate: each component is derived from occurrence-indexed shard facts.
+theorem leaf_proved : BankCase.check
+    (refs.map (MixedCaseTrimCandidate.row Node1209Dense.nodes 336))
+    (Node1209Dense.nodes 336).support ∅ ∅ (Node1209Dense.nodes 336).demand
+    (.dual entries 1000000) = true := by
+  apply leaf_with_index_bridges
+  · exact rows_proved
+  · exact weights_proved
+  · simpa only [load, entryAt] using capacity_proved
+  · decide
+  · rfl
+#print axioms leaf_proved
+
+/- Candidate assembly: pending Lean compilation and axiom gates. -/
+theorem singleton_check :
     MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes 336 := by
   change MixedCaseTrimCandidate.CaseCheck Node1209Dense.nodes 336 refs (.dual entries 1000000)
-  exact ⟨hrefs_proved, hleaf⟩
+  exact ⟨hrefs_proved, leaf_proved⟩
 
-theorem Shard336_337
-    (hleaf : BankCase.check (refs.map (MixedCaseTrimCandidate.row Node1209Dense.nodes 336))
-      (Node1209Dense.nodes 336).support ∅ ∅ (Node1209Dense.nodes 336).demand
-      (.dual entries 1000000) = true) :
+theorem Shard336_337 :
     ∀ i, 336 ≤ i → i < 337 → MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i := by
   intro i hlo hhi
   have : i = 336 := by omega
   subst i
-  exact singleton_check hleaf
+  exact singleton_check
 #print axioms singleton_check
 #print axioms Shard336_337
 end Node1190Dual

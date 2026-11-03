@@ -37,10 +37,10 @@ theorem source_subset :
   exact Finset.mem_insert.mpr (Or.inl (Finset.mem_singleton.mp hx))
 
 theorem source_bound
-    (prefix : ∀ i < 375,
+    (prefixChecks : ∀ i < 375,
       MixedDag.Check MixedCaseTrimCandidate.extraCheck Node1209Dense.nodes i) :
     Extended.Bound ExtensionFirstArchive.source 258 := by
-  have hb := MixedCaseTrimCandidate.sound Node1209Dense.nodes 375 prefix 374 (by decide)
+  have hb := MixedCaseTrimCandidate.sound Node1209Dense.nodes 375 prefixChecks 374 (by decide)
   have ht := Extended.bound_mono source_subset hb
   change Extended.Bound Node1209SourceCandidate.node.support
     Node1209SourceCandidate.node.demand at ht

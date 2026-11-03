@@ -92,8 +92,7 @@ jobs:
             fi
             f="${path%.lean}"
             timeout 45m lean -o "$f.olean" "$path" 2>&1 | tee "$RUNNER_TEMP/$f.log"
-            declarations=$(python3 -c 'import re,sys; print(" ".join("Node1190Dual."+x for x in re.findall(r"^#print axioms (\w+)",open(sys.argv[1]).read(),re.M)))' "$path")
-            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/$f.log" $declarations
+            python3 "$GITHUB_WORKSPACE/independent_bank/node1190_axiom_inventory.py" "$path" "$RUNNER_TEMP/$f.log"
           done
       - name: Upload small prerequisite diagnostics
         if: always()

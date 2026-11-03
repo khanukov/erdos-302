@@ -245,11 +245,48 @@ theorem support_coverage (v : ℕ) (hv : v ∈ (Node1209Dense.nodes 336).support
     for batch in range(len(chunks)):
         generated += f'  · exact chunk_capacity{batch:03} v h{batch}\n'
     generated += '#print axioms support_coverage\n#print axioms capacity_proved\n'
+    for batch, (a, b) in enumerate(intervals(530, 10)):
+        names = ', '.join(f'h{i}' for i in range(a, b))
+        generated += f'''\ntheorem weight_positions{batch:03} (i : ℕ) (lo : {a} ≤ i) (hi : i < {b}) :
+    0 < (entryAt i).2 := by
+  rcases weight_batch{batch:03} with ⟨{names}⟩
+  interval_cases i <;> assumption
+'''
+    generated += '''\ntheorem all_weight_positions (i : ℕ) (hi : i < entries.length) :
+    0 < (entryAt i).2 := by
+  have bound : i < 530 := by simpa [lengths.2] using hi
+''' + dispatch('weight') + '''\ntheorem weights_proved : ∀ i ∈ Finset.range entries.length,
+    0 < (BankCase.dualEntry entries i).2 := by
+  intro i hi
+  exact all_weight_positions i (Finset.mem_range.mp hi)
+#print axioms all_weight_positions
+#print axioms weights_proved
+
+-- Candidate: each component is derived from occurrence-indexed shard facts.
+theorem leaf_proved : BankCase.check
+    (refs.map (MixedCaseTrimCandidate.row Node1209Dense.nodes 336))
+    (Node1209Dense.nodes 336).support ∅ ∅ (Node1209Dense.nodes 336).demand
+    (.dual entries 1000000) = true := by
+  apply leaf_with_index_bridges
+  · exact rows_proved
+  · exact weights_proved
+  · simpa only [load, entryAt] using capacity_proved
+  · decide
+  · rfl
+#print axioms leaf_proved
+'''
     assembly = assembly.replace(marker, folds + generated + marker, 1)
-    # Only hleaf remains as an explicit premise.
+    assembly = assembly.replace('''/- The aggregate hypotheses are explicit: folding the individual facts into
+   the Boolean checker is still missing. This is not an unconditional proof. -/''',
+        '/- Candidate assembly: pending Lean compilation and axiom gates. -/')
     assembly = assembly.replace('    (hrefs : ∀ r ∈ refs, MixedCaseTrimCandidate.RefCheck Node1209Dense.nodes 336 r)\n', '')
-    assembly = assembly.replace('exact ⟨hrefs, hleaf⟩', 'exact ⟨hrefs_proved, hleaf⟩')
-    assembly = assembly.replace('exact singleton_check hrefs hleaf', 'exact singleton_check hleaf')
+    assembly = assembly.replace('''    (hleaf : BankCase.check (refs.map (MixedCaseTrimCandidate.row Node1209Dense.nodes 336))
+      (Node1209Dense.nodes 336).support ∅ ∅ (Node1209Dense.nodes 336).demand
+      (.dual entries 1000000) = true)''', '')
+    assembly = assembly.replace('exact ⟨hrefs, hleaf⟩', 'exact ⟨hrefs_proved, leaf_proved⟩')
+    assembly = assembly.replace('exact singleton_check hrefs hleaf', 'exact singleton_check')
+    assembly = assembly.replace('theorem singleton_check\n :', 'theorem singleton_check :')
+    assembly = assembly.replace('theorem Shard336_337\n :', 'theorem Shard336_337 :')
     files['Node1190Assembly.lean'] = assembly
     return {name: text.encode() for name, text in files.items()}
 

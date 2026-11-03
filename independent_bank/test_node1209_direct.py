@@ -14,6 +14,12 @@ class DirectTests(unittest.TestCase):
     def test_regeneration(self):
         self.assertEqual(direct.OUT.read_bytes(), direct.generate(self.doc).encode())
 
+    def test_source_bound_avoids_reserved_prefix_identifier(self):
+        text = direct.generate(self.doc)
+        self.assertIn('(prefixChecks : ∀ i < 375,', text)
+        self.assertIn('Node1209Dense.nodes 375 prefixChecks 374', text)
+        self.assertNotRegex(text, r'\(prefix\s*:')
+
     def test_subset_uses_shared_literal_fold(self):
         text = direct.generate(self.doc)
         self.assertIn('theorem fold_insert_subset', text)
