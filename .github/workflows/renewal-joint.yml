@@ -57,7 +57,7 @@ jobs:
           python3 "$gate" "$RUNNER_TEMP/SmoothRenewal.log" SmoothRenewal.triple_scale_iff SmoothRenewal.vertices_partition SmoothRenewal.vertices_disjoint SmoothRenewal.demand_recurrence SmoothRenewal.cover_pullback SmoothRenewal.edge_image SmoothRenewal.demand_scaled
           python3 "$gate" "$RUNNER_TEMP/DemandRenewalChain.log" DemandRenewalChain.update_graph_demand DemandRenewalChain.tail_graph_demand DemandRenewalChain.levels_graph_demand
           python3 "$gate" "$RUNNER_TEMP/ArchiveLedger.log" ArchiveLedger.archive_check ArchiveLedger.archive_valid ArchiveLedger.archive_arithmetic
-          python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointTests.log" RealBounded.rows RealBounded.update_eq RealBounded.finite_check
+          python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointTests.log" RealBounded.rows RealBounded.update_eq RealBounded.finite_check RealBounded.complete_cell RealBounded.right_endpoint
           python3 "$gate" "$RUNNER_TEMP/ArchiveRenewalJointCandidate.log" ArchiveRenewalJointCandidate.profile_demand_and_literal_recurrence ArchiveRenewalJointCandidate.profile_max_update
       - name: Retain diagnostics
         if: always()
