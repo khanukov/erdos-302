@@ -60,9 +60,18 @@ jobs:
             lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ExtensionSeedCandidate.log" ExtensionSeedCandidate.seed ExtensionSeedCandidate.scaled_seed ExtensionSeedCandidate.pair_boundary_sound ExtensionSeedCandidate.positive_example
+          # 20 x 15 minutes consumes up to 300 minutes; setup, axiom
+          # checks and assembly also share the 350-minute job deadline.
+          # A deadline is a diagnostic failure, never a successful shard.
           for i in $(seq -w 0 19); do
             f="ExtensionBoundaryShard$i"
-            lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+            printf 'START %s %s deadline=15m\n' "$f" "$(date -u +%FT%TZ)"
+            set +e
+            /usr/bin/time -v timeout --kill-after=10s 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+            statuses=("${PIPESTATUS[@]}")
+            set -e
+            printf 'END %s %s command_status=%s tee_status=%s\n' "$f" "$(date -u +%FT%TZ)" "${statuses[0]}" "${statuses[1]}"
+            test "${statuses[0]}" -eq 0 && test "${statuses[1]}" -eq 0 || exit 1
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/$f.log" "ExtensionFirstArchive.shard$i"
           done
           lean -o ExtensionBoundaryAssembly.olean ExtensionBoundaryAssembly.lean 2>&1 | tee "$RUNNER_TEMP/ExtensionBoundaryAssembly.log"
