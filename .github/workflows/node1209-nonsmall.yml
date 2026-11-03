@@ -63,7 +63,7 @@ jobs:
           test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
           lake exe cache get
           lake build Erdos302Lower.Defs
-          ulimit -v 12582912
+          ulimit -v 33554432
           export LEAN_STACK_SIZE_KB=262144
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p" LEAN_NUM_THREADS=1
           for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag; do
@@ -72,8 +72,12 @@ jobs:
           for f in MixedDag CaseRules CaseDual CaseTree MixedCaseTrimCandidate; do
             timeout 15m lean -o "$f.olean" "$f.lean"
           done
+          mkdir -p "$RUNNER_TEMP/node1209-small-logs"
           for f in Small*.lean; do
-            timeout 15m lean -o "${f%.lean}.olean" "$f" 2>&1 | tee "$RUNNER_TEMP/${f%.lean}.log"
+            printf 'Starting prerequisite %s at %s\n' "$f" "$(date -u +%FT%TZ)"
+            /usr/bin/time -v -o "$RUNNER_TEMP/node1209-small-logs/${f%.lean}.time.log" \
+              timeout 15m lean -o "${f%.lean}.olean" "$f" 2>&1 | tee "$RUNNER_TEMP/${f%.lean}.log" "$RUNNER_TEMP/node1209-small-logs/${f%.lean}.log"
+            printf 'Finished prerequisite %s at %s\n' "$f" "$(date -u +%FT%TZ)"
             mapfile -t declarations < <(python3 -c 'import re,sys; print("\n".join("Node1209Small."+x for x in re.findall(r"^#print axioms (node[0-9]+)$",open(sys.argv[1]).read(),re.M)))' "$f")
             test "${#declarations[@]}" -gt 0
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/${f%.lean}.log" "${declarations[@]}"
@@ -89,3 +93,10 @@ jobs:
             timeout 45m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/$f.log" "$f.check"
           done
+      - name: Upload small prerequisite diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: node1209-nonsmall-prerequisite-logs
+          path: ${{ runner.temp }}/node1209-small-logs/
+          if-no-files-found: warn
