@@ -47,7 +47,7 @@ jobs:
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
           cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
           cp lean/{MixedDag,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate}.lean "$p/"
-          cp audit/node1209-closure/Dense.lean "$p/"
+          cp audit/node1209-closure/Dense*.lean "$p/"
           cp audit/node1209-closure/Small*.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
@@ -65,13 +65,4 @@ jobs:
           for f in MixedDag CaseRules CaseDual CaseTree MixedCaseTrimCandidate; do
             timeout 15m lean -o "$f.olean" "$f.lean"
           done
-          for f in Small*.lean; do
-            timeout 15m lean -o "${f%.lean}.olean" "$f" 2>&1 | tee "$RUNNER_TEMP/${f%.lean}.log"
-            mapfile -t declarations < <(python3 -c 'import re,sys; print("\n".join("Node1209Small."+x for x in re.findall(r"^#print axioms (node[0-9]+)$",open(sys.argv[1]).read(),re.M)))' "$f")
-            test "${#declarations[@]}" -gt 0
-            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/${f%.lean}.log" "${declarations[@]}"
-          done
-          timeout 45m lean -o Dense.olean Dense.lean 2>&1 | tee "$RUNNER_TEMP/Dense.log"
-          mapfile -t declarations < <(python3 -c 'import re; print("\n".join("Node1209Dense."+x for x in re.findall(r"^#print axioms (check[0-9]+)$",open("Dense.lean").read(),re.M)))')
-          test "${#declarations[@]}" -eq 368
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/Dense.log" "${declarations[@]}"
+          bash "$GITHUB_WORKSPACE/independent_bank/build_node1209_dense.sh"

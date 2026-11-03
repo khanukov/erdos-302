@@ -17,9 +17,11 @@ class AssemblyInventory(unittest.TestCase):
                    ('MixedDag', 'CaseRules', 'CaseDual', 'CaseTree',
                     'MixedCaseTrimCandidate', 'Node1209SourceCandidate')]
         ordered += sorted((ROOT / 'audit/node1209-closure').glob('Small*.lean'))
+        ordered += [ROOT / 'audit/node1209-closure/DenseData.lean']
+        ordered += [ROOT / 'audit/node1209-closure' / f'Dense{i:02}.lean' for i in range(23)]
         ordered += [ROOT / 'audit/node1209-closure' / (n + '.lean')
                     for n in ('Dense', 'AssemblyCandidate', 'AssemblyContract', 'AssemblyExactTypeCandidate')]
-        self.assertEqual(len(ordered), 33)
+        self.assertEqual(len(ordered), 57)
         for path in ordered:
             text = path.read_text()
             for dep in re.findall(r'^import ([\w.]+)$', text, re.M):
@@ -38,7 +40,7 @@ class AssemblyInventory(unittest.TestCase):
         self.assertEqual(len(checks), 368)
         branches = [int(n) for n in re.findall(r'^  · exact (?:Node1209Dense\.check|h)(\d+)$', src, re.M)]
         self.assertEqual(branches, list(range(376)))
-        dense = (ROOT / 'audit/node1209-closure/Dense.lean').read_text()
+        dense = (ROOT / 'audit/node1209-closure/DenseData.lean').read_text()
         for i, rule in [(4, 'caseRule'), (5, 'trimRule'), (7, 'caseRule'),
                         (8, 'trimRule'), (14, 'caseRule'), (15, 'trimRule'),
                         (374, 'caseRule'), (375, '.pack')]:
@@ -61,7 +63,8 @@ class AssemblyInventory(unittest.TestCase):
         workflow = (ROOT / '.github/workflows/node1209-assembly-candidate.yml').read_text()
         for text in ('permissions:\n  contents: read', 'persist-credentials: false',
                      'audit/actual-sparse64/closure.py', 'audit/actual-sparse64/build.py',
-                     'Small*.lean,Dense.lean,AssemblyCandidate.lean,AssemblyContract.lean,AssemblyExactTypeCandidate.lean',
+                     'Small*.lean,Dense*.lean,AssemblyCandidate.lean,AssemblyContract.lean,AssemblyExactTypeCandidate.lean',
+                     'build_node1209_dense.sh',
                      'AssemblyCandidate AssemblyContract AssemblyExactTypeCandidate', 'set -euo pipefail',
                      'Node1209AssemblyCandidate.valid Node1209AssemblyCandidate.source_bound Node1209AssemblyCandidate.target_bound'):
             self.assertIn(text, workflow)

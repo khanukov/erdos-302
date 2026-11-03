@@ -11,7 +11,8 @@ class NonSmallTests(unittest.TestCase):
 
     def test_inventory_and_exact_bytes(self):
         closure.verify()
-        self.assertEqual(dense.OUT.read_bytes(), dense.generate(self.doc).encode())
+        for name, text in dense.generate_files(self.doc).items():
+            self.assertEqual((closure.OUT / name).read_bytes(), text.encode())
         ns.check_files(self.files, {p.name: p.read_bytes() for p in ns.OUT.glob('*.lean')})
         self.assertEqual(len(self.files), 7)
 

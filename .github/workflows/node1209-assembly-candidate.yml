@@ -49,7 +49,7 @@ jobs:
           cp -R "$RUNNER_TEMP/source/." "$p/"
           cp audit/actual-sparse64/Contract.lean "$p/Contract.lean"
           cp lean/{MixedDag,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate,Node1209SourceCandidate}.lean "$p/"
-          cp audit/node1209-closure/{Small*.lean,Dense.lean,AssemblyCandidate.lean,AssemblyContract.lean,AssemblyExactTypeCandidate.lean} "$p/"
+          cp audit/node1209-closure/{Small*.lean,Dense*.lean,AssemblyCandidate.lean,AssemblyContract.lean,AssemblyExactTypeCandidate.lean} "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
           git -C .lake/packages/mathlib init
@@ -62,8 +62,12 @@ jobs:
           export LEAN_PATH="$(lake env printenv LEAN_PATH):$p" LEAN_NUM_THREADS=1 LEAN_STACK_SIZE_KB=262144
           ulimit -v 25165824
           python3 "$GITHUB_WORKSPACE/audit/actual-sparse64/build.py" "$p" "$RUNNER_TEMP/logs"
-          for f in MixedDag CaseRules CaseDual CaseTree MixedCaseTrimCandidate Node1209SourceCandidate Small*.lean Dense AssemblyCandidate AssemblyContract AssemblyExactTypeCandidate; do
+          for f in MixedDag CaseRules CaseDual CaseTree MixedCaseTrimCandidate Node1209SourceCandidate; do
             f="${f%.lean}"
+            timeout --kill-after=30s 45m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
+          done
+          bash "$GITHUB_WORKSPACE/independent_bank/build_node1209_dense.sh"
+          for f in AssemblyCandidate AssemblyContract AssemblyExactTypeCandidate; do
             timeout --kill-after=30s 45m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/logs/AssemblyCandidate.log" Node1209AssemblyCandidate.valid Node1209AssemblyCandidate.source_bound Node1209AssemblyCandidate.target_bound
@@ -72,5 +76,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: node1209-assembly-logs
-          path: ${{ runner.temp }}/logs
+          path: |
+            ${{ runner.temp }}/logs
+            ${{ runner.temp }}/Small*.log
+            ${{ runner.temp }}/Dense*.log
           if-no-files-found: warn

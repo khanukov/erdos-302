@@ -5,6 +5,7 @@ Python performs all archive translation and is not part of Lean's kernel proof.
 Only the pinned extraction path is used when writing/checking artifacts.
 """
 import argparse
+import re
 from pathlib import Path
 import node1209_closure as closure
 
@@ -71,13 +72,36 @@ def generate(doc):
     lines.append('end Node1209Dense\n')
     return ''.join(lines)
 
+def generate_files(doc):
+    # Keep the exact node definition and theorem statements emitted by the
+    # original generator, but elaborate each transport in a separate module.
+    text = generate(doc)
+    data, proofs = text.split('theorem check', 1)
+    data = re.sub(r'^import Small\d+\n', '', data, flags=re.M)
+    files = {'DenseData.lean': data + 'end Node1209Dense\n'}
+    matches = re.findall(
+        r'(theorem check\d+ :[^\n]+\n  exact Node1209Small\.node\d+\n#print axioms check\d+\n)',
+        'theorem check' + proofs)
+    if len(matches) != 368:
+        raise ValueError('dense proof inventory')
+    for shard in range(23):
+        files[f'Dense{shard:02}.lean'] = (
+            f'import DenseData\nimport Small{shard:02}\n\nnamespace Node1209Dense\n'
+            'set_option maxRecDepth 16384\nset_option maxHeartbeats 16000000\n'
+            + ''.join(matches[16*shard:16*(shard+1)]) + 'end Node1209Dense\n')
+    files['Dense.lean'] = ''.join(f'import Dense{i:02}\n' for i in range(23))
+    return files
+
 def main():
     p = argparse.ArgumentParser(); p.add_argument('--check', action='store_true'); args = p.parse_args()
-    text = generate(closure.extract())
+    files = generate_files(closure.extract())
     if args.check:
-        if OUT.read_bytes() != text.encode(): raise ValueError('dense bytes mismatch')
+        actual = {p.name for p in closure.OUT.glob('Dense*.lean')}
+        if actual != set(files): raise ValueError('dense file inventory mismatch')
+        for name, text in files.items():
+            if (closure.OUT / name).read_bytes() != text.encode(): raise ValueError('dense bytes mismatch: ' + name)
     else:
-        OUT.write_text(text)
+        for name, text in files.items(): (closure.OUT / name).write_text(text)
     print('PASS dense generation (Python conversion trusted, not kernel provenance)')
 
 if __name__ == '__main__': main()
