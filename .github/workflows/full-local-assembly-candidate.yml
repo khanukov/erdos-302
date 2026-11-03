@@ -63,7 +63,7 @@ jobs:
           cp "$RUNNER_TEMP/local-shards/FullLocalCommon.lean" "$RUNNER_TEMP/local-shards/FullLocal0000.lean" "$p/"
           cd "$p"
           # Per-process virtual-address cap, not an aggregate job-memory cap.
-          ulimit -v 8388608
+          ulimit -v 25165824
           export LEAN_STACK_SIZE_KB=262144
           for f in FullLocalCommon FullLocal0000 FullLocalFirstShardTest; do
             timeout 900 lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
