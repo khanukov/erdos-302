@@ -36,9 +36,10 @@ def snapshot(cg):
              'memory.events', 'memory.events.local', 'memory.stat')}
 
 
-def inventory(roots):
-    """Hash all regular files reachable through the declared input roots."""
+def inventory(roots, optional_roots=()):
+    """Hash reachable files; explicitly record absent optional search roots."""
     entries = {}
+    missing = []
     def visit(path, ancestors):
         stat = path.stat()
         if path.is_dir():
@@ -59,16 +60,27 @@ def inventory(roots):
             raise ValueError(f'unsupported input: {path}')
     for root in roots:
         visit(root, set())
-    return dict(sorted(entries.items()))
+    for root in optional_roots:
+        try:
+            root.stat()
+        except FileNotFoundError:
+            # Do not turn a dangling symlink into an accepted missing root.
+            for part in (root, *root.parents):
+                if part.is_symlink():
+                    part.resolve(strict=True)
+            missing.append(str(root.absolute()))
+            continue
+        visit(root, set())
+    return {'files': dict(sorted(entries.items())), 'missing_roots': sorted(set(missing))}
 
 
-def write_inventory(out, name, roots):
-    data = inventory(roots)
+def write_inventory(out, name, roots, optional_roots=()):
+    data = inventory(roots, optional_roots)
     (out / name).write_text(json.dumps(data, indent=2) + '\n')
     return data
 
 
-def run(cap_kib, command, output, timeout, input_roots=()):
+def run(cap_kib, command, output, timeout, input_roots=(), optional_roots=()):
     out = output / str(cap_kib)
     out.mkdir(parents=True, exist_ok=True)
     cg = cgroup_dir()
@@ -82,7 +94,7 @@ def run(cap_kib, command, output, timeout, input_roots=()):
     def limit():
         os.setsid()
         resource.setrlimit(resource.RLIMIT_AS, (cap_kib * 1024, cap_kib * 1024))
-    inputs_before = write_inventory(out, 'inputs-before.json', input_roots)
+    inputs_before = write_inventory(out, 'inputs-before.json', input_roots, optional_roots)
     started = time.monotonic()
     with (out / 'stdout.log').open('w') as stdout, (out / 'stderr.log').open('w') as stderr:
         proc = subprocess.Popen(command, stdout=stdout, stderr=stderr, preexec_fn=limit)
@@ -109,12 +121,13 @@ def run(cap_kib, command, output, timeout, input_roots=()):
             stop.set()
             thread.join()
     elapsed = time.monotonic() - started
-    inputs_after = write_inventory(out, 'inputs-after.json', input_roots)
+    inputs_after = write_inventory(out, 'inputs-after.json', input_roots, optional_roots)
     report = {'cap_kib': cap_kib, 'cap_kind': 'per-process RLIMIT_AS',
               'command': command, 'returncode': code, 'timed_out': timed_out,
               'elapsed_seconds': elapsed, 'max_rss_kib': usage.ru_maxrss,
               'inputs_unchanged': inputs_before == inputs_after,
               'input_roots': [str(p) for p in input_roots],
+              'allow_missing_input_roots': [str(p) for p in optional_roots],
               'cgroup_path': str(cg) if cg else None, 'cgroup_before': before,
               'cgroup_after': snapshot(cg), 'cgroup_samples': samples,
               'note': 'cgroup metrics are shared aggregate/lifetime values; wait4 max RSS is the direct command and reaped children, not a concurrent process-tree sum. Input manifests cover declared roots, not arbitrary system or dynamically opened files.'}
@@ -128,6 +141,8 @@ def main():
     parser.add_argument('--timeout', type=int, default=900)
     parser.add_argument('--input', type=Path, action='append', required=True,
                         help='input file or directory to hash before and after each run; repeatable')
+    parser.add_argument('--allow-missing-input', type=Path, action='append', default=[],
+                        help='search root which may be absent; presence and contents are still inventoried')
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command
@@ -137,15 +152,16 @@ def main():
         parser.error('a command and positive timeout are required')
     args.output.mkdir(parents=True, exist_ok=True)
     roots = [p.absolute() for p in args.input]
+    optional_roots = [p.absolute() for p in args.allow_missing_input]
     output = args.output.resolve()
-    for root in roots:
-        resolved = root.resolve(strict=True)
+    for root in roots + optional_roots:
+        resolved = root.resolve(strict=root in roots)
         if resolved == output or resolved in output.parents:
             parser.error('output must be outside input roots')
     reports = []
     for cap in (8388608, 25165824):
         print(f'Running {command!r} with RLIMIT_AS={cap} KiB', flush=True)
-        reports.append(run(cap, command, output, args.timeout, roots))
+        reports.append(run(cap, command, output, args.timeout, roots, optional_roots))
     first = json.loads((output / str(8388608) / 'inputs-before.json').read_text())
     second = json.loads((output / str(25165824) / 'inputs-before.json').read_text())
     identical = first == second and all(r['inputs_unchanged'] for r in reports)

@@ -141,7 +141,7 @@ jobs:
           inputs=(--input "$p" --input "$(lean --print-prefix)")
           IFS=: read -r -a lean_paths <<< "$LEAN_PATH"
           for dir in "${lean_paths[@]}"; do
-            test -z "$dir" || inputs+=(--input "$dir")
+            test -z "$dir" || inputs+=(--allow-missing-input "$dir")
           done
           python3 "$GITHUB_WORKSPACE/audit/full-reflective/cap_probe.py" \
             --output "$RUNNER_TEMP/cap-comparison" --timeout 900 "${inputs[@]}" -- \
