@@ -5,6 +5,7 @@ This literal is not itself a kernel proof of archive correspondence. -/
 namespace ExtensionFirstArchive
 open Finset ExtensionSeedCandidate
 
+set_option maxRecDepth 100000 in
 def source : Finset ℕ :=
   {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
    14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
@@ -83,6 +84,7 @@ def source : Finset ℕ :=
    1863, 1870, 1872, 1875, 1876, 1880, 1881, 1886, 1887, 1888, 1890, 1892,
    1900}
 
+set_option maxRecDepth 100000 in
 def target : Finset ℕ :=
   {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
    14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,

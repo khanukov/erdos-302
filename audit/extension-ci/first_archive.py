@@ -42,9 +42,11 @@ This literal is not itself a kernel proof of archive correspondence. -/
 namespace ExtensionFirstArchive
 open Finset ExtensionSeedCandidate
 
+set_option maxRecDepth 100000 in
 def source : Finset ℕ :=
   ''' + literal(s) + '''
 
+set_option maxRecDepth 100000 in
 def target : Finset ℕ :=
   ''' + literal(t) + '''
 

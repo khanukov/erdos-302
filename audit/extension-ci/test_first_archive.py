@@ -1,5 +1,6 @@
 import importlib.util
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 P = Path(__file__).with_name('first_archive.py')
@@ -8,6 +9,21 @@ m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 
 class FirstArchiveTests(unittest.TestCase):
+    def test_large_literals_have_declaration_scoped_recursion_limit(self):
+        s, t, u = list(range(1, 902)), list(range(1, 838)), [901]
+        rows = [{'source_node': 1209, 'prime_level': 15, 'delete': u}]
+        with patch.object(m, 'load_inputs', return_value=(None, None, rows, None)), \
+             patch.object(m, 'verify', return_value={1209: (s, 258)}), \
+             patch.object(m, 'extensions', return_value=[(t, 242)] * 515), \
+             patch.object(m, 'validate'):
+            outputs = (m.generate(), m.generate_shards()['ExtensionBoundaryData'])
+        for text in outputs:
+            for name in ('source', 'target'):
+                prefix = f'set_option maxRecDepth 100000 in\ndef {name} : Finset ℕ :='
+                self.assertIn(prefix, text)
+                with self.assertRaises(ValueError):
+                    m.check_bytes(text.replace(prefix, prefix.replace('100000', '1000'), 1).encode(), text.encode())
+
     def test_shards_cover_source_coordinate_without_gaps(self):
         shards = m.shard_intervals()
         self.assertEqual(shards[0][0], 0)
