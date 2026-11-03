@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       max-parallel: 8
       matrix:
-        batch: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
+        batch: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63a, 63b]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -32,6 +32,8 @@ jobs:
           python3 -B -O independent_bank/node1209_pack_all.py --check
           python3 -B -m unittest discover -s independent_bank -p test_node1209_pack_all.py
           python3 -B -O -m unittest discover -s independent_bank -p test_node1209_pack_all.py
+          python3 -B -m unittest discover -s independent_bank -p test_node1209_row63_split.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_node1209_row63_split.py
           python3 -B independent_bank/node1209_pack_pilot.py --check
           python3 -B -O independent_bank/node1209_pack_pilot.py --check
           python3 -B -m unittest discover -s independent_bank -p test_node1209_pack_pilot.py
@@ -71,12 +73,23 @@ jobs:
           for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag MixedDag; do
             lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
-          [[ "$BATCH" =~ ^([0-9]|[1-5][0-9]|6[0-3])$ ]] || exit 1
-          printf -v shard 'Node1209Rows%03d' "$BATCH"
-          cp "$GITHUB_WORKSPACE/lean/node1209-pack-all/$shard.lean" .
+          case "$BATCH" in
+            63a) shard=Node1209Rows063; first=504; last=509; part=504-508 ;;
+            63b) shard=Node1209Rows063; first=509; last=510; part=509 ;;
+            *) [[ "$BATCH" =~ ^([0-9]|[1-5][0-9]|6[0-2])$ ]] || exit 1
+               printf -v shard 'Node1209Rows%03d' "$BATCH"
+               first=$((BATCH*8)); last=$((first+8)); part= ;;
+          esac
+          if [[ -n "$part" ]]; then
+            python3 -B "$GITHUB_WORKSPACE/independent_bank/node1209_row63_split.py" \
+              "$GITHUB_WORKSPACE/lean/node1209-pack-all/$shard.lean" "$part" "$shard.lean"
+          else
+            cp "$GITHUB_WORKSPACE/lean/node1209-pack-all/$shard.lean" .
+          fi
+          echo "Checking original occurrences $first through $((last-1)) in $shard"
           lean -o "$shard.olean" "$shard.lean" 2>&1 | tee "$RUNNER_TEMP/$shard.log"
           names=()
-          for ((i=BATCH*8; i<BATCH*8+8 && i<510; i++)); do
+          for ((i=first; i<last; i++)); do
             names+=("$shard.check$i" "$shard.bound$i")
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/$shard.log" "${names[@]}"
