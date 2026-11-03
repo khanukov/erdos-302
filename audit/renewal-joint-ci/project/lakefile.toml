@@ -1,0 +1,7 @@
+name = "renewaljoint"
+version = "0.1.0"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/teorth/mathlib4.git"
+rev = "da1f94df976c7cd38117281c57d6ee3046c8d104"
