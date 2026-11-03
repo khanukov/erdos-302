@@ -79,7 +79,7 @@ class Prefix256Test(unittest.TestCase):
         sound = self.files['ActualPrefix256Sound.lean']
         self.assertIn('set_option maxHeartbeats 4000000 in\n'
                       'theorem checked : ∀ i < 256, MixedDag.Check extraCheck nodes i := by\n', sound)
-        self.assertEqual(sound.count('set_option maxHeartbeats'), 1)
+        self.assertEqual(sound.count('set_option maxHeartbeats 4000000 in'), 17)
         self.assertIn('\ntheorem sound : ∀ i < 256, Extended.Bound', sound)
 
     def test_each_closed_check_and_aggregate(self):
@@ -90,7 +90,16 @@ class Prefix256Test(unittest.TestCase):
         sound = self.files['ActualPrefix256Sound.lean']
         self.assertIn('∀ i < 256, MixedDag.Check extraCheck nodes i', sound)
         self.assertIn('∀ i < 256, Extended.Bound (nodes i).support (nodes i).demand', sound)
-        self.assertEqual(re.findall(r'exact check(\d+)', sound), list(map(str, range(256))))
+        self.assertIn('ShardAggregation.prefix_sound', sound)
+        for shard, (start, end) in enumerate(shards.RANGES):
+            match = re.search(rf'theorem segment{shard} :.*?(?=^#print axioms)', sound, re.M | re.S)
+            self.assertIsNotNone(match)
+            self.assertIn(f'({start}) ({end})', match.group())
+            self.assertEqual(re.findall(r'exact check(\d+)', match.group()),
+                             list(map(str, range(start, end))))
+        chain = sound.split('theorem checked :', 1)[1].split('theorem sound :', 1)[0]
+        self.assertEqual(list(map(int, re.findall(r'\bsegment(\d+)\b', chain))), list(range(16)))
+        self.assertIn('ShardAggregation.Chain.empty 0', chain)
         self.assertIn('MixedCaseTrimCandidate.sound nodes 256 checked', sound)
 
     def test_reject_mutations_to_data_imports_hypotheses_and_checks(self):

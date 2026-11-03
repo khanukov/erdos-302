@@ -54,15 +54,25 @@ def generate():
         parts.extend(f'#print axioms check{i}\n' for i in range(start, end))
         parts.append('end ActualPrefix256\n')
         result[f'ActualPrefix256Checks{shard}.lean'] = ''.join(parts)
-    lines = [*(f'import ActualPrefix256Checks{i}\n' for i in range(len(RANGES))),
-             '\nnamespace ActualPrefix256\nopen ActualPrefix256Data MixedCaseTrimCandidate\n',
-             'set_option maxHeartbeats 4000000 in\n',
+    lines = ['import ShardAggregation\n',
+             *(f'import ActualPrefix256Checks{i}\n' for i in range(len(RANGES))),
+             '\nnamespace ActualPrefix256\nopen ActualPrefix256Data MixedCaseTrimCandidate\n']
+    for shard, (start, end) in enumerate(RANGES):
+        lines.extend(['set_option maxHeartbeats 4000000 in\n',
+                      f'theorem segment{shard} : ShardAggregation.Segment '
+                      f'(MixedDag.Check extraCheck nodes) ({start}) ({end}) := by\n',
+                      '  intro i lo hi\n  interval_cases i <;> first | ',
+                      ' | '.join(f'exact check{i}' for i in range(start, end)), '\n',
+                      f'#print axioms segment{shard}\n'])
+    chain = 'ShardAggregation.Chain.empty 0'
+    for shard in range(len(RANGES)):
+        chain = f'ShardAggregation.Chain.append ({chain}) segment{shard}'
+    lines.extend(['set_option maxHeartbeats 4000000 in\n',
              'theorem checked : ∀ i < 256, MixedDag.Check extraCheck nodes i := by\n',
-             '  intro i hi\n  interval_cases i <;> first | ',
-             ' | '.join(f'exact check{i}' for i in range(256)), '\n',
+             f'  exact ShardAggregation.prefix_sound ({chain})\n',
              'theorem sound : ∀ i < 256, Extended.Bound (nodes i).support (nodes i).demand :=\n',
              '  MixedCaseTrimCandidate.sound nodes 256 checked\n',
-             '#print axioms checked\n#print axioms sound\nend ActualPrefix256\n']
+             '#print axioms checked\n#print axioms sound\nend ActualPrefix256\n'])
     result['ActualPrefix256Sound.lean'] = ''.join(lines)
     return result
 

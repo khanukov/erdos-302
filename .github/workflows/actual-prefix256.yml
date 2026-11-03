@@ -137,4 +137,6 @@ jobs:
             for i in $(seq "$((shard * 16))" "$((shard * 16 + 15))"); do declarations+=("ActualPrefix256.check$i"); done
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix256Checks$shard.log" "${declarations[@]}"
           done
-          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix256Sound.log" ActualPrefix256.checked ActualPrefix256.sound
+          segments=()
+          for shard in $(seq 0 15); do segments+=("ActualPrefix256.segment$shard"); done
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/ActualPrefix256Sound.log" "${segments[@]}" ActualPrefix256.checked ActualPrefix256.sound
