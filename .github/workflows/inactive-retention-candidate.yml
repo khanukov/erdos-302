@@ -1,0 +1,87 @@
+name: Inactive retention checker candidate (experimental)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      LEAN_NUM_THREADS: '1'
+      LEAN_STACK_SIZE_KB: '262144'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify candidate sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/logs"
+          test "$(cat lean-toolchain)" = 'leanprover/lean4:v4.33.0-rc1'
+          printf '%s  %s\n' 9ff7d61b718627a93a2cc15ca0fc2204af3b8722c58d2df7804729a1237ee3a8 lake-manifest.json | sha256sum -c -
+          sha256sum lake-manifest.json > "$RUNNER_TEMP/manifest.sha256"
+          python3 audit/reciprocal-bridge/check_inactive_candidate.py
+          sha256sum audit/reciprocal-bridge/InactiveRetentionCandidate.lean > "$RUNNER_TEMP/logs/source.sha256"
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Mathlib cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          # Cache get can succeed with missing entries, including Mathlib.olean.
+          # Build the umbrella module and any uncached imports from the pinned sources;
+          # unlike building the whole library this requests only its olean facet.
+          lake build '@mathlib/+Mathlib:olean'
+          test -f .lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean
+          printf 'import Mathlib\n' > "$RUNNER_TEMP/check-mathlib-import.lean"
+          lake env lean "$RUNNER_TEMP/check-mathlib-import.lean"
+          sha256sum -c "$RUNNER_TEMP/manifest.sha256"
+          python3 audit/full-reflective/verify_dependencies.py "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/logs/dependency-revisions.txt"
+      - name: Build and gate existing ordered-edge bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 25165824
+          lake build '+UpperBridge:olean'
+          lake env lean -j 1 lean/UpperBridge.lean 2>&1 | tee "$RUNNER_TEMP/logs/upper-bridge.log"
+          python3 audit/reciprocal-bridge/check_axioms.py "$RUNNER_TEMP/logs/upper-bridge.log" \
+            UpperBridge.reciprocal_iff_product
+      - name: Compile checker and gate axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 25165824
+          /usr/bin/time -v lake env lean -j 1 audit/reciprocal-bridge/InactiveRetentionCandidate.lean 2>&1 | tee "$RUNNER_TEMP/logs/checker.log"
+          python3 audit/reciprocal-bridge/check_axioms.py "$RUNNER_TEMP/logs/checker.log" \
+            InactiveRetention.recovery_a InactiveRetention.recovery_bc \
+            InactiveRetention.check_iff_retained InactiveRetention.sample_check \
+            InactiveRetention.sample_positive InactiveRetention.sample_retained \
+            InactiveRetention.sample_mutation InactiveRetention.sample_edge \
+            InactiveRetention.edge_iff_ordered InactiveRetention.retained_iff_rational \
+            InactiveRetention.check_iff_rational_retained InactiveRetention.equal_denominator_counterexample \
+            InactiveRetention.sample_mutation_b InactiveRetention.sample_mutation_c \
+            InactiveRetention.truncated_recovery_a InactiveRetention.truncated_recovery_bc \
+            InactiveRetention.zero_not_positive InactiveRetention.zero_reciprocal_counterexample
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inactive-retention-${{ github.sha }}
+          path: ${{ runner.temp }}/logs/
+          if-no-files-found: warn
+          retention-days: 14
