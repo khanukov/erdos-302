@@ -37,6 +37,7 @@ def inventory():
     for stage in ('Coverage', 'Checked', 'All'):
         text = generated[gen.OUT / (stage + '.lean')]
         modules['ActualSparse64.' + stage] = [line.split()[1] for line in text.splitlines() if line.startswith('import ')]
+    modules['FirstExtensionBridge'] = ['ActualSparse64.All']
     return modules, vertices
 
 def stage(root, dest):
@@ -66,7 +67,7 @@ def stage(root, dest):
         reached.add(name)
         for dep in modules[name]:
             if dep in modules: visit(dep)
-    visit('ActualSparse64.All')
+    visit('FirstExtensionBridge')
     if reached != set(modules): raise ValueError('disconnected inventory')
     dest.mkdir(parents=True, exist_ok=True)
     if any(dest.iterdir()): raise ValueError('destination must be empty')

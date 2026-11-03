@@ -249,3 +249,4 @@ OccurrencePrimeBridgeCandidate
 OccurrencePrimeBridgeCandidateTests
 JointIndependenceCandidate
 JointIndependenceCandidateTests
+FirstExtensionBridge

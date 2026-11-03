@@ -26,7 +26,8 @@ class ClosureTests(unittest.TestCase):
         self.tmp.cleanup()
     def test_exact(self):
         modules, vertices = closure.stage(self.root, self.dest)
-        self.assertEqual(len(modules), 91)
+        self.assertEqual(len(modules), 92)
+        self.assertEqual(modules['FirstExtensionBridge'], ['ActualSparse64.All'])
         self.assertEqual(len(vertices), 64)
     def test_missing_import(self):
         path = self.root / 'lean/ActualSparse64/Coverage.lean'

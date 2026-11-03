@@ -43,6 +43,9 @@ for name in modules:
     if name.startswith('ActualSparse64.Vertex'):
         n = name.removeprefix('ActualSparse64.Vertex')
         gate(log, f'ActualSparse64.pair{n}_full', f'ActualSparse64.shard{n}_full')
+    if name == 'FirstExtensionBridge':
+        gate(log, 'FirstExtensionBridge.target_bound', 'FirstExtensionBridge.target_restrict',
+             'FirstExtensionBridge.target_of_checked_node')
     stage_gates = {'ActualSparse64.Outside': 'outside_eq', 'ActualSparse64.Coverage': 'all_shards',
                    'ActualSparse64.SourceEq': 'source_eq', 'ActualSparse64.TargetEq': 'target_eq',
                    'ActualSparse64.DeleteEq': 'delete_eq', 'ActualSparse64.All': 'boundary'}
