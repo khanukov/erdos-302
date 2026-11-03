@@ -1,0 +1,45 @@
+name: Distinct prime factor candidate
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'lean/DistinctPrimeFactorCandidate.lean'
+      - 'audit/mathlib-bridge-ci/**'
+      - '.github/workflows/distinct-prime-factor-candidate.yml'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Check proof and allowed axioms
+        run: |
+          set -euo pipefail
+          f=lean/DistinctPrimeFactorCandidate.lean
+          if grep -nE '\b(sorry|admit|native_decide)\b' "$f"; then exit 1; fi
+          p="$RUNNER_TEMP/factor-project"
+          mkdir -p "$p/.lake/packages/mathlib"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp "$f" "$p/"
+          git -C "$p/.lake/packages/mathlib" init
+          git -C "$p/.lake/packages/mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$p/.lake/packages/mathlib" fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C "$p/.lake/packages/mathlib" checkout --detach FETCH_HEAD
+          test "$(git -C "$p/.lake/packages/mathlib" rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          cd "$p"
+          lake exe cache get Mathlib.Data.Nat.Factorization.Basic Mathlib.Tactic
+          lake env lean DistinctPrimeFactorCandidate.lean 2>&1 | tee "$RUNNER_TEMP/factor.log"
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/factor.log" DistinctPrimeFactorCandidate.product_ne_zero DistinctPrimeFactorCandidate.factorization_absent DistinctPrimeFactorCandidate.product_injective

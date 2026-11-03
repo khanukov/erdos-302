@@ -242,3 +242,4 @@ OccurrenceUnique
 OccurrenceUniqueTests
 OccurrenceFactor
 OccurrenceFactorTests
+DistinctPrimeFactorCandidate
