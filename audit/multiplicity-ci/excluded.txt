@@ -240,3 +240,5 @@ OccurrencePath
 OccurrencePathTests
 OccurrenceUnique
 OccurrenceUniqueTests
+OccurrenceFactor
+OccurrenceFactorTests

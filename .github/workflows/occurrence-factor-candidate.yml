@@ -1,0 +1,42 @@
+name: Occurrence factor path candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install digest-pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile isolated source and gate axioms
+        run: |
+          set -euo pipefail
+          for f in lean/OccurrenceIndex.lean lean/OccurrencePath.lean lean/OccurrencePathTests.lean lean/OccurrenceUnique.lean lean/OccurrenceUniqueTests.lean lean/OccurrenceFactor.lean lean/OccurrenceFactorTests.lean; do
+            if grep -nE '\b(sorry|admit|native_decide)\b' "$f"; then exit 1; fi
+          done
+          mkdir -p "$RUNNER_TEMP/path-build"
+          cp lean/Occurrence{Index,Path,PathTests,Unique,UniqueTests,Factor,FactorTests}.lean "$RUNNER_TEMP/path-build/"
+          cd "$RUNNER_TEMP/path-build"
+          export LEAN_PATH="$PWD"
+          lean -o OccurrenceIndex.olean OccurrenceIndex.lean | tee index.log
+          lean -o OccurrencePath.olean OccurrencePath.lean | tee path.log
+          lean OccurrencePathTests.lean
+          lean -o OccurrenceUnique.olean OccurrenceUnique.lean | tee unique.log
+          lean OccurrenceUniqueTests.lean
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" unique.log RenewalOccurrenceIndex.occurrences_nodup RenewalOccurrenceIndex.path_unique_position
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" index.log RenewalOccurrenceIndex.index_expansion
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" path.log RenewalOccurrenceIndex.path_mem RenewalOccurrenceIndex.mem_path RenewalOccurrenceIndex.occurrence_position_path RenewalOccurrenceIndex.path_shape
+
+          lean -o OccurrenceFactor.olean OccurrenceFactor.lean | tee factor.log
+          lean OccurrenceFactorTests.lean
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" factor.log RenewalOccurrenceIndex.path_arg_factor RenewalOccurrenceIndex.position_arg_factor RenewalOccurrenceIndex.path_encoding_unique_position
