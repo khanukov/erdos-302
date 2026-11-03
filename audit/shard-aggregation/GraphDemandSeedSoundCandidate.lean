@@ -10,7 +10,7 @@ namespace GraphDemandSeedSoundCandidate
 open Finset UpperBridge
 open scoped Classical
 
-noncomputable def prefix (S Q : Finset ℕ) (n : ℕ) : Finset ℕ :=
+noncomputable def smoothPrefix (S Q : Finset ℕ) (n : ℕ) : Finset ℕ :=
   (S.filter (UpperProjection.Smooth Q)).filter (fun x => x ≤ n)
 
 noncomputable def outside (S Q : Finset ℕ) : Finset ℕ :=
@@ -21,7 +21,7 @@ noncomputable def nodeSeed (nodes : ℕ → ArchiveDag.Node) (Q : Finset ℕ)
   let S := (nodes i).support
   if n ∈ S ∧ UpperProjection.Smooth Q n then
     (nodes i).demand - (outside S Q).card -
-      ((S.filter (UpperProjection.Smooth Q)) \ prefix S Q n).card
+      ((S.filter (UpperProjection.Smooth Q)) \ smoothPrefix S Q n).card
   else 0
 
 noncomputable def seedMax (nodes : ℕ → ArchiveDag.Node) (count : ℕ)
@@ -37,15 +37,15 @@ theorem checked_node_le_cover (nodes : ℕ → ArchiveDag.Node) (count i : ℕ)
     (cover : OrderedCover W C) : nodeSeed nodes Q n i ≤ C.card := by
   classical
   by_cases gate : n ∈ (nodes i).support ∧ UpperProjection.Smooth Q n
-  · have hp : prefix (nodes i).support Q n ⊆ W := by
+  · have hp : smoothPrefix (nodes i).support Q n ⊆ W := by
       intro x hx
-      simp only [prefix, Finset.mem_filter] at hx
+      simp only [smoothPrefix, Finset.mem_filter] at hx
       exact embed x hx.1.2 hx.2
     have hb := BankProfile.checked_node_seed nodes count i valid hi Q n
-    have hc : OrderedCover (prefix (nodes i).support Q n) C :=
+    have hc : OrderedCover (smoothPrefix (nodes i).support Q n) C :=
       Extended.cover_mono hp cover
     have h := hb C hc
-    simpa [nodeSeed, gate, prefix, outside] using h
+    simpa [nodeSeed, gate, smoothPrefix, outside] using h
   · simp [nodeSeed, gate]
 
 /-- A finite max is sound for every cover of the ambient smooth prefix. -/
@@ -83,13 +83,13 @@ theorem first_cell_positive :
     · rintro (rfl | rfl | rfl) <;> simp [h2, h3, h6]
   have hu : outside ({2, 3, 6} : Finset ℕ) {2, 3} = ∅ := by
     ext x
-    simp only [outside, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, Finset.not_mem_empty, iff_false]
+    simp only [outside, Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, Finset.mem_empty, iff_false]
     rintro ⟨(rfl | rfl | rfl), hn, _⟩
     · exact hn h2
     · exact hn h3
     · exact hn h6
   have hp : ({2, 3, 6} : Finset ℕ).filter (fun x => x ≤ 6) = {2, 3, 6} := by decide
-  simp [seedMax, nodeSeed, ArchiveSeedNode0.nodes, h6, hs, hu, prefix, hp]
+  simp [seedMax, nodeSeed, ArchiveSeedNode0.nodes, h6, hs, hu, smoothPrefix, hp]
 
 /-- Concrete checked archived node, generic ambient set: no demand or cover
 bound is assumed.  This is the nonzero graph-demand claim at n = 6. -/
