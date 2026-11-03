@@ -56,6 +56,13 @@ class PilotTests(unittest.TestCase):
         cells = [row.copy() for row in self.cells]; cells[0][1] += 1
         self.assertFalse(independently_check(self.values, cells, 2))
 
+    def test_equation_decidable_before_recurrence(self):
+        text = gen.render(PATH)
+        declaration = 'instance (n : Nat) : Decidable (equation n)'
+        self.assertIn(declaration, text)
+        self.assertLess(text.index(declaration), text.index('theorem recurrence :'))
+        self.assertIn('theorem recurrence : ∀ n ∈ Finset.Icc 1 80, equation n := by', text)
+
     def test_complete_generated_file(self):
         self.assertEqual(gen.OUTPUT.read_text(), gen.render(PATH))
         self.assertNotEqual(gen.OUTPUT.read_text().replace('import ArchiveLedger', 'import Std'), gen.render(PATH))

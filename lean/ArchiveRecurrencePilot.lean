@@ -21,6 +21,10 @@ def correction (n : Nat) : Nat :=
 def equation (n : Nat) : Prop :=
   current.getD n 0 = parent.getD n 0 + current.getD (n / level.prime) 0 + correction n
 
+instance (n : Nat) : Decidable (equation n) := by
+  unfold equation
+  infer_instance
+
 /-- Includes all indices used by quotient lookups, excluding default padding. -/
 theorem input_shape : parent.length = 81 ∧ current.length = 81 ∧
     level.prime = 2 ∧ current.getD 0 0 = 0 ∧ parent.getD 0 0 = 0 := by

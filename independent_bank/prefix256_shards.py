@@ -56,6 +56,7 @@ def generate():
         result[f'ActualPrefix256Checks{shard}.lean'] = ''.join(parts)
     lines = [*(f'import ActualPrefix256Checks{i}\n' for i in range(len(RANGES))),
              '\nnamespace ActualPrefix256\nopen ActualPrefix256Data MixedCaseTrimCandidate\n',
+             'set_option maxHeartbeats 4000000 in\n',
              'theorem checked : ∀ i < 256, MixedDag.Check extraCheck nodes i := by\n',
              '  intro i hi\n  interval_cases i <;> first | ',
              ' | '.join(f'exact check{i}' for i in range(256)), '\n',

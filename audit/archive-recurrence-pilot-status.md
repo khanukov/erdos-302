@@ -1,5 +1,19 @@
 # Bounded recurrence pilot candidate
 
+The hosted pilot at `655a7ad` failed during elaboration: Lean could not
+synthesize decidability for the bounded recurrence proposition. The candidate
+now declares a computational `Decidable (equation n)` instance before the
+unchanged, closed recurrence theorem. This addresses the missing pointwise
+instance; it does **not** establish that the full finite proof executes within
+CI's resource limits or even that the exact Mathlib bounded quantifier now
+elaborates. Those remain to be checked in a hosted build and axiom gate.
+
+A scoped local Lean 4.33.0-rc1 probe used the generated definitions and all 52
+report cells in a stand-in ledger, replacing the Finset theorem with a Boolean
+check of 80 inputs. It compiled with `decide +kernel`; `#print axioms` reported
+`propext` for both that check and `input_shape`. This checks computation in the
+stand-in, not the actual imported ledger or the stated Finset theorem.
+
 At base 0f2567a, this candidate states a closed, hypothesis-free equation on
 `Finset.Icc 1 80` at zero-based level 1 (prime 2). Its correction uses the
 actual `ArchiveLedger.ledger` level and all its cell occurrences, not a

@@ -75,6 +75,13 @@ class Prefix256Test(unittest.TestCase):
             for ref in node.get('references', []) + node.get('rows', []):
                 self.assertLess(ref['source'], node['id'])
 
+    def test_aggregate_heartbeat_is_finite_and_scoped_to_checked(self):
+        sound = self.files['ActualPrefix256Sound.lean']
+        self.assertIn('set_option maxHeartbeats 4000000 in\n'
+                      'theorem checked : ∀ i < 256, MixedDag.Check extraCheck nodes i := by\n', sound)
+        self.assertEqual(sound.count('set_option maxHeartbeats'), 1)
+        self.assertIn('\ntheorem sound : ∀ i < 256, Extended.Bound', sound)
+
     def test_each_closed_check_and_aggregate(self):
         for shard, (start, end) in enumerate(shards.RANGES):
             text = self.files[f'ActualPrefix256Checks{shard}.lean']
