@@ -1,0 +1,79 @@
+name: Four edge representative projection (experimental)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      LEAN_NUM_THREADS: '1'
+      LEAN_STACK_SIZE_KB: '262144'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify source projection and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/logs"
+          test "$(cat lean-toolchain)" = 'leanprover/lean4:v4.33.0-rc1'
+          printf '%s  %s\n' 9ff7d61b718627a93a2cc15ca0fc2204af3b8722c58d2df7804729a1237ee3a8 lake-manifest.json | sha256sum -c -
+          sha256sum lake-manifest.json > "$RUNNER_TEMP/manifest.sha256"
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_four_edge*.py' -v
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_four_probe.py' -v
+          python3 audit/reciprocal-bridge/prepare_four_probe.py "$RUNNER_TEMP/probe"
+          sha256sum "$RUNNER_TEMP/probe"/*.lean | tee "$RUNNER_TEMP/logs/probe-source-sha256.txt"
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Mathlib cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          # Cache get can succeed with missing entries, including Mathlib.olean.
+          # Build the umbrella module and any uncached imports from the pinned sources;
+          # unlike building the whole library this requests only its olean facet.
+          lake build '@mathlib/+Mathlib:olean'
+          test -f .lake/packages/mathlib/.lake/build/lib/lean/Mathlib.olean
+          printf 'import Mathlib\n' > "$RUNNER_TEMP/check-mathlib-import.lean"
+          lake env lean "$RUNNER_TEMP/check-mathlib-import.lean"
+          sha256sum -c "$RUNNER_TEMP/manifest.sha256"
+          python3 audit/full-reflective/verify_dependencies.py "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/logs/dependency-revisions.txt"
+      - name: Compile projected literals and representative shard
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -v 25165824
+          python3 .github/kitamura/resource_monitor.py > "$RUNNER_TEMP/logs/resources.jsonl" &
+          monitor=$!
+          trap 'kill "$monitor" 2>/dev/null || :; wait "$monitor" 2>/dev/null || :' EXIT
+          lake env bash -euo pipefail -c '
+            cd "$RUNNER_TEMP/probe"
+            export LEAN_PATH="$PWD:$LEAN_PATH"
+            /usr/bin/time -v lean -j 1 -o FourProbeLiterals.olean FourProbeLiterals.lean 2>&1 | tee "$RUNNER_TEMP/logs/literals.log"
+            /usr/bin/time -v lean -j 1 -o FourProbe.olean FourProbe.lean 2>&1 | tee "$RUNNER_TEMP/logs/probe.log"
+          '
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/logs/probe.log" FourExternal.edges_1097_129_132
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: four-edge-projection-${{ github.sha }}
+          path: ${{ runner.temp }}/logs/
+          if-no-files-found: warn
+          retention-days: 14
