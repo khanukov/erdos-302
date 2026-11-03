@@ -61,7 +61,7 @@ class LocalShardTests(unittest.TestCase):
     def test_scoped_depth_preserves_exact_generated_bytes(self):
         # Only the nodes declaration gets the finite resource option. Every
         # existing arm, default, namespace, and import must remain byte-identical.
-        marker = 'set_option maxRecDepth 100000 in\ndef nodes : ℕ → MixedDag.Node FullLocalShards.Payload\n'
+        marker = 'set_option maxRecDepth 100000 in\nset_option maxHeartbeats 4000000 in\ndef nodes : ℕ → MixedDag.Node FullLocalShards.Payload\n'
         original_lines = self.rendered.split('def nodes : ℕ → MixedDag.Node Payload\n', 1)[1].split('\n  | _ => ⟨∅, 0, .small⟩\n', 1)[0].splitlines()
         for shard in self.manifest['shards']:
             text = self.files[shard['file']]
@@ -79,7 +79,7 @@ class LocalShardTests(unittest.TestCase):
                         'def nodes : ℕ → MixedDag.Node FullLocalShards.Payload\n' +
                         '\n'.join(arms[i] for i in sorted(arms)) +
                         f'\n  | _ => ⟨∅, 0, .small⟩\nend FullLocalShards.S{serial}\n')
-            self.assertEqual(text.replace('set_option maxRecDepth 100000 in\n', '', 1).encode(), expected.encode())
+            self.assertEqual(text.replace('set_option maxRecDepth 100000 in\nset_option maxHeartbeats 4000000 in\n', '', 1).encode(), expected.encode())
 
     def test_disk_inventory_fails_closed(self):
         files = {'FullLocalCommon.lean': 'common', 'FullLocal0000.lean': 'shard'}

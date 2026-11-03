@@ -58,10 +58,12 @@ end FullLocalShards
         name = f'FullLocal{serial:04}.lean'
         # Shard 0's node 1091 has a deeply nested literal (592 support entries
         # plus a large rule); default elaboration depth fails at its constructor.
-        # Scope the finite budget to this declaration, not downstream proofs.
+        # The LCNF compiler also exceeds the default heartbeat limit on shard 0.
+        # Bound both resources only for this declaration, not downstream proofs.
         contents = ('import FullLocalCommon\n\nnamespace FullLocalShards.S' + str(serial) +
                     '\n/- Candidate data only; predecessor rule fields are synthetic. -/\n'
                     'set_option maxRecDepth 100000 in\n'
+                    'set_option maxHeartbeats 4000000 in\n'
                     'def nodes : ℕ → MixedDag.Node FullLocalShards.Payload\n' +
                     '\n'.join(arms[i] for i in sorted(arms)) +
                     '\n  | _ => ⟨∅, 0, .small⟩\nend FullLocalShards.S' + str(serial) + '\n')
