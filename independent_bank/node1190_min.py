@@ -74,7 +74,9 @@ def files(bank):
             end = start + 1
         else:
             end = start
-            while end < min(start + 16, len(doc['nodes'])) and doc['nodes'][end]['raw_node']['t'] == 'small':
+            # CI exhausted memory on [272,288); bound only that failing interval.
+            limit = 4 if 272 <= start < 288 else 16
+            while end < min(start + limit, len(doc['nodes'])) and doc['nodes'][end]['raw_node']['t'] == 'small':
                 end += 1
         ranges.append((start, end))
         start = end

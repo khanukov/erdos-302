@@ -23,7 +23,10 @@ import Shard208_224
 import Shard224_240
 import Shard240_256
 import Shard256_272
-import Shard272_288
+import Shard272_276
+import Shard276_280
+import Shard280_284
+import Shard284_288
 import Shard288_304
 import Shard304_320
 import Shard320_336
@@ -87,8 +90,14 @@ theorem valid : ∀ i < 337, MixedDag.Check MixedCaseTrimCandidate.extraCheck No
   · exact Shard240_256 i (by omega) h256
   by_cases h272 : i < 272
   · exact Shard256_272 i (by omega) h272
+  by_cases h276 : i < 276
+  · exact Shard272_276 i (by omega) h276
+  by_cases h280 : i < 280
+  · exact Shard276_280 i (by omega) h280
+  by_cases h284 : i < 284
+  · exact Shard280_284 i (by omega) h284
   by_cases h288 : i < 288
-  · exact Shard272_288 i (by omega) h288
+  · exact Shard284_288 i (by omega) h288
   by_cases h304 : i < 304
   · exact Shard288_304 i (by omega) h304
   by_cases h320 : i < 320

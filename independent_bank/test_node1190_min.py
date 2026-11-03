@@ -42,7 +42,10 @@ class ClosureTests(unittest.TestCase):
         import re
         files = m.files(self.bank)
         shards = sorted(n for n in files if re.fullmatch(r'Shard\d{3}_\d{3}\.lean', n))
-        self.assertEqual(len(shards), 30)
+        self.assertEqual(len(shards), 33)
+        for a in range(272, 288, 4):
+            self.assertIn(f'Shard{a:03}_{a+4:03}.lean', shards)
+        self.assertNotIn('Shard272_288.lean', shards)
         covered = []
         for filename in shards:
             name = filename[:-5]
@@ -97,6 +100,25 @@ class ClosureTests(unittest.TestCase):
         with mock.patch.object(type(original), 'read_bytes', mutated):
             with self.assertRaises(ValueError):
                 m.check(self.bank)
+
+    def test_split_shard_and_contract_mutations_rejected(self):
+        read = type(m.OUT).read_bytes
+        for filename, before, after in [
+            ('Shard272_276.lean', b'i < 276', b'i < 275'),
+            ('Candidate.lean', b'import Shard280_284\n', b''),
+            ('ExactContract.lean', b' := Shard284_288\n', b' := Shard280_284\n'),
+        ]:
+            original = m.OUT / filename
+            def mutated(path):
+                data = read(path)
+                if path == original:
+                    if before not in data:
+                        raise RuntimeError('mutation target missing')
+                    return data.replace(before, after, 1)
+                return data
+            with self.subTest(filename=filename), mock.patch.object(type(original), 'read_bytes', mutated):
+                with self.assertRaises(ValueError):
+                    m.check(self.bank)
 
     def test_generated_artifact_byte_mutation_rejected(self):
         original = m.OUT / 'DenseData.lean'

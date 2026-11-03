@@ -86,8 +86,10 @@ jobs:
             timeout --kill-after=30s 45m lean -o "$f.olean" "$src" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
             python3 "$GITHUB_WORKSPACE/independent_bank/node1190_axiom_inventory.py" "$src" "$RUNNER_TEMP/logs/$f.log"
           done
-          for src in Shard*.lean; do
-            f="${src%.lean}"
+          # The source inventory was byte-checked above; do not pick up unrelated shards.
+          for src in "$GITHUB_WORKSPACE"/audit/node1190-min/Shard*.lean; do
+            f="$(basename "${src%.lean}")"
+            src="$f.lean"
             echo "BUILD $f"
             timeout --kill-after=30s 45m lean -o "$f.olean" "$src" 2>&1 | tee "$RUNNER_TEMP/logs/$f.log"
             python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/logs/$f.log" "Node1190Min.$f"
