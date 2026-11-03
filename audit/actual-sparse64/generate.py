@@ -111,8 +111,8 @@ theorem boundary : ExtensionSeedCandidate.Boundary ExtensionFirstArchive.source
 #print axioms boundary
 end ActualSparse64
 '''
-    # Keep each expensive declaration in a fresh Lean process.  The original
-    # theorem statements and proof bodies remain byte-for-byte unchanged.
+    # Keep each expensive declaration in a fresh Lean process.  The source_eq
+    # proof is replaced below without changing its theorem statement.
     old = result[OUT / 'All.lean']
     start = old.index('theorem outside_eq')
     names = ('outside_eq', 'target_subset', 'delete_subset', 'all_shards',
@@ -122,6 +122,27 @@ end ActualSparse64
         a = old.index('theorem ' + name, start)
         b = old.index('theorem ' + names[i + 1], a) if i + 1 < len(names) else old.index('#print axioms outside_eq', a)
         chunks[name] = old[a:b]
+    chunks['source_eq'] = '''/-- A literal-shaped fold: unlike `toFinset`, it does not decide membership. -/
+def literalFinset {α : Type} [DecidableEq α] : List α → Finset α
+  | [] => ∅
+  | [a] => {a}
+  | a :: b :: xs => insert a (literalFinset (b :: xs))
+
+/-- The literal-shaped fold and `List.toFinset` represent the same set. -/
+theorem literalFinset_eq_toFinset {α : Type} [DecidableEq α] (xs : List α) :
+    literalFinset xs = xs.toFinset := by
+  induction xs with
+  | nil => simp [literalFinset]
+  | cons a xs ih =>
+      cases xs with
+      | nil => simp [literalFinset]
+      | cons b xs =>
+          simpa only [literalFinset, List.toFinset_cons] using congrArg (insert a) ih
+
+theorem source_eq : S.toFinset = ExtensionFirstArchive.source := by
+  rw [← literalFinset_eq_toFinset]
+  rfl
+'''
     header = '\nnamespace ActualSparse64\nset_option maxRecDepth 100000\nset_option maxHeartbeats 40000000\n\n'
     def stage(name, imports, declarations, gates=()):
         result[OUT / (name + '.lean')] = (''.join('import ' + x + '\n' for x in imports) + header
@@ -148,14 +169,14 @@ def main():
     expected = set(files)
     actual = generated_inventory()
     if args.check:
-        if actual != expected or any(not path.is_file() or path.read_text() != value for path, value in files.items()):
+        if actual != expected or any(not path.is_file() or path.read_bytes() != value.encode('utf-8') for path, value in files.items()):
             raise SystemExit('generated file inventory or content mismatch')
         print(f'verified {len(files)} generated files')
     else:
         if actual - expected:
             raise SystemExit('unexpected generated files; refusing to delete')
         for path, content in files.items():
-            path.write_text(content)
+            path.write_bytes(content.encode('utf-8'))
         print(f'wrote {len(files)} generated files')
 
 if __name__ == '__main__':
