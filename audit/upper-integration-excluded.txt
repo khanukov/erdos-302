@@ -164,3 +164,7 @@ OccurrenceUniqueTests
 OccurrenceFactor
 OccurrenceFactorTests
 DistinctPrimeFactorCandidate
+OccurrenceAligned
+OccurrenceAlignedTests
+OccurrencePrimeBridgeCandidate
+OccurrencePrimeBridgeCandidateTests
