@@ -80,3 +80,7 @@ SparseBoundaryMathlib
 SparseTriple
 SparseTripleTest
 SparseTripleNode1209Sample
+SparseBoundaryShards
+SparseBoundaryFast
+ActualSparse64.Data
+ActualSparse64.FastSample

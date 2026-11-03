@@ -1,0 +1,35 @@
+name: Sparse boundary fast representative
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  kernel-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Kernel-check fast representative and axiom audit
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sparse/ActualSparse64"
+          export LEAN_PATH="$RUNNER_TEMP/sparse"
+          lean -o "$RUNNER_TEMP/sparse/SparseTriple.olean" lean/SparseTriple.lean
+          lean -o "$RUNNER_TEMP/sparse/SparseBoundary.olean" lean/SparseBoundary.lean
+          lean -o "$RUNNER_TEMP/sparse/SparseBoundaryShards.olean" lean/SparseBoundaryShards.lean
+          lean -o "$RUNNER_TEMP/sparse/SparseBoundaryFast.olean" lean/SparseBoundaryFast.lean | tee "$RUNNER_TEMP/fast.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/fast.log" SparseBoundaryFast.pairs_sound SparseBoundaryFast.pairs_to_shard
+          lean -o "$RUNNER_TEMP/sparse/ActualSparse64/Data.olean" lean/ActualSparse64/Data.lean
+          lean lean/ActualSparse64/FastSample.lean | tee "$RUNNER_TEMP/sample.log"
+          python3 audit/mathlib-bridge-ci/check_axioms.py "$RUNNER_TEMP/sample.log" ActualSparse64.vertex118 ActualSparse64.shard118
