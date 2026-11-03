@@ -75,6 +75,8 @@ ExtensionBoundaryShard19
 ExtensionFirstArchive
 ExtensionSeedCandidate
 ArchiveRecurrencePilot
+SparseBoundary
+SparseBoundaryMathlib
 SparseTriple
 SparseTripleTest
 SparseTripleNode1209Sample

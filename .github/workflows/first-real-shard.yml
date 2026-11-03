@@ -76,6 +76,7 @@ jobs:
           cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
           cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
           cp lean/{UpperRenewal,Projection,BankProfile,ArchiveSeedNode0,BankProfileTests}.lean "$p/"
+          cp lean/{Renewal,SmoothRenewal}.lean "$p/"
           cp lean/{BankRowPack,BankRowPackTests,BankRowPackArchive1090,MixedDag,MixedDagTests,CaseRules,CaseDual,CaseTree,MixedCaseTrimCandidate,MixedCaseTrimCandidateTest}.lean "$p/"
           cd "$p"
           mkdir -p .lake/packages/mathlib
@@ -136,8 +137,9 @@ jobs:
             timeout 60m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/SeedMaxFirstCellCandidate.log" SeedMaxFirstCellCandidate.node0_bound SeedMaxFirstCellCandidate.first_seed SeedMaxFirstCellCandidate.seed_only_suffices SeedMaxFirstCellCandidate.seed_only_correction SeedMaxFirstCellCandidate.recurrence_on_shard SeedMaxFirstCellCandidate.witnessed_correction SeedMaxFirstCellCandidate.derived_matches_literal SeedMaxFirstCellCandidate.positive_literal
-          for f in UpperRenewal Projection BankProfile ArchiveSeedNode0 BankProfileTests GraphDemandSeedSoundCandidate GraphDemandSeedSoundContract; do
+          for f in UpperRenewal Projection BankProfile ArchiveSeedNode0 BankProfileTests GraphDemandSeedSoundCandidate GraphDemandSeedSoundContract Renewal SmoothRenewal GraphDemandSmoothSix; do
             timeout 15m lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
           done
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/GraphDemandSeedSoundCandidate.log" GraphDemandSeedSoundCandidate.seedMax_bound GraphDemandSeedSoundCandidate.first_cell_positive GraphDemandSeedSoundCandidate.first_cell_bound GraphDemandSeedSoundCandidate.archived_first_cell_bound
           python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/GraphDemandSeedSoundContract.log" GraphDemandSeedSoundContract.general_contract GraphDemandSeedSoundContract.positive_contract GraphDemandSeedSoundContract.archived_contract
+          python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/GraphDemandSmoothSix.log" GraphDemandSmoothSix.positive_of_smooth GraphDemandSmoothSix.seed_max_bound GraphDemandSmoothSix.bound_one GraphDemandSmoothSix.archived_bound
