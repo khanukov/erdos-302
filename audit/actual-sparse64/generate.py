@@ -57,8 +57,9 @@ theorem shard{x}_full : SparseBoundaryShards.shard S D {x} = true :=
 end ActualSparse64
 '''
     imports = ''.join(f'import ActualSparse64.Vertex{x}\n' for x in v)
-    cases = ' | '.join(f'h{x}' for x in v)
-    branches = '\n'.join(f'  · subst v; exact shard{x}_full' for x in v)
+    cases = ' | '.join([*(f'h{x}' for x in v), 'hnil'])
+    branches = '\n'.join([*(f'  · subst v; exact shard{x}_full' for x in v),
+                          '  · cases hnil'])
     result[OUT / 'All.lean'] = imports + f'''import SparseBoundaryMathlib
 import ExtensionBoundaryData
 

@@ -9,6 +9,15 @@ import unittest
 HERE = pathlib.Path(__file__).resolve().parent
 
 class GenerateTests(unittest.TestCase):
+    def test_coverage_handles_empty_tail_after_all_vertex_cases(self):
+        spec = importlib.util.spec_from_file_location('generate', HERE / 'generate.py')
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        coverage = mod.generate()[mod.OUT / 'Coverage.lean']
+        self.assertIn('theorem all_shards : ∀ v, v ∈ V → SparseBoundaryShards.shard S D v = true := by', coverage)
+        self.assertIn('h1876 | h1888 | hnil\n', coverage)
+        self.assertIn('  · subst v; exact shard1888_full\n  · cases hnil\n', coverage)
+
     def test_source_eq_uses_literal_fold_without_changing_statement(self):
         spec = importlib.util.spec_from_file_location('generate', HERE / 'generate.py')
         mod = importlib.util.module_from_spec(spec)

@@ -71,7 +71,7 @@ set_option maxHeartbeats 40000000
 theorem all_shards : ∀ v, v ∈ V → SparseBoundaryShards.shard S D v = true := by
   intro v hv
   simp only [V, List.mem_cons, List.mem_singleton] at hv
-  rcases hv with h118 | h122 | h134 | h142 | h177 | h183 | h201 | h213 | h236 | h244 | h268 | h284 | h295 | h305 | h335 | h354 | h355 | h366 | h402 | h426 | h472 | h488 | h531 | h536 | h549 | h568 | h590 | h603 | h610 | h639 | h670 | h708 | h710 | h732 | h804 | h852 | h885 | h915 | h1005 | h1062 | h1065 | h1098 | h1180 | h1206 | h1220 | h1239 | h1278 | h1281 | h1340 | h1407 | h1416 | h1420 | h1464 | h1593 | h1608 | h1652 | h1704 | h1708 | h1711 | h1770 | h1829 | h1830 | h1876 | h1888
+  rcases hv with h118 | h122 | h134 | h142 | h177 | h183 | h201 | h213 | h236 | h244 | h268 | h284 | h295 | h305 | h335 | h354 | h355 | h366 | h402 | h426 | h472 | h488 | h531 | h536 | h549 | h568 | h590 | h603 | h610 | h639 | h670 | h708 | h710 | h732 | h804 | h852 | h885 | h915 | h1005 | h1062 | h1065 | h1098 | h1180 | h1206 | h1220 | h1239 | h1278 | h1281 | h1340 | h1407 | h1416 | h1420 | h1464 | h1593 | h1608 | h1652 | h1704 | h1708 | h1711 | h1770 | h1829 | h1830 | h1876 | h1888 | hnil
   · subst v; exact shard118_full
   · subst v; exact shard122_full
   · subst v; exact shard134_full
@@ -136,6 +136,7 @@ theorem all_shards : ∀ v, v ∈ V → SparseBoundaryShards.shard S D v = true 
   · subst v; exact shard1830_full
   · subst v; exact shard1876_full
   · subst v; exact shard1888_full
+  · cases hnil
 
 #print axioms all_shards
 end ActualSparse64
