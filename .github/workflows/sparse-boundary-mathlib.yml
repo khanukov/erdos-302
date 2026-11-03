@@ -1,0 +1,62 @@
+name: Sparse boundary Mathlib bridge
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Validate exact sparse closure and negative tests
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s audit/extension-ci -p test_sparse_mathlib_ci.py
+          python3 -B -O -m unittest discover -s audit/extension-ci -p test_sparse_mathlib_ci.py
+          python3 -B audit/mathlib-bridge-ci/test_check_axioms.py
+          python3 -B audit/extension-ci/sparse_mathlib_closure.py "$RUNNER_TEMP/sparse-source"
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile isolated closure and gate exact axiom reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/sparse-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp "$RUNNER_TEMP/sparse-source/"*.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get || echo 'Mathlib cache unavailable; build may time out'
+          lake build Erdos302Lower.Defs
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p"
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag UpperRenewal Projection BankProfile ExtensionSeedCandidate SparseTriple SparseBoundary SparseBoundaryMathlib; do
+            lean -o "$f.olean" "$f.lean" 2>&1 | tee "$RUNNER_TEMP/$f.log"
+          done
+          for f in ExtensionSeedCandidate SparseTriple SparseBoundary SparseBoundaryMathlib; do
+            python3 "$GITHUB_WORKSPACE/audit/extension-ci/sparse_axioms.py" "$f" "$RUNNER_TEMP/$f.log"
+          done
