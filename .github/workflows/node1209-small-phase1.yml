@@ -1,0 +1,64 @@
+name: Node 1209 small-ancestor checks (phase 1 candidate)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  small:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: khanukov/erdos302
+          ref: a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          path: lower-source
+          persist-credentials: false
+      - name: Verify extraction in normal and optimized Python
+        run: |
+          python3 -B -m unittest discover -s independent_bank -p test_node1209_closure.py
+          python3 -B -O -m unittest discover -s independent_bank -p test_node1209_closure.py
+          python3 -B independent_bank/node1209_closure.py --check
+          python3 -B -O independent_bank/node1209_closure.py --check
+      - name: Install pinned Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 https://github.com/leanprover/lean4/releases/download/v4.33.0-rc1/lean-4.33.0-rc1-linux.tar.zst -o "$RUNNER_TEMP/lean.tar.zst"
+          printf '%s  %s\n' 25e7b3e18ec75a4e2529fc23194be8e3cc3183df99b553f870d8a111c7488210 "$RUNNER_TEMP/lean.tar.zst" | sha256sum -c -
+          tar --zstd -xf "$RUNNER_TEMP/lean.tar.zst" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/lean-4.33.0-rc1-linux/bin" >> "$GITHUB_PATH"
+      - name: Compile bounded independent small checks and gate axioms
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C lower-source rev-parse HEAD)" = a60f43511ce0741ef6e80bdb9b620c5bf854f81c
+          printf '%s  %s\n' bf79ae9596f6872d3275ee91f8b2dc52b49eb5bdd60b2c8b41782f87dc137f9d lower-source/lower-lean/Erdos302Lower/Defs.lean | sha256sum -c -
+          p="$RUNNER_TEMP/node1209-project"
+          mkdir -p "$p/Erdos302Lower"
+          cp audit/mathlib-bridge-ci/project/* "$p/"
+          cp lower-source/lower-lean/Erdos302Lower/Defs.lean "$p/Erdos302Lower/"
+          cp lean/{UpperBridge,UpperBank,Extended,Weighted,Scaling,PackRule,Dag}.lean "$p/"
+          cp audit/node1209-closure/Small*.lean "$p/"
+          cd "$p"
+          mkdir -p .lake/packages/mathlib
+          git -C .lake/packages/mathlib init
+          git -C .lake/packages/mathlib remote add origin https://github.com/teorth/mathlib4.git
+          git -C .lake/packages/mathlib fetch --no-tags --depth=1 origin da1f94df976c7cd38117281c57d6ee3046c8d104
+          git -C .lake/packages/mathlib checkout --detach FETCH_HEAD
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = da1f94df976c7cd38117281c57d6ee3046c8d104
+          lake exe cache get
+          lake build Erdos302Lower.Defs
+          export LEAN_PATH="$(lake env printenv LEAN_PATH):$p" LEAN_NUM_THREADS=1
+          for f in UpperBridge UpperBank Extended Weighted Scaling PackRule Dag; do
+            timeout 15m lean -o "$f.olean" "$f.lean"
+          done
+          for f in Small*.lean; do
+            timeout 15m lean -o "${f%.lean}.olean" "$f" 2>&1 | tee "$RUNNER_TEMP/${f%.lean}.log"
+            mapfile -t declarations < <(python3 -c 'import re,sys; print("\n".join("Node1209Small."+x for x in re.findall(r"^#print axioms (node[0-9]+)$",open(sys.argv[1]).read(),re.M)))' "$f")
+            test "${#declarations[@]}" -gt 0
+            python3 "$GITHUB_WORKSPACE/audit/mathlib-bridge-ci/check_axioms.py" "$RUNNER_TEMP/${f%.lean}.log" "${declarations[@]}"
+          done

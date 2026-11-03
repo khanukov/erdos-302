@@ -171,3 +171,4 @@ OccurrencePrimeBridgeCandidateTests
 JointIndependenceCandidate
 JointIndependenceCandidateTests
 FirstExtensionBridge
+Node1209SourceCandidate
