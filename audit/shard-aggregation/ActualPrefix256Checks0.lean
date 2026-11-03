@@ -11,7 +11,10 @@ set_option maxRecDepth 16384 in
 theorem check4 : MixedDag.Check extraCheck nodes 4 := by
   change CaseCheck nodes 4 _ _
   unfold CaseCheck RefCheck row image nodes
-  simp only [BankCase.check] <;> decide
+  constructor
+  · decide
+  · repeat' rw [BankCase.check]
+    decide
 theorem check5 : MixedDag.Check extraCheck nodes 5 := by
   change TrimCheck nodes 5 _
   unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge
@@ -21,7 +24,10 @@ set_option maxRecDepth 16384 in
 theorem check7 : MixedDag.Check extraCheck nodes 7 := by
   change CaseCheck nodes 7 _ _
   unfold CaseCheck RefCheck row image nodes
-  simp only [BankCase.check] <;> decide
+  constructor
+  · decide
+  · repeat' rw [BankCase.check]
+    decide
 theorem check8 : MixedDag.Check extraCheck nodes 8 := by
   change TrimCheck nodes 8 _
   unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge
@@ -35,7 +41,10 @@ set_option maxRecDepth 16384 in
 theorem check14 : MixedDag.Check extraCheck nodes 14 := by
   change CaseCheck nodes 14 _ _
   unfold CaseCheck RefCheck row image nodes
-  simp only [BankCase.check] <;> decide
+  constructor
+  · decide
+  · repeat' rw [BankCase.check]
+    decide
 theorem check15 : MixedDag.Check extraCheck nodes 15 := by
   change TrimCheck nodes 15 _
   unfold TrimCheck RefCheck image nodes UpperBridge.OrderedEdge

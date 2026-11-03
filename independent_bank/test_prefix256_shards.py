@@ -1,6 +1,7 @@
 import pathlib
 import re
 import unittest
+from unittest.mock import patch
 
 import archive_prefix
 import mixed_lean_producer
@@ -16,8 +17,39 @@ class Prefix256Test(unittest.TestCase):
         for i, node in enumerate(doc['nodes'][:256]):
             if node['kind'] == 'case_placeholder':
                 text = self.files[f'ActualPrefix256Checks{i // 16}.lean']
-                self.assertIn(f'set_option maxRecDepth 16384 in\ntheorem check{i} : MixedDag.Check extraCheck nodes {i} := by\n  change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes\n  simp only [BankCase.check] <;> decide', text)
-        self.assertEqual(doc['nodes'][14]['kind'], 'case_placeholder')
+                self.assertIn(f'set_option maxRecDepth 16384 in\ntheorem check{i} : MixedDag.Check extraCheck nodes {i} := by\n  change CaseCheck nodes {i} _ _\n  unfold CaseCheck RefCheck row image nodes\n  constructor\n  · decide\n  · repeat\' rw [BankCase.check]\n    decide', text)
+        ids = [n['id'] for n in doc['nodes'][:256] if n['kind'] == 'case_placeholder']
+        self.assertEqual(ids, [4, 7, 14, 35, 67, 72, 78])
+        self.assertEqual(
+            [(n['id'], n['archive']['root'], len(n['archive']['tree']))
+             for n in doc['nodes'][:256] if n['kind'] == 'case_placeholder'],
+            [(4, 0, 1), (7, 0, 1), (14, 0, 1), (35, 2, 3),
+             (67, 13, 14), (72, 13, 14), (78, 10, 11)])
+
+    def test_every_case_rejects_weakened_or_missing_checks(self):
+        # Exercise the byte gate against mutations of each case, not merely one
+        # representative shard. Cache the already-generated expected artifact.
+        with patch.object(shards, 'generate', return_value=self.files):
+            for i in (4, 7, 14, 35, 67, 72, 78):
+                name = f'ActualPrefix256Checks{i // 16}.lean'
+                text = self.files[name]
+                match = re.search(rf'^theorem check{i} : .*?(?=^theorem |^set_option |^#print)',
+                                  text, re.M | re.S)
+                self.assertIsNotNone(match)
+                proof = match.group()
+                mutations = (
+                    proof.replace('MixedDag.Check extraCheck nodes ' + str(i), 'True'),
+                    proof.replace('  · decide\n', '  · trivial\n', 1),
+                    proof.replace("repeat' rw [BankCase.check]", 'skip'),
+                    proof.replace('    decide\n', '    trivial\n', 1),
+                    '',
+                )
+                for mutation in mutations:
+                    with self.subTest(node=i, mutation=mutation[:50]):
+                        self.assertNotEqual(mutation, proof)
+                        altered = text[:match.start()] + mutation + text[match.end():]
+                        with self.assertRaises(ValueError):
+                            shards.verify_bytes(name, altered.encode())
 
     @classmethod
     def setUpClass(cls):
