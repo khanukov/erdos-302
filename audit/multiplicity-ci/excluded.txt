@@ -236,3 +236,7 @@ ActualSparse64.SourceEq
 ActualSparse64.Outside
 ActualSparse64.Coverage
 ActualSparse64.TargetEq
+OccurrencePath
+OccurrencePathTests
+OccurrenceUnique
+OccurrenceUniqueTests

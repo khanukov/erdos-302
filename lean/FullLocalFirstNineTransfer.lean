@@ -19,14 +19,15 @@ def lowerRule : Rule FullLocalAssemblyCandidate.Payload → Rule Payload
 def lower (ns : ℕ → Node FullLocalAssemblyCandidate.Payload) : ℕ → Node Payload :=
   fun j => ⟨(ns j).support, (ns j).demand, lowerRule (ns j).rule⟩
 
-set_option maxRecDepth 100000
-set_option maxHeartbeats 4000000
-
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
 /-- The equality is kernel checked for each of the nine literal fields. -/
 theorem fields (j : ℕ) (hj : j < 9) :
     SameData FirstRealData.nodes (lower localNodes) j := by
-  interval_cases j <;> simp [SameData, FirstRealData.nodes, lower, localNodes, FullLocalShards.S0.nodes]
+  interval_cases j <;> constructor <;> rfl
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
 theorem rules (i : ℕ) (hi : i < 9) :
     (FirstRealData.nodes i).rule = (lower localNodes i).rule := by
   interval_cases i <;> rfl
@@ -43,16 +44,13 @@ theorem lower_checked (i : ℕ) (hi : i < 9) :
     (fields i hi) (rules i hi) (fun j hj => fields j (reads_bounded i hi j hj))).mp
   exact FirstRealShard.checked i hi
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
 /-- The wrapper does not alter any checker field on these actual nodes. -/
 theorem local_checked (i : ℕ) (hi : i < 9) :
     Check FullLocalAssemblyCandidate.extraCheck localNodes i := by
   have h := lower_checked i hi
-  interval_cases i <;>
-    simpa [Check, lower, lowerRule, localNodes, FullLocalShards.S0.nodes,
-      FullLocalAssemblyCandidate.extraCheck, FullLocalAssemblyCandidate.projection,
-      MixedCaseTrimCandidate.extraCheck, MixedCaseTrimCandidate.CaseCheck,
-      MixedCaseTrimCandidate.TrimCheck, MixedCaseTrimCandidate.RefCheck,
-      MixedCaseTrimCandidate.row, MixedCaseTrimCandidate.image] using h
+  interval_cases i <;> exact h
 
 /-- Corrupt the demand of the actual dependency of node 5. -/
 def changed (j : ℕ) : Node Payload :=
